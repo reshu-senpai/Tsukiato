@@ -1,0 +1,41 @@
+Tsukiato PWA setup
+==================
+
+Files (keep together on the server):
+  index.html
+  sw.js
+  manifest.webmanifest
+  icons/icon-192.png
+  icons/icon-512.png
+  favicon.png
+  apple-touch-icon.png
+
+1. Host on HTTPS
+   - GitHub Pages, Cloudflare Pages, Netlify, or any static host
+   - Service workers do NOT work on file:// or most plain HTTP
+
+2. Upload the folder so URLs look like:
+   https://YOU.github.io/tsukiato/index.html
+   https://YOU.github.io/tsukiato/sw.js
+   https://YOU.github.io/tsukiato/manifest.webmanifest
+
+3. Test offline (Chrome)
+   - Open the site once while online (SW installs, shell caches)
+   - DevTools → Application → Service Workers → should show "activated"
+   - Application → Cache Storage → tsukiato-shell-v1
+   - Toggle Offline → reload → UI should still open
+   - List/calendar/notifs use your existing localStorage caches
+
+4. Install
+   Android Chrome: menu → Install app / Add to Home screen
+   Desktop Chrome: install icon in address bar
+   iOS Safari: Share → Add to Home Screen
+
+5. AppMint
+   - Prefer loading the HTTPS URL (not only embedded file) so SW can register
+   - Or keep localStorage offline data inside the WebView APK as you do now
+
+6. Updates
+   - Change CACHE name in sw.js (e.g. tsukiato-shell-v2) when you ship a new shell
+   - Users get the new shell on next visit after activate
+
