@@ -255,7 +255,7 @@ body::after {
   position: fixed;
   top: calc(66px + env(safe-area-inset-top));
   right: calc(20px + env(safe-area-inset-right));
-  width: 232px;
+  width: 272px;
   z-index: 70;
   font-family: 'DM Mono', monospace;
   transform-origin: top right;
@@ -358,7 +358,7 @@ body::after {
   margin-bottom: 10px;
 }
 .popup-name-badge {
-  display: inline-block;
+  display: block;
   font-family: 'Caveat', cursive;
   font-weight: 700;
   font-size: 30px;
@@ -372,8 +372,224 @@ body::after {
 .popup-user-row {
   display: flex;
   align-items: center;
+  gap: 10px;
+}
+.popup-user-text {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 2×2 stat cards replace the old flat text rows — bordered tiles read as
+   distinct "panels" (comic-page language) instead of blending together. */
+.popup-stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  margin-bottom: 10px;
+}
+.popup-stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  padding: 7px 9px 6px;
+  border: 1.5px solid rgba(var(--ink-rgb),0.22);
+  border-radius: 10px;
+  background: rgba(var(--ink-rgb),0.035);
+}
+
+/* Completed insights charts (avatar popup) */
+.popup-stat-clickable { cursor: pointer; transition: border-color 0.15s, transform 0.15s; }
+.popup-stat-clickable:active { transform: scale(0.97); }
+.popup-stat-clickable:hover { border-color: var(--rose); }
+.account-popup.charts-open { width: min(300px, 92vw); }
+.account-charts-view { margin-top: 2px; }
+.account-charts-view[hidden] { display: none !important; }
+.charts-head {
+  font-family: 'Shippori Mincho', serif;
+  font-size: 14px;
+  color: rgb(var(--ink-rgb));
+  margin: 4px 0 10px;
+  letter-spacing: 0.02em;
+}
+.charts-scroll {
+  max-height: 52vh;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+.chart-block {
+  margin-bottom: 14px;
+  opacity: 0;
+  transform: translateY(8px);
+  animation: chartBlockIn 0.4s cubic-bezier(.22,.85,.3,1) forwards;
+}
+.chart-block:nth-child(1) { animation-delay: 0.05s; }
+.chart-block:nth-child(2) { animation-delay: 0.12s; }
+.chart-block:nth-child(3) { animation-delay: 0.19s; }
+.chart-block:nth-child(4) { animation-delay: 0.26s; }
+@keyframes chartBlockIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+.chart-label {
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rose);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+.chart-bars-v {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  height: 88px;
+  padding: 0 2px;
+}
+.chart-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  gap: 4px;
+}
+.chart-col.is-peak {
+  flex: 1.25;
+  transform: scale(1.06);
+  transform-origin: bottom center;
+}
+.chart-col-val {
+  font-size: 8px;
+  color: rgb(var(--ink-rgb));
+  font-weight: 500;
+  line-height: 1;
+  opacity: 0.85;
+}
+.chart-col.is-peak .chart-col-val { color: var(--rose); font-weight: 600; }
+.chart-col-bar {
+  width: 100%;
+  max-width: 22px;
+  border-radius: 4px 4px 2px 2px;
+  background: #1a1a1a;
+  transform-origin: bottom center;
+  transform: scaleY(0);
+  animation: chartBarGrow 0.55s cubic-bezier(.22,.85,.3,1) forwards;
+}
+.chart-col.is-peak .chart-col-bar {
+  background: var(--rose);
+  box-shadow: 0 0 10px rgba(217,79,128,0.45);
+}
+.chart-col-bar.alt { background: #2c2c2c; }
+.chart-col.is-peak .chart-col-bar.alt { background: var(--rose); }
+@keyframes chartBarGrow {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+.chart-col-lbl {
+  font-size: 8px;
+  letter-spacing: 0.02em;
+  color: rgba(var(--ink-rgb),0.65);
+  white-space: nowrap;
+}
+.chart-col.is-peak .chart-col-lbl { color: var(--rose); font-weight: 600; }
+
+.chart-bars-h { display: flex; flex-direction: column; gap: 7px; }
+.chart-h-row {
+  display: grid;
+  grid-template-columns: 52px 1fr 28px;
+  align-items: center;
+  gap: 6px;
+}
+.chart-h-lbl {
+  font-size: 9px;
+  color: rgb(var(--ink-rgb));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chart-h-track {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(var(--ink-rgb),0.1);
+  overflow: hidden;
+}
+.chart-h-track {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(var(--ink-rgb),0.12);
+  overflow: hidden;
+  position: relative;
+}
+.chart-h-fill {
+  display: block;
+  height: 100%;
+  min-height: 8px;
+  width: 0;
+  border-radius: inherit;
+  background: #d94f80 !important;
+  background: var(--rose) !important;
+}
+.chart-h-row.is-peak .chart-h-fill {
+  background: #d94f80 !important;
+  background: var(--rose) !important;
+  box-shadow: 0 0 8px rgba(217,79,128,0.45);
+}
+.chart-h-row.is-peak .chart-h-lbl { color: var(--rose); font-weight: 600; }
+.chart-h-val {
+  font-size: 9px;
+  text-align: right;
+  color: rgb(var(--ink-rgb));
+}
+.chart-empty {
+  font-size: 10px;
+  color: rgba(var(--ink-rgb),0.55);
+  padding: 8px 0;
+}
+[data-theme="dark"] .chart-col-bar { background: #e8e6f0; }
+[data-theme="dark"] .chart-col-bar.alt { background: #c4c0d4; }
+[data-theme="dark"] .chart-col.is-peak .chart-col-bar { background: var(--rose); }
+
+.popup-stat-card.accent {
+  border-color: rgba(217,79,128,0.45);
+  background: rgba(217,79,128,0.09);
+}
+.popup-stat-icon {
+  font-size: 10px;
+  opacity: 0.55;
+  line-height: 1;
+}
+.popup-stat-card.accent .popup-stat-icon { opacity: 0.9; color: var(--rose); }
+.popup-stat-num {
+  font-family: 'DM Mono', monospace;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.15;
+  color: rgb(var(--ink-rgb));
+}
+.popup-stat-card.accent .popup-stat-num { color: var(--rose); }
+.popup-stat-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(var(--ink-rgb),0.62);
+}
+
+.popup-substat-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 4px;
+}
+.popup-substat {
+  display: flex;
   justify-content: space-between;
-  gap: 8px;
+  align-items: baseline;
+  font-size: 11px;
+  padding: 3px 0;
+  gap: 10px;
 }
 .popup-user-actions {
   display: flex;
@@ -381,6 +597,24 @@ body::after {
   gap: 4px;
   flex-shrink: 0;
 }
+/* Account gear → connectivity panel */
+.popup-connectivity-panel {
+  margin-top: 4px;
+}
+.popup-connectivity-panel[hidden] { display: none !important; }
+#accountGearBtn {
+  opacity: 0.72;
+  background: transparent;
+}
+#accountGearBtn[aria-expanded="true"] {
+  opacity: 1;
+  color: var(--rose);
+}
+#accountGearBtn:hover, #accountGearBtn:active { opacity: 1; }
+[data-theme="dark"] .account-popup #accountGearBtn {
+  color: rgba(var(--ink-rgb), 0.9);
+}
+
 .theme-toggle-btn,
 .cache-refresh-btn {
   flex-shrink: 0;
@@ -420,20 +654,54 @@ body::after {
 }
 
 .popup-view-profile-btn {
-  display: block;
-  width: 100%;
-  text-align: right;
-  background: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: fit-content;
+  margin: 8px 0 2px auto;
+  padding: 5px 8px 5px 12px;
+  background: var(--rose);
   border: none;
-  padding: 4px 0 2px;
-  margin-bottom: 2px;
+  border-radius: 999px;
   font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 0.04em;
-  color: var(--rose);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #fff;
+  box-shadow: 0 2px 5px rgba(217, 79, 128, 0.3);
   cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.12s;
 }
-.popup-view-profile-btn:active { opacity: 0.7; }
+.popup-view-profile-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 1px 2px rgba(217, 79, 128, 0.25);
+}
+.popup-view-profile-btn .popup-arrow-nudge {
+  display: inline-block;
+  animation: arrowNudge 1.6s ease-in-out infinite;
+}
+@keyframes arrowNudge {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(3px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .popup-view-profile-btn .popup-arrow-nudge { animation: none; }
+}
+/* Tapped: the pill drops off and fades, like it's been plucked away —
+   plays instead of an instant swap while the profile sheet opens behind it. */
+.popup-view-profile-btn.is-leaving {
+  animation: pillFallAway 0.38s ease-in forwards;
+  pointer-events: none;
+}
+.popup-view-profile-btn.is-leaving .popup-arrow-nudge { animation: none; }
+@keyframes pillFallAway {
+  0%   { transform: translateY(0) rotate(0deg);   opacity: 1; }
+  100% { transform: translateY(26px) rotate(14deg); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .popup-view-profile-btn.is-leaving { animation: none; opacity: 0; }
+}
 
 .popup-stat {
   display: flex;
@@ -493,6 +761,360 @@ body::after {
   width: 280px;
 }
 .calendar-card { width: 300px; }
+/* Calendar Archive — year pills + molecule seasons + grid */
+.calendar-card.archive-wide { width: min(320px, 92vw); }
+.calendar-card #calPopupTitle {
+  font-family: 'Shippori Mincho', serif;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  color: rgb(var(--ink-rgb));
+  margin-bottom: 8px;
+}
+.cal-archive-view { min-height: 120px; }
+.cal-archive-back {
+  display: inline-block;
+  margin: 0 0 10px;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--rose);
+  cursor: pointer;
+}
+.cal-archive-back[hidden] { display: none !important; }
+.cal-archive-years {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  padding: 4px 0 8px;
+}
+.cal-year-pill {
+  border: 1.5px solid rgba(217,79,128,0.45);
+  background: rgba(217,79,128,0.14);
+  color: var(--rose);
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  padding: 6px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s, box-shadow 0.2s;
+}
+.cal-year-pill:active { transform: scale(0.96); }
+.cal-year-pill.is-picked {
+  background: var(--rose);
+  color: #fff;
+  border-color: var(--rose);
+}
+.cal-year-pill.cal-year-fade {
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity 0.28s ease, transform 0.28s ease;
+  pointer-events: none;
+}
+.cal-year-pill.cal-year-flying-source {
+  visibility: hidden;
+  pointer-events: none;
+}
+.cal-year-flyer {
+  position: fixed;
+  z-index: 12000;
+  margin: 0;
+  pointer-events: none;
+  will-change: transform;
+  box-shadow: 0 6px 18px rgba(217,79,128,0.35);
+  transition:
+    transform 0.5s cubic-bezier(.22,1,.36,1),
+    background 0.25s ease,
+    color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+.cal-year-flyer.is-landing {
+  opacity: 0;
+  transition:
+    transform 0.5s cubic-bezier(.22,1,.36,1),
+    opacity 0.12s ease;
+}
+.cal-mol-center.cal-mol-await {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  animation: none !important;
+  pointer-events: none !important;
+}
+.cal-archive-molecule.cal-mol-await-branches .cal-mol-node,
+.cal-archive-molecule.cal-mol-await-branches .cal-mol-line {
+  opacity: 0 !important;
+  animation: none !important;
+  pointer-events: none !important;
+}
+
+.cal-archive-molecule {
+  position: relative;
+  width: 220px;
+  height: 200px;
+  margin: 8px auto 12px;
+}
+.cal-mol-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 64px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: var(--rose);
+  color: #fff;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  box-shadow: 0 4px 14px rgba(217,79,128,0.35);
+  animation: calMolIn 0.35s cubic-bezier(.34,1.4,.48,1) both;
+}
+.cal-mol-center.cal-mol-settled:not(.cal-mol-await) {
+  animation: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+.cal-mol-node {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(217,79,128,0.5);
+  background: rgba(217,79,128,0.18);
+  color: var(--rose);
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.15;
+  padding: 4px;
+  opacity: 0;
+  transform: scale(0.4);
+  animation: calMolBranch 0.4s cubic-bezier(.34,1.3,.48,1) forwards;
+  animation-delay: calc(0.08s + var(--i, 0) * 0.07s);
+}
+.cal-mol-node:active {
+  background: rgba(217,79,128,0.35);
+  transform: scale(0.94);
+}
+.cal-mol-season[data-season="WINTER"] { left: 8px; top: 8px; }
+.cal-mol-season[data-season="SPRING"] { right: 8px; top: 8px; left: auto; }
+.cal-mol-season[data-season="SUMMER"] { left: 8px; bottom: 8px; top: auto; }
+.cal-mol-season[data-season="FALL"] { right: 8px; bottom: 8px; top: auto; left: auto; }
+.cal-mol-line {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 72px;
+  height: 1.5px;
+  background: rgba(217,79,128,0.4);
+  transform-origin: left center;
+  z-index: 1;
+  opacity: 0;
+  animation: calMolLine 0.35s ease forwards;
+  animation-delay: 0.05s;
+}
+.cal-mol-tl { transform: rotate(-135deg); }
+.cal-mol-tr { transform: rotate(-45deg); }
+.cal-mol-bl { transform: rotate(135deg); }
+.cal-mol-br { transform: rotate(45deg); }
+@keyframes calMolIn {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes calMolBranch {
+  from { opacity: 0; transform: scale(0.4); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes calMolLine {
+  from { opacity: 0; width: 0; }
+  to   { opacity: 1; width: 72px; }
+}
+
+.cal-archive-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+  min-height: 22px;
+}
+.cal-archive-sort-capsule {
+  margin-left: auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.cal-archive-sort-capsule[hidden] { display: none !important; }
+.cal-archive-sort-capsule .sort-toggle {
+  font-size: 8.5px;
+  letter-spacing: 0.06em;
+  padding: 3px 8px 3px 9px;
+  gap: 0;
+  border-radius: 999px 0 0 999px;
+  border-right: none;
+}
+.cal-archive-sort-capsule .sort-arrow {
+  font-size: 10px;
+  padding: 3px 7px;
+  min-width: 0;
+  border-radius: 0 999px 999px 0;
+  border: 1px solid var(--ink-dim);
+  border-left: none;
+  background: transparent;
+  color: var(--ink-muted);
+  cursor: pointer;
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s, border-color 0.15s, transform 0.15s;
+}
+.cal-archive-sort-capsule .sort-arrow.desc { transform: none; }
+.cal-archive-sort-capsule .sort-toggle.open,
+.cal-archive-sort-capsule .sort-toggle:hover,
+.cal-archive-sort-capsule .sort-arrow:hover {
+  border-color: var(--rose);
+  color: var(--rose);
+}
+.cal-archive-sort-capsule .sort-options {
+  right: 0;
+  left: auto;
+  min-width: 108px;
+  font-size: 10px;
+}
+.cal-archive-heading {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--rose);
+  text-align: center;
+  margin: 2px 0 10px;
+  font-weight: 500;
+}
+.cal-archive-heading[hidden] { display: none !important; }
+.cal-archive-empty {
+  font-family: 'Shippori Mincho', serif;
+  font-size: 13px;
+  line-height: 1.45;
+  text-align: center;
+  color: var(--rose);
+  padding: 28px 12px 20px;
+  letter-spacing: 0.02em;
+}
+
+
+.cal-archive-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 10px;
+  padding: 4px 0 8px;
+}
+/* Match planning gcard language — cover, score badge, format bar, title */
+.cal-archive-tile {
+  cursor: pointer;
+  text-align: left;
+}
+.cal-archive-tile:active { opacity: 0.85; }
+.cal-archive-tile .cal-arch-poster {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1.5px solid rgba(var(--ink-rgb),0.18);
+  background: rgba(var(--ink-rgb),0.06);
+}
+.cal-archive-tile img {
+  width: 100%;
+  aspect-ratio: 2/3;
+  object-fit: cover;
+  display: block;
+}
+.cal-archive-tile .cal-arch-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  max-width: calc(100% - 12px);
+  z-index: 1;
+}
+.cal-archive-tile .cal-arch-badge span {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  padding: 2px 5px;
+  border-radius: 6px;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  backdrop-filter: blur(4px);
+}
+.cal-archive-tile .cal-arch-badge span.score {
+  background: rgba(0,0,0,0.55);
+}
+.cal-archive-tile .cal-arch-badge span.score.is-mine {
+  background: var(--rose);
+  color: #fff;
+}
+.cal-archive-tile .cal-arch-bar {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 18px 7px 7px;
+  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.4) 55%, transparent 100%);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: rgba(255,255,255,0.92);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.cal-archive-tile .cal-arch-bar .status-dot {
+  position: static;
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+}
+.cal-archive-tile .cal-arch-bar .cal-arch-fmt {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cal-archive-tile .cal-arch-sub {
+  font-size: 9.5px;
+  color: rgba(var(--ink-rgb),0.7);
+  margin-top: 2px;
+  letter-spacing: 0.03em;
+}
+.cal-archive-tile .cal-arch-name {
+  font-size: 11px;
+  line-height: 1.25;
+  margin-top: 6px;
+  color: rgb(var(--ink-rgb));
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-weight: 500;
+}
+
 .search-card { width: 300px; }
 /* Scroll region lives INSIDE the textured card, not on the card itself —
    the card's ::before paper texture is sized to the card's own box, so
@@ -674,6 +1296,8 @@ body::after {
 }
 .popup-mode-btn.active:active { color: #fff; }
 
+#calScopeToggle { flex-wrap: wrap; }
+#calScopeToggle .popup-mode-btn { font-size: 9.5px; padding: 5px 7px; }
 #calScopeToggle .popup-mode-btn.active {
   background: var(--rose);
   border-color: var(--rose);
@@ -693,6 +1317,8 @@ body::after {
   width: 34px; height: 34px; object-fit: cover; border-radius: 6px; flex-shrink: 0;
   border: 1px solid rgba(var(--ink-rgb),0.15);
 }
+.notif-thumb-open { cursor: pointer; }
+.notif-thumb-open:active { opacity: 0.7; transform: scale(0.96); }
 .notif-thumb.round { border-radius: 50%; }
 .notif-thumb-fallback { background: rgba(var(--ink-rgb),0.08); }
 .notif-body { min-width: 0; flex: 1; }
@@ -822,8 +1448,124 @@ body::after {
 [data-theme="dark"] .account-popup .popup-name-badge {
   color: rgba(255, 255, 255, 0.96);
 }
-[data-theme="dark"] .account-popup .popup-stat .popup-label {
+[data-theme="dark"] .account-popup .popup-substat .popup-label {
   color: rgba(255, 255, 255, 0.72);
+}
+[data-theme="dark"] .account-popup .popup-stat-card {
+  border-color: rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.05);
+}
+[data-theme="dark"] .account-popup 
+/* Completed insights charts (avatar popup) */
+.popup-stat-clickable { cursor: pointer; transition: border-color 0.15s, transform 0.15s; }
+.popup-stat-clickable:active { transform: scale(0.97); }
+.popup-stat-clickable:hover { border-color: var(--rose); }
+.account-popup.charts-open { width: min(300px, 92vw); }
+.account-charts-view { margin-top: 2px; }
+.account-charts-view[hidden] { display: none !important; }
+.charts-head {
+  font-family: 'Shippori Mincho', serif;
+  font-size: 14px;
+  color: rgb(var(--ink-rgb));
+  margin: 4px 0 10px;
+  letter-spacing: 0.02em;
+}
+.charts-scroll {
+  max-height: 52vh;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+.chart-block {
+  margin-bottom: 14px;
+  opacity: 0;
+  transform: translateY(8px);
+  animation: chartBlockIn 0.4s cubic-bezier(.22,.85,.3,1) forwards;
+}
+.chart-block:nth-child(1) { animation-delay: 0.05s; }
+.chart-block:nth-child(2) { animation-delay: 0.12s; }
+.chart-block:nth-child(3) { animation-delay: 0.19s; }
+.chart-block:nth-child(4) { animation-delay: 0.26s; }
+@keyframes chartBlockIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+.chart-label {
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rose);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+.chart-bars-v {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  height: 88px;
+  padding: 0 2px;
+}
+.chart-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  gap: 4px;
+}
+.chart-col.is-peak {
+  flex: 1.25;
+  transform: scale(1.06);
+  transform-origin: bottom center;
+}
+.chart-col-val {
+  font-size: 8px;
+  color: rgb(var(--ink-rgb));
+  font-weight: 500;
+  line-height: 1;
+  opacity: 0.85;
+}
+.chart-col.is-peak .chart-col-val { color: var(--rose); font-weight: 600; }
+.chart-col-bar {
+  width: 100%;
+  max-width: 22px;
+  border-radius: 4px 4px 2px 2px;
+  background: #1a1a1a;
+  transform-origin: bottom center;
+  transform: scaleY(0);
+  animation: chartBarGrow 0.55s cubic-bezier(.22,.85,.3,1) forwards;
+}
+.chart-col.is-peak .chart-col-bar {
+  background: var(--rose);
+  box-shadow: 0 0 10px rgba(217,79,128,0.45);
+}
+.chart-col-bar.alt { background: #2c2c2c; }
+.chart-col.is-peak .chart-col-bar.alt { background: var(--rose); }
+@keyframes chartBarGrow {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+.chart-col-lbl {
+  font-size: 8px;
+  letter-spacing: 0.02em;
+  color: rgba(var(--ink-rgb),0.65);
+  white-space: nowrap;
+}
+.chart-col.is-peak .chart-col-lbl { color: var(--rose); font-weight: 600; }
+
+[data-theme="dark"] .chart-col-bar { background: #e8e6f0; }
+[data-theme="dark"] .chart-col-bar.alt { background: #c4c0d4; }
+[data-theme="dark"] .chart-col.is-peak .chart-col-bar { background: var(--rose); }
+
+.popup-stat-card.accent {
+  border-color: rgba(217,79,128,0.55);
+  background: rgba(217,79,128,0.14);
+}
+[data-theme="dark"] .account-popup .popup-stat-num {
+  color: rgba(255,255,255,0.96);
+}
+[data-theme="dark"] .account-popup .popup-stat-tag {
+  color: rgba(255,255,255,0.68);
 }
 [data-theme="dark"] .account-popup .theme-toggle-btn,
 [data-theme="dark"] .account-popup .cache-refresh-btn {
@@ -882,13 +1624,17 @@ body::after {
   50%      { box-shadow: 0 0 0 3px rgba(217,79,128,0); }
 }
 
-/* Rose surge across card when + is tapped */
+/* Rose surge across card when + is tapped (also Completed insights hint) */
 .card.rose-surge,
-.gcard.rose-surge {
+.gcard.rose-surge,
+#popupCompletedCard.rose-surge {
   isolation: isolate;
+  position: relative;
+  overflow: hidden;
 }
 .card.rose-surge::after,
-.gcard.rose-surge::after {
+.gcard.rose-surge::after,
+#popupCompletedCard.rose-surge::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -911,7 +1657,8 @@ body::after {
   mix-blend-mode: multiply;
 }
 [data-theme="dark"] .card.rose-surge::after,
-[data-theme="dark"] .gcard.rose-surge::after {
+[data-theme="dark"] .gcard.rose-surge::after,
+[data-theme="dark"] #popupCompletedCard.rose-surge::after {
   mix-blend-mode: screen;
   background: linear-gradient(
     115deg,
@@ -1708,8 +2455,8 @@ body::after {
   display: none;
 }
 .profile-about.loaded { display: block; }
-.profile-about img, .profile-about video {
-  max-width: 100%; border-radius: 10px; display: block; margin: 8px 0;
+.profile-about img, .profile-about video, .profile-about .rich-text-img {
+  max-width: 100%; border-radius: 10px; display: block; margin: 8px 0; height: auto;
 }
 .profile-about a { color: var(--rose); }
 .profile-about p { margin-bottom: 8px; }
@@ -1865,15 +2612,20 @@ body::after {
   opacity: 0;
   transform: translateY(-8px) scale(0.94);
   transform-origin: top right;
-  transition: opacity 0.2s cubic-bezier(.22,.85,.3,1), transform 0.2s cubic-bezier(.22,.85,.3,1);
+  transition: opacity 0.22s cubic-bezier(.22,.85,.3,1), transform 0.22s cubic-bezier(.22,.85,.3,1);
 }
 .detail-status-popup.is-open {
   opacity: 1;
   transform: translateY(0) scale(1);
 }
+/* Slow exit after 4s hold */
 .detail-status-popup.is-closing {
   opacity: 0;
-  transform: translateY(-6px) scale(0.96);
+  transform: translateY(-4px) scale(0.97);
+  transition: opacity 0.85s ease, transform 0.85s ease;
+}
+.detail-status-popup.is-closing.quick-dismiss {
+  transition: opacity 0.18s ease, transform 0.18s ease;
 }
 .detail-status-popup .popup-shadow {
   top: 6px;
@@ -2035,8 +2787,28 @@ body::after {
   color: var(--rose); cursor: pointer;
 }
 .comment-like {
-  font-size: 10px; color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  color: var(--muted, rgba(232,230,240,0.45));
+  background: none;
+  border: none;
+  padding: 2px 6px;
+  border-radius: 999px;
+  cursor: default;
+  font-family: inherit;
 }
+button.comment-like {
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, transform 0.12s;
+}
+button.comment-like:active { transform: scale(0.94); }
+button.comment-like.is-liked {
+  color: var(--rose);
+  background: rgba(217,79,128,0.12);
+}
+button.comment-like:disabled { opacity: 0.55; cursor: default; }
 .comments-compose {
   position: sticky;
   bottom: 0;
@@ -2189,6 +2961,49 @@ body::after {
   padding: 0;
   margin: 0;
   transition: background 0.15s, color 0.15s, transform 0.1s;
+}
+/* Nyaa open — dots: enter left → stack center → exit right */
+.nyaa-load-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.28);
+  pointer-events: none;
+}
+.nyaa-load-overlay[hidden] { display: none !important; }
+.nyaa-load-track {
+  position: relative;
+  width: 96px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+.nyaa-load-track span {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--rose);
+  box-shadow: 0 0 0 1px rgba(var(--ink-rgb), 0.12);
+  opacity: 0;
+  animation: nyaaDotFlow 1.5s ease-in-out infinite;
+}
+.nyaa-load-track span:nth-child(1) { animation-delay: 0s; }
+.nyaa-load-track span:nth-child(2) { animation-delay: 0.14s; }
+.nyaa-load-track span:nth-child(3) { animation-delay: 0.28s; }
+.nyaa-load-track span:nth-child(4) { animation-delay: 0.42s; }
+@keyframes nyaaDotFlow {
+  0%   { transform: translateX(-52px); opacity: 0; }
+  18%  { opacity: 1; }
+  32%  { transform: translateX(0); opacity: 1; }
+  58%  { transform: translateX(0); opacity: 1; }
+  78%  { transform: translateX(52px); opacity: 1; }
+  100% { transform: translateX(52px); opacity: 0; }
 }
 .card-dl-btn:active {
   background: rgba(217,79,128,0.28);
@@ -3137,18 +3952,48 @@ body::after {
   <svg class="popup-tail calendar-tail" width="34" height="30" viewBox="0 0 34 30">
     <polygon points="2,28 16,28 32,2" fill="rgb(var(--card-rgb))" stroke="rgb(var(--ink-rgb))" stroke-width="2.4" stroke-linejoin="round"/>
   </svg>
-  <div class="popup-card calendar-card">
-    <div class="popup-row popup-user">Airing This Week</div>
+  <div class="popup-card calendar-card" id="calendarCard">
+    <div class="popup-row popup-user" id="calPopupTitle">You've Been Lazy</div>
     <div class="popup-mode-toggle" id="calScopeToggle">
       <button class="popup-mode-btn" data-scope="MY_LIST">My List</button>
       <button class="popup-mode-btn" data-scope="ALL">All</button>
       <button class="popup-mode-btn active" data-scope="UNWATCHED">Unwatched</button>
+      <button class="popup-mode-btn" data-scope="ARCHIVE" type="button">Archive</button>
     </div>
     <div class="popup-divider"></div>
-    <div class="popup-scroll">
+    <div class="popup-scroll" id="calScroll">
       <div id="calList" class="cal-list" hidden></div>
       <div id="backlogSection">
         <div id="backlogList" class="cal-list"></div>
+      </div>
+      <div id="calArchiveView" class="cal-archive-view" hidden>
+        <div class="cal-archive-toolbar">
+          <button type="button" class="cal-archive-back" id="calArchiveBack" hidden>← Back</button>
+          <div class="sort-capsule cal-archive-sort-capsule" id="calArchiveSortCapsule" hidden>
+            <button type="button" class="sort-toggle" id="calArchiveSortToggle">
+              <span id="calArchiveSortLabel">Popularity</span>
+            </button>
+            <button type="button" class="sort-arrow" id="calArchiveSortArrow" title="Descending">&#8595;</button>
+            <div class="sort-options" id="calArchiveSortOptions" hidden>
+              <button type="button" data-sort="POPULARITY">Popularity</button>
+              <button type="button" data-sort="SCORE">Rating</button>
+            </div>
+          </div>
+        </div>
+        <div class="cal-archive-heading" id="calArchiveHeading" hidden></div>
+        <div id="calArchiveYears" class="cal-archive-years"></div>
+        <div id="calArchiveMolecule" class="cal-archive-molecule" hidden>
+          <div class="cal-mol-line cal-mol-tl"></div>
+          <div class="cal-mol-line cal-mol-tr"></div>
+          <div class="cal-mol-line cal-mol-bl"></div>
+          <div class="cal-mol-line cal-mol-br"></div>
+          <button type="button" class="cal-mol-node cal-mol-season" data-season="WINTER" style="--i:0">Winter</button>
+          <button type="button" class="cal-mol-node cal-mol-season" data-season="SPRING" style="--i:1">Spring</button>
+          <button type="button" class="cal-mol-node cal-mol-season" data-season="SUMMER" style="--i:2">Summer</button>
+          <button type="button" class="cal-mol-node cal-mol-season" data-season="FALL" style="--i:3">Fall</button>
+          <div class="cal-mol-center" id="calMolYear">—</div>
+        </div>
+        <div id="calArchiveGrid" class="cal-archive-grid" hidden></div>
       </div>
     </div>
   </div>
@@ -3211,8 +4056,13 @@ body::after {
   </svg>
   <div class="popup-card">
     <div class="popup-row popup-user popup-user-row">
-      <span class="popup-name-badge" id="popupName">—</span>
+      <div class="popup-user-text">
+        <span class="popup-name-badge" id="popupName">—</span>
+      </div>
       <div class="popup-user-actions">
+        <button class="cache-refresh-btn" id="accountGearBtn" type="button" aria-label="Connections &amp; settings" title="Connections &amp; settings" aria-expanded="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        </button>
         <button class="cache-refresh-btn" id="cacheRefreshBtn" type="button" aria-label="Clear cache and reload" title="Clear cache &amp; reload">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-2.1-5.7"/><polyline points="21 3 21 9 15 9"/></svg>
         </button>
@@ -3226,18 +4076,68 @@ body::after {
       <button class="popup-mode-btn active" data-mode="ANIME">Anime</button>
       <button class="popup-mode-btn" data-mode="MANGA">Manga</button>
     </div>
+    <div id="accountMainView">
     <div class="popup-divider"></div>
-    <div class="popup-stat"><span class="popup-label" id="popupWatchingLabel">Watching</span><span class="popup-val" id="popupWatching">—</span></div>
-    <div class="popup-stat"><span class="popup-label">Planning</span><span class="popup-val" id="popupPlanning">—</span></div>
-    <div class="popup-stat"><span class="popup-label">Completed</span><span class="popup-val" id="popupCompleted">—</span></div>
-    <div class="popup-stat"><span class="popup-label">Mean score</span><span class="popup-val" id="popupMeanScore">—</span></div>
-    <div class="popup-stat"><span class="popup-label" id="popupEpisodesLabel">Episodes watched</span><span class="popup-val" id="popupEpisodes">—</span></div>
-    <div class="popup-stat"><span class="popup-label" id="popupDaysLabel">Days watched</span><span class="popup-val" id="popupDays">—</span></div>
-    <button class="popup-view-profile-btn" id="viewProfileBtn" type="button">View full profile →</button>
-    <div class="popup-divider"></div>
-    <div id="popupAuthSection"></div>
-    <div class="popup-divider"></div>
-    <div id="popupMalSection"></div>
+    <div class="popup-stat-grid">
+      <div class="popup-stat-card">
+        <span class="popup-stat-icon">▶</span>
+        <span class="popup-stat-num" id="popupWatching">—</span>
+        <span class="popup-stat-tag" id="popupWatchingLabel">Watching</span>
+      </div>
+      <div class="popup-stat-card">
+        <span class="popup-stat-icon">◷</span>
+        <span class="popup-stat-num" id="popupPlanning">—</span>
+        <span class="popup-stat-tag">Planning</span>
+      </div>
+      <div class="popup-stat-card popup-stat-clickable" id="popupCompletedCard" role="button" tabindex="0" title="Completed insights">
+        <span class="popup-stat-icon">✓</span>
+        <span class="popup-stat-num" id="popupCompleted">—</span>
+        <span class="popup-stat-tag">Completed</span>
+      </div>
+      <div class="popup-stat-card accent">
+        <span class="popup-stat-icon">★</span>
+        <span class="popup-stat-num" id="popupMeanScore">—</span>
+        <span class="popup-stat-tag">Mean score</span>
+      </div>
+    </div>
+    <div class="popup-substat-row">
+      <div class="popup-substat"><span class="popup-label" id="popupEpisodesLabel">Episodes watched</span><span class="popup-val" id="popupEpisodes">—</span></div>
+      <div class="popup-substat"><span class="popup-label" id="popupDaysLabel">Days watched</span><span class="popup-val" id="popupDays">—</span></div>
+    </div>
+    <button class="popup-view-profile-btn" id="viewProfileBtn" type="button">View profile <span class="popup-arrow-nudge">→</span></button>
+    </div>
+    <div id="accountChartsView" class="account-charts-view" hidden>
+      <button type="button" class="cal-archive-back" id="accountChartsBack">← Back</button>
+      <div class="charts-head">Completed insights</div>
+      <div class="charts-scroll" id="accountChartsScroll">
+        <div class="chart-block">
+          <div class="chart-label">Finished by year</div>
+          <div class="chart-bars chart-bars-v" id="chartFinishYear"></div>
+        </div>
+        <div class="chart-block">
+          <div class="chart-label">Release years most completed</div>
+          <div class="chart-bars chart-bars-v" id="chartReleaseYear"></div>
+        </div>
+        <div class="chart-block">
+          <div class="chart-label">Your scores</div>
+          <div class="chart-bars chart-bars-v" id="chartScores"></div>
+        </div>
+        <div class="chart-block">
+          <div class="chart-label">Formats</div>
+          <div class="chart-bars chart-bars-h" id="chartFormats"></div>
+        </div>
+      </div>
+    </div>
+    <div id="popupConnectivityPanel" class="popup-connectivity-panel" hidden>
+      <div class="popup-divider"></div>
+      <div class="popup-label" style="margin-bottom:6px;">Connections</div>
+      <div id="popupAuthSection"></div>
+      <div class="popup-divider"></div>
+      <div id="popupMalSection"></div>
+      <div class="popup-divider"></div>
+      <button type="button" class="popup-connect-btn" id="testNotifBtn" style="width:100%;display:none;" hidden>Test notification (temp)</button>
+      <div class="popup-hint" style="margin-top:6px;display:none;" hidden>Fires one system notification from your latest AniList alert. Remove later.</div>
+    </div>
   </div>
 </div>
 <div class="wrap">
@@ -3352,6 +4252,12 @@ body::after {
     <a class="molecule-node molecule-b" href="https://x.com/reshuya" target="_blank" rel="noopener noreferrer" aria-label="Twitter / X">
       <svg viewBox="0 0 24 24" width="22" height="22"><path d="M18.24 2.25h3.29l-7.19 8.22 8.46 11.28h-6.62l-5.18-6.78-5.93 6.78H1.78l7.7-8.8L1.35 2.25h6.79l4.68 6.2 5.42-6.2zm-1.16 17.52h1.82L7.02 4.13H5.06l12.02 15.64z"/></svg>
     </a>
+  </div>
+</div>
+
+<div class="nyaa-load-overlay" id="nyaaLoadOverlay" hidden aria-hidden="true">
+  <div class="nyaa-load-track" aria-label="Opening Nyaa">
+    <span></span><span></span><span></span><span></span>
   </div>
 </div>
 
@@ -3627,6 +4533,31 @@ query ($id: Int, $page: Int) {
   }
 }`;
 
+const SEASONAL_ARCHIVE_Q = `
+query ($season: MediaSeason, $seasonYear: Int, $page: Int, $type: MediaType, $sort: [MediaSort]) {
+  Page(page: $page, perPage: 50) {
+    pageInfo { hasNextPage currentPage }
+    media(season: $season, seasonYear: $seasonYear, type: $type, sort: $sort) {
+      id type
+      title { userPreferred romaji english }
+      coverImage { extraLarge large medium }
+      format averageScore episodes chapters status
+      season seasonYear
+      startDate { year month day }
+    }
+  }
+}
+`;
+
+/* One-hit probe: does this seasonYear exist on AniList for the medium? */
+const ARCHIVE_YEAR_PROBE_Q = `
+query ($y: Int, $t: MediaType) {
+  Page(page: 1, perPage: 1) {
+    media(seasonYear: $y, type: $t) { id }
+  }
+}
+`;
+
 const NOTIF_Q = `
 query {
   Page(page: 1, perPage: 25) {
@@ -3778,11 +4709,11 @@ async function gql(query, variables) {
   const headers = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
   const token = getToken();
   if (token) headers['Authorization'] = `Bearer ${token}`;
-  const res = await fetch('https://graphql.anilist.co', {
+  const res = await fetchWithTimeout('https://graphql.anilist.co', {
     method: 'POST',
     headers,
     body: JSON.stringify({ query, variables })
-  });
+  }, isMutation ? 30000 : 60000);
   const json = await res.json();
   if (json.errors && json.errors.length) {
     const e0 = json.errors[0];
@@ -3807,6 +4738,127 @@ async function gql(query, variables) {
    set its Redirect URL to https://anilist.co/api/v2/oauth/pin, then paste the
    Client ID below. */
 const ANILIST_CLIENT_ID = '45726';
+
+/* ── Manus-safe hardening (tokens stay in localStorage) ───────────────── */
+function safeUrl(value, { image = false } = {}) {
+  if (!value || typeof value !== 'string') return '';
+  // Offline poster data-URLs must pass through
+  if (image && value.indexOf('data:image/') === 0) return value;
+  try {
+    const u = new URL(value, location.href);
+    const allowed = image
+      ? (u.protocol === 'https:' && (
+          u.hostname === 's4.anilist.co' ||
+          u.hostname.endsWith('.anilist.co') ||
+          u.hostname === 'cdn.myanimelist.net' ||
+          u.hostname.endsWith('.myanimelist.net') ||
+          u.hostname === location.hostname
+        ))
+      : (u.protocol === 'https:' && (
+          u.hostname === 'anilist.co' ||
+          u.hostname.endsWith('.anilist.co') ||
+          u.hostname === 'myanimelist.net' ||
+          u.hostname.endsWith('.myanimelist.net') ||
+          u.hostname.endsWith('.workers.dev') ||
+          u.hostname === 'youtube.com' ||
+          u.hostname.endsWith('.youtube.com') ||
+          u.hostname === 'youtu.be' ||
+          u.hostname === 'www.reddit.com' ||
+          u.hostname === 'reddit.com' ||
+          u.hostname === 'x.com' ||
+          u.hostname === 'twitter.com' ||
+          u.hostname.endsWith('.pinterest.com') ||
+          u.hostname === 'www.pinterest.com'
+        ));
+    return allowed ? u.href : '';
+  } catch (e) { return ''; }
+}
+function safeImageUrl(value) { return safeUrl(value, { image: true }); }
+function errorText(err, fallback = 'Unexpected error') {
+  const raw = err && (err.message || String(err));
+  return String(raw || fallback).slice(0, 240);
+}
+function renderError(el, prefix, err, extraClass = '') {
+  if (!el) return;
+  el.textContent = '';
+  const box = document.createElement('div');
+  box.className = ('state err ' + (extraClass || '')).trim();
+  box.textContent = String(prefix || '') + errorText(err);
+  el.appendChild(box);
+}
+function fetchWithTimeout(resource, options = {}, timeoutMs = 45000) {
+  // Avoid AbortController — some Android WebViews abort immediately with
+  // "signal is aborted without reason". Use a soft timeout instead.
+  const opts = Object.assign({}, options || {});
+  // Never forward a pre-aborted signal
+  if (opts.signal) delete opts.signal;
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    const timer = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      reject(new Error('Request timed out'));
+    }, timeoutMs || 45000);
+    fetch(resource, opts).then(
+      (res) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        resolve(res);
+      },
+      (err) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        reject(err);
+      }
+    );
+  });
+}
+function accountStorageNamespace() {
+  const name = (typeof activeListUser !== 'undefined' && activeListUser) || USERNAME || 'guest';
+  return String(name).trim().toLowerCase().replace(/[^a-z0-9._-]+/g, '_').slice(0, 80) || 'guest';
+}
+function scopedKey(base) { return base + ':' + accountStorageNamespace(); }
+
+/** Full local wipe (auth + snapshots + covers + notif). Used by nuclear clear. */
+function clearAllLocalData() {
+  try { clearToken(); } catch (e) {}
+  try { clearMalAuth(); } catch (e) {}
+  try { if (typeof clearSessionFetchCaches === 'function') clearSessionFetchCaches(); } catch (e) {}
+  try {
+    if (typeof indexedDB !== 'undefined') {
+      indexedDB.deleteDatabase('tsukiato-posters-v2');
+      indexedDB.deleteDatabase('tsukiato-posters-v1');
+      indexedDB.deleteDatabase('tsukiato');
+    }
+  } catch (e) {}
+  try {
+    const prefixes = [
+      'anilistListSnapshot:', 'posterCache:', 'anilistNotifSnapshot:',
+      'notifiedEpisodes', 'notifiedEpisodesSeeded',
+      'tsukiato:lastScheduledNotifCheck:', 'tsukiato:pendingMal',
+      'tsukiatoCoverPack:', 'tsukiatoProfilePack:', 'tsukiato:archiveEmptyYears'
+    ];
+    const doomed = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k) continue;
+      if (prefixes.some(p => k === p || k.indexOf(p) === 0)) doomed.push(k);
+    }
+    doomed.forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
+    try { localStorage.removeItem('alViewerName'); } catch (e) {}
+    try { localStorage.removeItem('tsukiatoCoverPack:v1'); } catch (e) {}
+  } catch (e) {}
+  try {
+    if (typeof caches !== 'undefined' && caches.keys) {
+      caches.keys().then(keys => Promise.all(
+        keys.filter(k => k.indexOf('tsukiato') === 0).map(k => caches.delete(k))
+      )).catch(() => {});
+    }
+  } catch (e) {}
+}
+
 const TOKEN_KEY = 'anilist_token';
 
 function getToken()   { return localStorage.getItem(TOKEN_KEY); }
@@ -3876,7 +4928,7 @@ function renderAuthSection() {
       clearToken();
       activeListUser = USERNAME;
       renderAuthSection();
-      load().then(() => renderCards());
+      load().then(() => renderCards({ skipDeal: true }));
     });
   } else {
     el.innerHTML = `
@@ -4997,6 +6049,16 @@ function setMediaMode(mode) {
   renderSortCapsule();
   renderCards();
   if (cachedUserData) populateAccountPopup(cachedUserData, dataByTab);
+  // Completed insights: rebuild + re-animate for the other medium
+  const charts = document.getElementById('accountChartsView');
+  if (charts && !charts.hidden) {
+    charts.querySelectorAll('.chart-block').forEach(b => {
+      b.style.animation = 'none';
+      void b.offsetWidth;
+      b.style.animation = '';
+    });
+    buildCompletedInsights();
+  }
 }
 
 function initModeToggle() {
@@ -5150,47 +6212,143 @@ function coverCorsFallback(img) {
     img.src = chain[step];
     return;
   }
+  // 3) Try Cache API (tsukiato-img-v1) — covers stored offline by cachePosterFromUrl / SW
+  try {
+    if (typeof caches !== 'undefined') {
+      const urls = [
+        img.dataset.coverXl || '',
+        img.dataset.coverLg || '',
+        img.dataset.coverMd || '',
+      ].filter(Boolean);
+      caches.open('tsukiato-img-v1').then(c => {
+        const tryNext = (i) => {
+          if (i >= urls.length) { img.style.opacity = '0'; img.dataset.coverFailed = '1'; return; }
+          c.match(urls[i]).then(r => {
+            if (r && r.ok) {
+              r.blob().then(b => {
+                const objUrl = URL.createObjectURL(b);
+                img.onerror = () => tryNext(i + 1);
+                img.onload = () => { img.dataset.coverFailed = ''; img.style.opacity = ''; };
+                img.src = objUrl;
+              }).catch(() => tryNext(i + 1));
+            } else {
+              tryNext(i + 1);
+            }
+          }).catch(() => tryNext(i + 1));
+        };
+        tryNext(0);
+      }).catch(() => { img.style.opacity = '0'; img.dataset.coverFailed = '1'; });
+      return;
+    }
+  } catch (e) {}
   img.style.opacity = '0';
   img.dataset.coverFailed = '1';
+}
+
+/** Prefer extraLarge everywhere; only fall back if XL missing. */
+function bestCoverUrl(ci) {
+  if (!ci) return '';
+  return ci.extraLarge || ci.large || ci.medium || '';
+}
+
+/** Load a remote cover into a data-URL (Android notifications often block http images). */
+function coverToDataUrl(url, maxDim) {
+  maxDim = maxDim || 320;
+  if (!url) return Promise.resolve('');
+  if (String(url).indexOf('data:') === 0) return Promise.resolve(url);
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    let done = false;
+    const finish = (v) => { if (done) return; done = true; resolve(v || ''); };
+    const timer = setTimeout(() => finish(''), 2800);
+    img.onload = () => {
+      clearTimeout(timer);
+      try {
+        const scale = Math.min(1, maxDim / Math.max(img.naturalWidth || 1, 1));
+        const w = Math.max(1, Math.round((img.naturalWidth || maxDim) * scale));
+        const h = Math.max(1, Math.round((img.naturalHeight || maxDim) * scale));
+        const c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        c.getContext('2d').drawImage(img, 0, 0, w, h);
+        finish(c.toDataURL('image/jpeg', 0.85));
+      } catch (e) { finish(''); }
+    };
+    img.onerror = () => { clearTimeout(timer); finish(''); };
+    try { img.src = url; } catch (e) { clearTimeout(timer); finish(''); }
+  });
+}
+
+async function resolveNotifCoverImage(mediaId, coverUrl) {
+  // 1) Offline poster cache (already data-URL)
+  try {
+    if (mediaId && typeof cachedPosterFor === 'function') {
+      const c = cachedPosterFor('ANIME', mediaId) || cachedPosterFor('MANGA', mediaId);
+      if (c) return c;
+    }
+  } catch (e) {}
+  // 2) Rasterize network XL/large/medium into data-URL for WebView notifications
+  const data = await coverToDataUrl(coverUrl || '', 360);
+  if (data) return data;
+  if (coverUrl) return coverUrl;
+  return TRACKER_NOTIF_ICON;
 }
 
 function coverImgAttrs(m, opts) {
   opts = opts || {};
   const ci = m.coverImage || {};
-  const xl = ci.extraLarge || '';
-  const lg = ci.large || '';
-  const md = ci.medium || '';
+  const xl = ci.extraLarge || ci.large || ci.medium || '';
+  const lg = ci.large || ci.extraLarge || ci.medium || '';
+  const md = ci.medium || ci.large || ci.extraLarge || '';
   const eager = !!opts.eager;
   const id = m.id != null ? m.id : '';
   const grid = !!opts.grid;
-  // Grid always uses extraLarge (snapshot + live) — no downscale srcset, no
-  // 280px poster-cache JPEG (that path is list-only for instant offline thumbs).
-  let src = grid
-    ? (xl || lg || md || '')
-    : (xl || lg || md || '');
-  if (!src) return '';
+  // Infer media type for offline cache key when caller omits posterType
+  let pType = opts.posterType || null;
+  if (!pType && id !== '' && id != null) {
+    const t = (m.type || opts.mediaType || '').toUpperCase();
+    if (t === 'MANGA') pType = 'MANGA';
+    else pType = 'ANIME';
+  }
+  let src = xl || lg || md || '';
+  if (!src && !(pType && id !== '')) return '';
   let srcset = '';
-  const cors = (grid && !opts.posterType) ? '' : ' crossorigin="anonymous"';
-
   let posterAttr = '';
-  if (opts.posterType && !grid) {
-    const cached = cachedPosterFor(opts.posterType, id);
+  const sessionHit = lookupSessionImg([
+    pType && id !== '' ? (pType + ':' + id) : '',
+    xl, lg, md, src
+  ].filter(Boolean));
+  if (sessionHit) {
+    src = sessionHit;
+    srcset = '';
+    if (pType && id !== '') {
+      posterAttr = ' data-poster-cached="1" data-poster-type="' + pType + '"';
+    }
+  } else if (pType && id !== '') {
+    const cached = cachedPosterFor(pType, id);
     if (cached) {
       src = cached;
       srcset = '';
-      posterAttr = ' data-poster-cached="1"';
+      posterAttr = ' data-poster-cached="1" data-poster-type="' + pType + '"';
+      rememberSessionImg([pType + ':' + id, xl, lg, md], cached);
     } else {
-      posterAttr = ' data-poster-type="' + opts.posterType + '"';
+      posterAttr = ' data-poster-type="' + pType + '"';
+      if (!src) return '';
     }
-  } else if (opts.posterType && grid) {
-    // Still allow caching later from the XL network image for list offline use
-    posterAttr = ' data-poster-type="' + opts.posterType + '"';
+  } else if (src) {
+    const byUrl = lookupSessionImg([xl, lg, md, src]);
+    if (byUrl) { src = byUrl; srcset = ''; }
   }
+
+  // data: URLs must not use crossorigin — breaks in Android WebView
+  const isData = typeof src === 'string' && src.indexOf('data:') === 0;
+  const cors = isData ? '' : ' crossorigin="anonymous"';
+  const onerr = isData ? '' : ' onerror="coverCorsFallback(this)"';
 
   return (
     'src="' + src + '"' + srcset + ' alt="" loading="' + (eager ? 'eager' : 'lazy') +
     '" decoding="async" fetchpriority="' + (eager ? 'high' : 'auto') + '"' +
-    cors + posterAttr + ' onerror="coverCorsFallback(this)" data-card-id="' + id +
+    cors + posterAttr + onerr + ' data-card-id="' + id +
     '" data-cover-xl="' + xl + '" data-cover-lg="' + lg + '" data-cover-md="' + md +
     '" data-cover-step="0"'
   );
@@ -5287,13 +6445,15 @@ function attachColorBleed() {
 
   const imgs = document.querySelectorAll('.card-cover[data-card-id]');
   const pending = [];
-  imgs.forEach(img => {
+  imgs.forEach((img, idx) => {
     const mediaId = img.dataset.cardId;
     if (lookupTint(mediaId)) {
       applyTint(mediaId, lookupTint(mediaId));
       return;
     }
-    pending.push(img);
+    // Only sample colors for first 16 uncached list covers per pass (lag)
+    if (pending.length < 16) pending.push(img);
+    else applyTint(mediaId, hashTint(mediaId));
   });
 
   if (pending.length) {
@@ -5326,22 +6486,168 @@ function attachColorBleed() {
  *  the tint pass above (which skips already-tinted images) so a cover with
  *  a warm tint but no poster cache entry yet still gets cached. */
 function maybeCachePoster(img, mediaId) {
-  if (img.dataset.posterCached === '1') return;
-  const type = img.dataset.posterType;
-  if (!type) return;
-  cachePosterFromImg(img, type, mediaId);
+  if (!img || img.dataset.posterCached === '1') return;
+  if (!img.naturalWidth) return;
+  const type = img.dataset.posterType || 'ANIME';
+  const mid = mediaId || img.dataset.cardId || img.dataset.mediaId;
+  const netUrl = img.dataset.coverXl || img.currentSrc || img.src || '';
+
+  // Fast path: if this network URL already in session, swap img to data URL (no re-decode later)
+  const existing = lookupSessionImg([
+    mid ? (type + ':' + mid) : '',
+    netUrl,
+    img.dataset.coverLg || '',
+    img.dataset.coverMd || '',
+  ]);
+  if (existing && img.src !== existing && existing.indexOf('data:') === 0) {
+    img.src = existing;
+    img.dataset.posterCached = '1';
+    return;
+  }
+
+  if (!mid) {
+    // Snapshot by URL only into session + Cache API
+    try {
+      const canvas = document.createElement('canvas');
+      const max = 640;
+      const scale = Math.min(1, max / img.naturalWidth);
+      canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
+      canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      rememberSessionImg([netUrl, img.currentSrc, img.src], dataUrl);
+    } catch (e) {}
+    try { cacheImageToCacheApi(img); } catch (e) {}
+    img.dataset.posterCached = '1';
+    return;
+  }
+  cachePosterFromImg(img, type, mid);
   img.dataset.posterCached = '1';
 }
 function schedulePosterCaching() {
-  document.querySelectorAll('.card-cover[data-poster-type], .gcard-poster img[data-poster-type]').forEach(img => {
-    const mediaId = img.dataset.cardId;
-    if (!mediaId) return;
+  document.querySelectorAll(
+    '.card-cover, .gcard-poster img, .cal-thumb, .notif-thumb, .detail-cover, .search-thumb, .profile-about img, img[data-poster-type], img[data-card-id]'
+  ).forEach(img => {
+    if (img.dataset.posterCached === '1') return;
+    const mediaId = img.dataset.cardId || img.dataset.mediaId;
     if (img.complete && img.naturalWidth > 0) {
       maybeCachePoster(img, mediaId);
     } else {
       img.addEventListener('load', () => maybeCachePoster(img, mediaId), { once: true });
     }
   });
+}
+
+/** Any <img> that finishes loading anywhere → Cache API + poster localStorage when keyed. */
+function initGlobalImageCache() {
+  if (window.__tsukiatoImgCacheInit) return;
+  window.__tsukiatoImgCacheInit = true;
+  document.addEventListener('load', (ev) => {
+    const img = ev.target;
+    if (!img || img.tagName !== 'IMG') return;
+    if (!img.src || img.src.indexOf('data:') === 0) return;
+    try {
+      const mid = img.dataset.cardId || img.dataset.mediaId;
+      maybeCachePoster(img, mid);
+    } catch (e) {}
+  }, true);
+}
+
+/** Prefetch + store covers for Watching + Unwatched backlog (offline snapshot completeness). */
+/** Fetch cover → data-URL (bypasses tainted-canvas when <img crossOrigin fails). */
+async function cachePosterFromUrl(type, mediaId, url) {
+  if (!type || mediaId == null || !url) return false;
+  if (cachedPosterFor(type, mediaId)) return true;
+  try {
+    const res = await fetch(url, { mode: 'cors', credentials: 'omit', cache: 'no-store' });
+    if (!res.ok) throw new Error('status ' + res.status);
+    const blob = await res.blob();
+    // Downscale via bitmap when possible to keep localStorage lean
+    let dataUrl;
+    try {
+      const bmp = await createImageBitmap(blob);
+      const scale = Math.min(1, POSTER_CACHE_MAX_DIM / Math.max(bmp.width, bmp.height));
+      const w = Math.max(1, Math.round(bmp.width * scale));
+      const h = Math.max(1, Math.round(bmp.height * scale));
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(bmp, 0, 0, w, h);
+      try { bmp.close(); } catch (e) {}
+      dataUrl = canvas.toDataURL('image/jpeg', POSTER_CACHE_QUALITY);
+    } catch (e) {
+      dataUrl = await new Promise((resolve, reject) => {
+        const fr = new FileReader();
+        fr.onload = () => resolve(fr.result);
+        fr.onerror = reject;
+        fr.readAsDataURL(blob);
+      });
+    }
+    if (!dataUrl || dataUrl.indexOf('data:') !== 0) return false;
+    const k = posterCacheKey(type, mediaId);
+    rememberSessionImg([k, url], dataUrl);
+    savePosterEntry(k, dataUrl);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+function warmMissingPosterCache() {
+  if (typeof isBrowserOnline === 'function' && !isBrowserOnline()) return;
+  const jobs = [];
+  const seen = new Set();
+  const pushJob = (type, id, url) => {
+    if (!id || !url) return;
+    const k = type + ':' + id;
+    if (seen.has(k) || cachedPosterFor(type, id)) return;
+    seen.add(k);
+    jobs.push({ type, id, url });
+  };
+  // Watching / Reading
+  for (const e of (animeByTab.CURRENT || [])) {
+    if (!e.media) continue;
+    const ci = e.media.coverImage || {};
+    pushJob('ANIME', e.media.id, ci.extraLarge || ci.large || ci.medium);
+  }
+  for (const e of (mangaByTab.CURRENT || [])) {
+    if (!e.media) continue;
+    const ci = e.media.coverImage || {};
+    pushJob('MANGA', e.media.id, ci.extraLarge || ci.large || ci.medium);
+  }
+  // Calendar Unwatched
+  try {
+    (lastBacklogRows || []).forEach(r => {
+      if (r && r.mediaId && r.cover) pushJob('ANIME', r.mediaId, r.cover);
+    });
+  } catch (e) {}
+
+  let i = 0;
+  const next = () => {
+    if (i >= jobs.length) {
+      try { syncPosterCache(); } catch (e) {}
+      try { saveOfflineCoverPack(); } catch (e) {}
+      try { injectOfflineCoversIntoLists(); } catch (e) {}
+      try { saveListSnapshot(true); } catch (e) {}
+      return;
+    }
+    const job = jobs[i++];
+    // Prefer fetch→dataURL (reliable offline store); fall back to Image+canvas
+    cachePosterFromUrl(job.type, job.id, job.url).then((ok) => {
+      if (ok) {
+        setTimeout(next, 20);
+        return;
+      }
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        try { cachePosterFromImg(img, job.type, job.id); } catch (e) {}
+        setTimeout(next, 25);
+      };
+      img.onerror = () => setTimeout(next, 20);
+      img.src = job.url;
+    });
+  };
+  setTimeout(next, 350);
 }
 
 function airingClass(media) {
@@ -5571,8 +6877,8 @@ function updateCardProgressUI(mediaId, progress) {
     const airing = nextEp && nextEp.episode;
     const maxKnown = airing ? airing - 1 : total;
     const isCaughtUp = maxKnown && cur >= maxKnown;
-    const soonAiring = nextEp && (nextEp.airingAt * 1000 - Date.now()) < 24 * 3600 * 1000;
-    const showCaught = PROGRESS_TABS.includes(activeTab) && isCaughtUp && !soonAiring;
+    // Grid badge — keep "up" while caught up (ignore <24h airing window)
+    const showCaught = PROGRESS_TABS.includes(activeTab) && isCaughtUp;
     let caught = badge.querySelector('span.caught');
     if (showCaught && !caught) {
       caught = document.createElement('span');
@@ -5606,6 +6912,24 @@ function updateCardProgressUI(mediaId, progress) {
   card.querySelectorAll('.ep-increment').forEach(btn => {
     btn.dataset.cur = String(cur);
   });
+
+  // Live score badge (list + grid) without full re-render
+  try {
+    if (entry && m && typeof resolveCardScore === 'function') {
+      const scoreInfo = resolveCardScore(entry, m, FINISHED_TABS.includes(activeTab));
+      const scoreNodes = card.querySelectorAll('.gcard-badge span.score, .card-score, span.score');
+      if (scoreInfo.dec) {
+        if (scoreNodes.length) {
+          scoreNodes.forEach(n => {
+            n.textContent = n.classList.contains('card-score') || n.classList.contains('score')
+              ? (n.classList.contains('card-score') ? scoreInfo.dec : ('★ ' + scoreInfo.dec))
+              : scoreInfo.dec;
+            n.classList.toggle('is-mine', !!scoreInfo.isMine);
+          });
+        }
+      }
+    }
+  } catch (e) {}
 
   return true;
 }
@@ -5728,8 +7052,105 @@ function renderCards(opts) {
 
 /** Prefer in-place card update; fall back to quiet full render. */
 function refreshCardOrList(mediaId) {
-  if (mediaId != null && updateCardProgressUI(mediaId)) return;
+  if (mediaId != null) {
+    let prog;
+    try {
+      const f = findListEntry(mediaId);
+      if (f && f.entry) prog = f.entry.progress;
+    } catch (e) {}
+    if (updateCardProgressUI(mediaId, prog)) {
+      try { updateHeader(); } catch (e) {}
+      return;
+    }
+  }
+  silentListRefresh(mediaId);
+}
+
+/**
+ * Live but silent list update after any mutation.
+ * - Same tab: in-place progress/score, or swap one card HTML
+ * - Left current tab: soft-remove that card only
+ * - Otherwise: full rebuild without entrance animations
+ */
+function silentListRefresh(mediaId) {
+  try {
+    const mid = mediaId != null ? parseInt(mediaId, 10) : null;
+    const card = (mid != null && Number.isFinite(mid))
+      ? document.getElementById('card-' + mid)
+      : null;
+    const found = (mid != null && Number.isFinite(mid) && typeof findListEntry === 'function')
+      ? findListEntry(mid)
+      : null;
+    const onActive = !!(found && found.bucket === dataByTab && found.tab === activeTab);
+
+    if (card && !onActive) {
+      // Entry left this tab — fade out without rebuilding the whole list
+      card.style.transition = 'opacity 0.22s ease, transform 0.22s ease';
+      card.style.opacity = '0';
+      card.style.transform = 'scale(0.96)';
+      setTimeout(() => {
+        try { card.remove(); } catch (e) {}
+        // Empty state if last card gone
+        const el = document.getElementById('listEl');
+        if (el && !el.querySelector('.card, .gcard')) {
+          renderCards({ skipDeal: true });
+        }
+      }, 230);
+      try { updateHeader(); } catch (e) {}
+      try { saveListSnapshot(true); } catch (e) {}
+      return;
+    }
+
+    if (onActive && card) {
+      // Rebuild only this card's HTML (score / status / badges can change)
+      const isManga = mediaMode === 'MANGA';
+      const unit = isManga ? 'Ch' : 'Ep';
+      const unitWord = isManga ? 'ch' : 'eps';
+      const ctx = { isManga, unit, unitWord };
+      let html = '';
+      if (viewMode === 'grid') {
+        html = renderGridCard(found.entry, 0, ctx);
+      } else {
+        // list card renderer name
+        if (typeof renderListCard === 'function') {
+          html = renderListCard(found.entry, 0, ctx);
+        } else if (typeof renderCard === 'function') {
+          html = renderCard(found.entry, 0, ctx);
+        }
+      }
+      if (html) {
+        const wrap = document.createElement('div');
+        wrap.innerHTML = html.trim();
+        const fresh = wrap.firstElementChild;
+        if (fresh) {
+          fresh.style.animation = 'none';
+          fresh.style.opacity = '1';
+          card.replaceWith(fresh);
+          try { ensureVisibleCovers(); } catch (e) {}
+          try { updateHeader(); } catch (e) {}
+          try { saveListSnapshot(true); } catch (e) {}
+          return;
+        }
+      }
+      // Fall through to progress-only if HTML swap failed
+      if (updateCardProgressUI(mid, found.entry.progress)) {
+        try { updateHeader(); } catch (e) {}
+        try { saveListSnapshot(true); } catch (e) {}
+        return;
+      }
+    }
+
+    if (onActive && !card) {
+      // Newly on this tab — quiet full paint (prepend would fight sort order)
+      renderCards({ skipDeal: true });
+      try { updateHeader(); } catch (e) {}
+      try { saveListSnapshot(true); } catch (e) {}
+      return;
+    }
+  } catch (e) {}
+
   renderCards({ skipDeal: true });
+  try { updateHeader(); } catch (e) {}
 }
 
 function renderGridCard(e, i, { isManga, unit, unitWord }) {
@@ -5745,8 +7166,8 @@ function renderGridCard(e, i, { isManga, unit, unitWord }) {
   const airing = nextEp?.episode;
   const maxKnown = airing ? airing - 1 : total;
   const isCaughtUp = maxKnown && cur >= maxKnown;
-  const soonAiring = nextEp && (nextEp.airingAt * 1000 - Date.now()) < 24 * 3600 * 1000;
-  const showCaughtUp = PROGRESS_TABS.includes(activeTab) && isCaughtUp && !soonAiring;
+  // Grid keeps "up" even when next ep is <24h (list view still hides it)
+  const showCaughtUp = PROGRESS_TABS.includes(activeTab) && isCaughtUp;
 
   const scoreInfo = resolveCardScore(e, m, FINISHED_TABS.includes(activeTab));
   const scoreDec = scoreInfo.dec;
@@ -5791,7 +7212,7 @@ function renderGridCard(e, i, { isManga, unit, unitWord }) {
   <div class="gcard ${cls}" id="card-${m.id}" style="animation-delay:${Math.min(i, 12) * 0.02}s">
     <div class="gcard-poster">
       ${cover
-        ? `<img ${coverImgAttrs(m, { eager: i < 6, grid: true, posterType: activeTab === 'CURRENT' ? (isManga ? 'MANGA' : 'ANIME') : null })}>`
+        ? `<img ${coverImgAttrs(m, { eager: i < 6, grid: true, posterType: (['CURRENT','PAUSED','PLANNING'].includes(activeTab) ? (isManga ? 'MANGA' : 'ANIME') : null) })}>`
         : `<div class="gcard-poster-ph"></div>`}
       ${badges ? `<div class="gcard-badge">${badges}</div>` : ''}
       <div class="gcard-bar">${barBits}</div>
@@ -5858,7 +7279,7 @@ function renderListCard(e, i, { isManga, unit, unitWord }) {
     <div class="card ${cls}" id="card-${m.id}" style="animation-delay:${Math.min(i, 12) * 0.025}s">
       <span class="status-dot ${cls}"></span>
       ${dlBtn}
-      ${cover ? `<img class="card-cover" ${coverImgAttrs(m, { eager: i < 6, grid: viewMode === 'grid', posterType: activeTab === 'CURRENT' ? (isManga ? 'MANGA' : 'ANIME') : null })}>` : `<div class="card-cover-placeholder"></div>`}
+      ${cover ? `<img class="card-cover" ${coverImgAttrs(m, { eager: i < 6, grid: viewMode === 'grid', posterType: (['CURRENT','PAUSED','PLANNING'].includes(activeTab) ? (isManga ? 'MANGA' : 'ANIME') : null) })}>` : `<div class="card-cover-placeholder"></div>`}
       <div class="card-body">
         <div class="card-title" title="${title}">${title}${m.format ? ` <span class="format-pill">${formatLabel(m.format)}</span>` : ''}${statePill}</div>
         <div class="prog-track"><div class="prog-fill" style="width:${pct !== null ? pct : 0}%"></div></div>
@@ -5882,7 +7303,7 @@ function renderListCard(e, i, { isManga, unit, unitWord }) {
     <div class="card ${cls}" id="card-${m.id}" style="animation-delay:${Math.min(i, 12) * 0.025}s">
       <span class="status-dot ${cls}"></span>
       ${dlBtn}
-      ${cover ? `<img class="card-cover" ${coverImgAttrs(m, { eager: i < 6, grid: viewMode === 'grid' })}>` : `<div class="card-cover-placeholder"></div>`}
+      ${cover ? `<img class="card-cover" ${coverImgAttrs(m, { eager: i < 6, grid: viewMode === 'grid', posterType: isManga ? 'MANGA' : 'ANIME' })}>` : `<div class="card-cover-placeholder"></div>`}
       <div class="card-body">
         <div class="card-title" title="${title}">${title}${m.format ? ` <span class="format-pill">${formatLabel(m.format)}</span>` : ''}${statePill}</div>
         <div class="card-foot">
@@ -5904,7 +7325,7 @@ function renderListCard(e, i, { isManga, unit, unitWord }) {
     <div class="card ${cls}" id="card-${m.id}" style="animation-delay:${Math.min(i, 12) * 0.025}s">
       <span class="status-dot ${cls}"></span>
       ${dlBtn}
-      ${cover ? `<img class="card-cover" ${coverImgAttrs(m, { eager: i < 6, grid: viewMode === 'grid' })}>` : `<div class="card-cover-placeholder"></div>`}
+      ${cover ? `<img class="card-cover" ${coverImgAttrs(m, { eager: i < 6, grid: viewMode === 'grid', posterType: isManga ? 'MANGA' : 'ANIME' })}>` : `<div class="card-cover-placeholder"></div>`}
       <div class="card-body">
         <div class="card-title" title="${title}">${title}${m.format ? ` <span class="format-pill">${formatLabel(m.format)}</span>` : ''}</div>
         <div class="card-foot">
@@ -5977,18 +7398,155 @@ function populateAccountPopup(user, tabs) {
   }
 }
 
+
+// ── Permanent offline profile pack (avatar GIF, banner, about) ─────────────
+// Recent activity is the only piece refetched each session when opening profile.
+const PROFILE_PACK_KEY = () => {
+  try {
+    if (typeof hasToken === 'function' && hasToken() && activeListUser)
+      return 'tsukiatoProfilePack:v1:al:' + activeListUser;
+  } catch (e) {}
+  return 'tsukiatoProfilePack:v1:guest:' + (typeof USERNAME !== 'undefined' ? USERNAME : 'anon');
+};
+
+async function urlToDataUrlPreserve(url) {
+  if (!url || typeof url !== 'string') return '';
+  if (url.indexOf('data:') === 0) return url;
+  try {
+    const res = await fetch(url, { mode: 'cors', credentials: 'omit', cache: 'force-cache' });
+    if (!res.ok) throw new Error('status ' + res.status);
+    const blob = await res.blob();
+    return await new Promise((resolve, reject) => {
+      const fr = new FileReader();
+      fr.onload = () => resolve(fr.result || '');
+      fr.onerror = () => reject(fr.error || new Error('read fail'));
+      fr.readAsDataURL(blob);
+    });
+  } catch (e) {
+    return '';
+  }
+}
+
+function readProfilePack() {
+  try {
+    const raw = localStorage.getItem(PROFILE_PACK_KEY());
+    if (!raw) return null;
+    const p = JSON.parse(raw);
+    return p && typeof p === 'object' ? p : null;
+  } catch (e) { return null; }
+}
+
+function writeProfilePack(pack) {
+  try {
+    localStorage.setItem(PROFILE_PACK_KEY(), JSON.stringify(pack));
+    return true;
+  } catch (e) {
+    try {
+      const slim = Object.assign({}, pack, { aboutImgMap: {} });
+      localStorage.setItem(PROFILE_PACK_KEY(), JSON.stringify(slim));
+      return true;
+    } catch (e2) { return false; }
+  }
+}
+
+async function cacheProfilePack(user) {
+  if (!user || (typeof isBrowserOnline === 'function' && !isBrowserOnline())) return null;
+  const prev = readProfilePack() || {};
+  const pack = {
+    savedAt: Date.now(),
+    user: {
+      id: user.id,
+      name: user.name,
+      about: user.about || (prev.user && prev.user.about) || null,
+      bannerImage: user.bannerImage || (prev.user && prev.user.bannerImage) || '',
+      avatar: user.avatar || (prev.user && prev.user.avatar) || null,
+      statistics: user.statistics || (prev.user && prev.user.statistics) || null,
+      unreadNotificationCount: user.unreadNotificationCount,
+    },
+    avatarData: prev.avatarData || '',
+    bannerData: prev.bannerData || '',
+    aboutImgMap: Object.assign({}, prev.aboutImgMap || {}),
+    avatarSrc: prev.avatarSrc || '',
+    bannerSrc: prev.bannerSrc || '',
+  };
+
+  const av = user.avatar?.large || user.avatar?.medium || '';
+  if (av && (!pack.avatarData || pack.avatarSrc !== av)) {
+    const d = await urlToDataUrlPreserve(av);
+    if (d) { pack.avatarData = d; pack.avatarSrc = av; }
+  }
+  if (user.bannerImage && (!pack.bannerData || pack.bannerSrc !== user.bannerImage)) {
+    const d = await urlToDataUrlPreserve(user.bannerImage);
+    if (d) { pack.bannerData = d; pack.bannerSrc = user.bannerImage; }
+  }
+
+  const aboutHtml = user.about || '';
+  if (aboutHtml) {
+    try {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = aboutHtml;
+      const srcs = [];
+      tmp.querySelectorAll('img').forEach(img => {
+        const s = img.getAttribute('src') || img.getAttribute('data-src') || img.getAttribute('data-lazy-src') || '';
+        if (s && s.indexOf('data:') !== 0) srcs.push(s);
+      });
+      for (const s of srcs.slice(0, 24)) {
+        if (pack.aboutImgMap[s]) continue;
+        const d = await urlToDataUrlPreserve(s);
+        if (d) pack.aboutImgMap[s] = d;
+      }
+    } catch (e) {}
+  }
+
+  writeProfilePack(pack);
+  return pack;
+}
+
+function profileUserFromPack(pack, fallbackUser) {
+  const u = Object.assign({}, fallbackUser || {}, (pack && pack.user) || {});
+  if (pack && pack.avatarData) {
+    u.avatar = Object.assign({}, u.avatar || {}, { large: pack.avatarData, medium: pack.avatarData });
+  }
+  if (pack && pack.bannerData) {
+    u.bannerImage = pack.bannerData;
+  }
+  if (pack && pack.user && pack.user.about && !u.about) {
+    u.about = pack.user.about;
+  }
+  return u;
+}
+
+function applyAboutOfflineImages(root, aboutImgMap) {
+  if (!root || !aboutImgMap) return;
+  root.querySelectorAll('img').forEach(img => {
+    const src = img.getAttribute('src') || img.getAttribute('data-src') || '';
+    const mapped = aboutImgMap[src];
+    if (mapped) {
+      img.setAttribute('src', mapped);
+      img.removeAttribute('data-src');
+      img.removeAttribute('data-lazy-src');
+    }
+    img.removeAttribute('crossorigin');
+    img.removeAttribute('crossOrigin');
+  });
+}
+
 function buildProfileHTML(user) {
   const animeStats = user.statistics?.anime || {};
   const mangaStats = user.statistics?.manga || {};
   // Wrapped (not bare) when a real banner exists, so initProfileParallax()
   // has a clipped box to transform the image inside of.
   const banner = user.bannerImage
-    ? `<div class="profile-banner-wrap"><img class="profile-banner" id="profileBannerImg" src="${user.bannerImage}" alt="" crossorigin="anonymous"></div>`
+    ? `<div class="profile-banner-wrap"><img class="profile-banner" id="profileBannerImg" src="${escapeHtml(safeImageUrl(user.bannerImage))}" alt="" decoding="async" referrerpolicy="no-referrer"></div>`
     : `<div class="profile-banner-none"></div>`;
-  const aboutHtml = user.about
+  // Sanitize about HTML so img/gif src survives attribute stripping + WebView quirks
+  const aboutSafe = user.about
+    ? (typeof sanitizeRichText === 'function' ? sanitizeRichText(user.about) : user.about)
+    : '';
+  const aboutHtml = aboutSafe
     ? `<div class="profile-about-wrap">
          <div class="profile-about-loader" id="profileAboutLoader"><div class="cradle-loader"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div>
-         <div class="profile-about" id="profileAboutContent">${user.about}</div>
+         <div class="profile-about" id="profileAboutContent">${aboutSafe}</div>
        </div>`
     : '';
 
@@ -5999,7 +7557,7 @@ function buildProfileHTML(user) {
   return `
     ${banner}
     <div class="profile-id-row">
-      <img class="profile-avatar" src="${user.avatar?.large || user.avatar?.medium || ''}" alt="">
+      <img class="profile-avatar" src="${escapeHtml(safeImageUrl(user.avatar?.large || user.avatar?.medium || ''))}" alt="">
       <div class="profile-name">${escapeHtml(user.name)}</div>
     </div>
     <div class="profile-pills">
@@ -6025,19 +7583,42 @@ function buildProfileHTML(user) {
 
 function openProfile() {
   const popup = document.getElementById('accountPopup');
-  if (popup) popup.hidden = true;
-  if (!cachedUserData) return;
+  if (popup) {
+    popup.classList.remove('is-open');
+    clearTimeout(popup._closeT);
+    popup.hidden = true;
+  }
+  const pack = (typeof readProfilePack === 'function') ? readProfilePack() : null;
+  if (!cachedUserData && !(pack && pack.user)) return;
+
+  const user = profileUserFromPack(pack, cachedUserData);
+  if (!cachedUserData) cachedUserData = user;
 
   const overlay = document.getElementById('profileOverlay');
   const content = document.getElementById('profileContent');
-  content.innerHTML = buildProfileHTML(cachedUserData);
+  content.innerHTML = buildProfileHTML(user);
+  try {
+    const aboutRoot = content.querySelector('#profileAboutContent');
+    if (aboutRoot && pack && pack.aboutImgMap) applyAboutOfflineImages(aboutRoot, pack.aboutImgMap);
+  } catch (e) {}
   revealOverlay(overlay, { animate: true });
   document.body.style.overflow = 'hidden';
 
   attachProfileTint();
-  preloadAboutImages();
-  /* profile banner parallax disabled (scroll jank) */
-  loadProfileActivities(cachedUserData?.id);
+
+  const aboutReady = preloadAboutImages();
+  const activityReady = loadProfileActivities(user.id);
+
+  if (typeof isBrowserOnline === 'function' ? isBrowserOnline() : navigator.onLine) {
+    cacheProfilePack(cachedUserData || user).catch(() => {});
+  }
+
+  Promise.all([activityReady, aboutReady]).finally(resetViewProfileBtn);
+}
+
+function resetViewProfileBtn() {
+  const btn = document.getElementById('viewProfileBtn');
+  if (btn) btn.classList.remove('is-leaving');
 }
 
 // Banner lags behind scroll (parallax) and blooms outward on overscroll,
@@ -6067,7 +7648,7 @@ function profileActivityText(a) {
 }
 
 function buildProfileActivityRow(a) {
-  const cover = a.__typename === 'ListActivity' ? (a.media?.coverImage?.medium || '') : '';
+  const cover = a.__typename === 'ListActivity' ? (a.media?.coverImage?.extraLarge || a.media?.coverImage?.large || a.media?.coverImage?.medium || '') : '';
   return `
     <div class="profile-activity-row">
       ${cover
@@ -6083,6 +7664,11 @@ function buildProfileActivityRow(a) {
 async function loadProfileActivities(userId) {
   const el = document.getElementById('profileActivityList');
   if (!el || !userId) return;
+  // Activity is session-live only — show offline note when disconnected
+  if (typeof isBrowserOnline === 'function' ? !isBrowserOnline() : (typeof navigator !== 'undefined' && navigator.onLine === false)) {
+    el.innerHTML = '<div class="state" style="padding:12px 0;opacity:0.75">Recent activity needs a connection.</div>';
+    return;
+  }
   try {
     const data  = await gql(PROFILE_ACTIVITY_Q, { userId, page: 1 });
     const items = (data.Page?.activities || []).filter(a => a.__typename === 'ListActivity' || a.__typename === 'TextActivity');
@@ -6122,27 +7708,55 @@ function attachProfileTint() {
 // About-me content can embed gifs/images (profile signatures etc). Keep it
 // hidden behind a loader until everything inside has actually loaded, so it
 // doesn't pop in piecemeal — with a timeout so a dead image can't hang it.
+// Returns a promise so callers can wait for the images, not just the DOM swap.
 function preloadAboutImages() {
   const wrap    = document.getElementById('profileAboutContent');
   const loader  = document.getElementById('profileAboutLoader');
-  if (!wrap) return;
+  if (!wrap) return Promise.resolve();
 
   const reveal = () => {
     wrap.classList.add('loaded');
     if (loader) loader.hidden = true;
   };
 
-  const imgs = Array.from(wrap.querySelectorAll('img'));
-  if (!imgs.length) { reveal(); return; }
-
-  let remaining = imgs.length;
-  const done = () => { remaining--; if (remaining <= 0) reveal(); };
-  imgs.forEach(img => {
-    if (img.complete) { done(); return; }
-    img.addEventListener('load', done, { once: true });
-    img.addEventListener('error', done, { once: true });
+  // AniList about HTML / WebView: promote data-src, drop crossorigin (breaks many GIFs),
+  // force a network fetch, and show section even if some images fail.
+  wrap.querySelectorAll('img').forEach(img => {
+    const dataSrc = img.getAttribute('data-src') || img.getAttribute('data-lazy-src') || '';
+    if (dataSrc && !img.getAttribute('src')) img.setAttribute('src', dataSrc);
+    img.removeAttribute('crossorigin');
+    img.removeAttribute('crossOrigin');
+    img.setAttribute('referrerpolicy', 'no-referrer');
+    img.setAttribute('loading', 'eager');
+    img.setAttribute('decoding', 'async');
+    // Kick WebView to reload after attribute fixes
+    const src = img.getAttribute('src');
+    if (src) {
+      img.setAttribute('src', '');
+      img.setAttribute('src', src);
+    }
   });
-  setTimeout(reveal, 6000); // safety net for a slow/broken image
+
+  const imgs = Array.from(wrap.querySelectorAll('img'));
+  if (!imgs.length) { reveal(); return Promise.resolve(); }
+
+  return new Promise(resolve => {
+    let remaining = imgs.length;
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      reveal();
+      resolve();
+    };
+    const done = () => { remaining--; if (remaining <= 0) finish(); };
+    imgs.forEach(img => {
+      if (img.complete && img.naturalWidth > 0) { done(); return; }
+      img.addEventListener('load', done, { once: true });
+      img.addEventListener('error', done, { once: true });
+    });
+    setTimeout(finish, 8000);
+  });
 }
 
 function closeProfile() {
@@ -6154,7 +7768,14 @@ function closeProfile() {
 
 function initProfileOverlay() {
   const btn = document.getElementById('viewProfileBtn');
-  if (btn) btn.addEventListener('click', openProfile);
+  if (btn) {
+    btn.addEventListener('click', () => {
+      if (btn.classList.contains('is-leaving')) return; // already animating out
+      btn.classList.add('is-leaving');
+      const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      setTimeout(openProfile, reduced ? 0 : 380);
+    });
+  }
   document.getElementById('profileClose').addEventListener('click', closeProfile);
   document.getElementById('profileOverlay').addEventListener('click', (e) => {
     if (e.target.id === 'profileOverlay') closeProfile();
@@ -6229,15 +7850,23 @@ function notifText(n) {
 }
 
 function buildNotifRow(n) {
-  const cover  = n.media?.coverImage?.medium || '';
+  const cover  = bestCoverUrl(n.media && n.media.coverImage) || '';
   const avatar = n.user?.avatar?.large || n.user?.avatar?.medium || '';
   const img    = cover || avatar;
   const round  = !cover && !!avatar;
+  const mediaId = n.media && n.media.id != null ? n.media.id : '';
+  // AniList notifications for media are anime-centric; type not always present
+  const mediaType = (n.media && n.media.type) || 'ANIME';
+  const openable = mediaId !== '' && mediaId != null;
+  const thumbAttrs = openable
+    ? ` data-media-id="${mediaId}" data-media-type="${mediaType}" role="button" tabindex="0" title="Open title"`
+    : '';
+  const thumbCls = 'notif-thumb' + (round ? ' round' : '') + (openable ? ' notif-thumb-open' : '');
   return `
     <div class="notif-row">
       ${img
-        ? `<img class="notif-thumb ${round ? 'round' : ''}" src="${img}" alt="" loading="lazy" crossorigin="anonymous" onerror="coverCorsFallback(this)">`
-        : `<div class="notif-thumb notif-thumb-fallback"></div>`}
+        ? `<img class="${thumbCls}" src="${img}" alt="" loading="lazy" crossorigin="anonymous" onerror="coverCorsFallback(this)"${thumbAttrs}>`
+        : `<div class="${thumbCls} notif-thumb-fallback"${thumbAttrs}></div>`}
       <div class="notif-body">
         <div class="notif-text">${notifText(n)}</div>
         <div class="notif-time">${timeAgo(n.createdAt)}</div>
@@ -6272,7 +7901,12 @@ async function loadNotifications() {
   }
 }
 
-let calendarScope = 'UNWATCHED'; // 'ALL' | 'MY_LIST' | 'UNWATCHED' — default: Unwatched
+let calendarScope = 'UNWATCHED'; // 'ALL' | 'MY_LIST' | 'UNWATCHED' | 'ARCHIVE'
+let calArchiveYear = null;
+let calArchiveStep = 'years'; // years | seasons | grid
+let calArchiveSort = 'POPULARITY'; // POPULARITY | SCORE
+let calArchiveSortDir = 'desc'; // asc | desc
+let calArchiveSeason = null;
 
 // Global schedules can run to a few hundred episodes across a week (every
 // currently-airing show, not just yours) — capped at 5 pages (250 entries)
@@ -6332,11 +7966,19 @@ function timeOfDay(unixSeconds) {
 function buildCalRow(s, listIds) {
   const m       = s.media;
   const title   = m.title?.userPreferred || 'Unknown';
-  const cover   = m.coverImage?.medium || '';
+  const mid     = m.id;
+  const cached  = (typeof cachedPosterFor === 'function') ? cachedPosterFor('ANIME', mid) : null;
+  const xl = bestCoverUrl(m.coverImage);
+  const lg = (m.coverImage && (m.coverImage.large || m.coverImage.extraLarge || m.coverImage.medium)) || '';
+  const md = (m.coverImage && (m.coverImage.medium || m.coverImage.large || m.coverImage.extraLarge)) || '';
+  const cover   = cached || xl || lg || md || '';
   const onList  = listIds && listIds.includes(m.id);
+  const cacheAttr = cached ? ' data-poster-cached="1"' : ' data-poster-type="ANIME"';
   return `
-    <div class="cal-row" data-media-id="${m.id}">
-      <img class="cal-thumb" src="${cover}" alt="" loading="lazy" crossorigin="anonymous" onerror="coverCorsFallback(this)">
+    <div class="cal-row" data-media-id="${mid}">
+      <img class="cal-thumb" src="${cover}" alt="" loading="lazy" crossorigin="anonymous"${cacheAttr}
+        data-card-id="${mid}" data-cover-xl="${xl}" data-cover-lg="${lg}" data-cover-md="${md}" data-cover-step="0"
+        onerror="coverCorsFallback(this)" onload="try{maybeCachePoster(this,String(${mid}));}catch(e){}">
       <div class="cal-body">
         <div class="cal-title">${escapeHtml(title)}</div>
         <div class="cal-sub">Episode ${s.episode}</div>
@@ -6364,6 +8006,30 @@ async function loadCalendarPopup() {
   } catch (err) {
     listEl.innerHTML = `<div class="state err">Could not load calendar — ${err.message}</div>`;
   }
+}
+
+/** Background twin of loadBacklogSection(): runs after every full list load
+ *  (not just when the user opens the backlog popup) so Unwatched covers and
+ *  rows are already snapshotted before the device ever goes offline. */
+function warmBacklogForOffline() {
+  if (typeof isBrowserOnline === 'function' && !isBrowserOnline()) return;
+  setTimeout(async () => {
+    try {
+      const rows = await fetchBacklog();
+      lastBacklogRows = rows;
+      const missing = rows.slice(0, BACKLOG_ROW_CAP).filter(r => r.cover && r.mediaId && !cachedPosterFor('ANIME', r.mediaId));
+      let bi = 0;
+      const nextB = () => {
+        if (bi >= missing.length) {
+          try { saveListSnapshot(true); } catch (e) {}
+          return;
+        }
+        const r = missing[bi++];
+        cachePosterFromUrl('ANIME', r.mediaId, r.cover).then(() => setTimeout(nextB, 25));
+      };
+      nextB();
+    } catch (e) { /* offline or network hiccup — next full load retries */ }
+  }, 900); // after warmMissingPosterCache's own 600ms stagger start
 }
 
 const BACKLOG_ROW_CAP = 40; // keeps a long-neglected weekly show from flooding the popup
@@ -6395,7 +8061,7 @@ async function fetchBacklog() {
       .forEach(n => rows.push({
         mediaId:  e.media.id,
         title:    m.title?.userPreferred || 'Unknown',
-        cover:    m.coverImage?.medium || '',
+        cover:    m.coverImage?.extraLarge || m.coverImage?.large || m.coverImage?.medium || '',
         episode:  n.episode,
         airingAt: n.airingAt,
       }));
@@ -6408,16 +8074,27 @@ async function fetchBacklog() {
 function renderBacklogHTML(rows) {
   const shown    = rows.slice(0, BACKLOG_ROW_CAP);
   const overflow = rows.length - shown.length;
-  const html = shown.map(r => `
-    <div class="backlog-row" data-media-id="${r.mediaId}">
-      <img class="cal-thumb" src="${r.cover}" alt="" loading="lazy" crossorigin="anonymous" onerror="coverCorsFallback(this)">
+  const html = shown.map(r => {
+    const mid = r.mediaId;
+    let cached = '';
+    try { cached = (typeof cachedPosterFor === 'function' && cachedPosterFor('ANIME', mid)) || ''; } catch (e) {}
+    const net = r.cover || '';
+    const src = cached || net || '';
+    const xl = net; const lg = net; const md = net;
+    const cacheAttr = cached ? ' data-poster-cached="1"' : ' data-poster-type="ANIME"';
+    return `
+    <div class="backlog-row" data-media-id="${mid}">
+      <img class="cal-thumb" src="${src}" alt="" loading="lazy" crossorigin="anonymous"${cacheAttr}
+        data-card-id="${mid}" data-cover-xl="${xl}" data-cover-lg="${lg}" data-cover-md="${md}" data-cover-step="0"
+        onerror="coverCorsFallback(this)" onload="try{maybeCachePoster(this,String(${mid}));}catch(e){}">
       <div class="cal-body">
         <div class="cal-title">${escapeHtml(r.title)}</div>
         <div class="cal-sub">Episode ${r.episode}</div>
       </div>
       <div class="backlog-dot" title="Unwatched"></div>
       <div class="cal-time">${timeAgo(r.airingAt)}</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   return overflow > 0 ? html + `<div class="backlog-more">+${overflow} more</div>` : html;
 }
 
@@ -6433,6 +8110,17 @@ async function loadBacklogSection() {
     const rows = await fetchBacklog();
     el.innerHTML = rows.length ? renderBacklogHTML(rows) : '<div class="state">You\'re caught up on everything ongoing.</div>';
     lastBacklogRows = rows;
+    // Prefetch unwatched covers into poster cache so offline Unwatched works
+    try {
+      rows.slice(0, BACKLOG_ROW_CAP).forEach(r => {
+        if (!r.cover || !r.mediaId) return;
+        if (typeof cachedPosterFor === 'function' && cachedPosterFor('ANIME', r.mediaId)) return;
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => { try { cachePosterFromImg(img, 'ANIME', r.mediaId); } catch (e) {} };
+        img.src = r.cover;
+      });
+    } catch (e) {}
     // Piggyback on the list snapshot save path (already proven reliable)
     // instead of a separate localStorage key. This also means it only
     // persists once the list itself has hydrated, which is exactly the
@@ -6485,6 +8173,7 @@ function closeAllTopPopups() {
 function initNotifPopup() {
   const btn   = document.getElementById('notifBtn');
   const popup = document.getElementById('notifPopup');
+  const listEl = document.getElementById('notifList');
   let loaded  = false;
 
   btn.addEventListener('click', (e) => {
@@ -6498,6 +8187,22 @@ function initNotifPopup() {
     }
   });
 
+  // Tap cover only → open title details
+  if (listEl) {
+    listEl.addEventListener('click', (e) => {
+      const thumb = e.target && e.target.closest && e.target.closest('.notif-thumb-open[data-media-id]');
+      if (!thumb) return;
+      const mid = parseInt(thumb.dataset.mediaId, 10);
+      if (!mid) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const mtype = thumb.dataset.mediaType || 'ANIME';
+      closeComicPopup(popup);
+      navStack = [];
+      openDetail(mid, mtype);
+    });
+  }
+
   document.addEventListener('click', (e) => {
     if (!popup.hidden && popup.classList.contains('is-open') && !popup.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
       closeComicPopup(popup);
@@ -6505,10 +8210,533 @@ function initNotifPopup() {
   });
 }
 
+
+function calSeasonLabel(season) {
+  const map = { WINTER: 'Winter', SPRING: 'Spring', SUMMER: 'Summer', FALL: 'Fall' };
+  return map[season] || season || '';
+}
+
+function updateCalPopupTitle() {
+  const el = document.getElementById('calPopupTitle');
+  if (!el) return;
+  if (calendarScope === 'UNWATCHED') {
+    el.textContent = "You've Been Lazy";
+  } else if (calendarScope === 'ARCHIVE') {
+    if (calArchiveStep === 'grid' && calArchiveYear && calArchiveSeason) {
+      el.textContent = calArchiveYear + ' · ' + calSeasonLabel(calArchiveSeason);
+    } else if ((calArchiveStep === 'seasons' || calArchiveStep === 'grid') && calArchiveYear) {
+      el.textContent = calArchiveYear + (calArchiveSeason ? ' · ' + calSeasonLabel(calArchiveSeason) : '');
+    } else {
+      el.textContent = 'Seasonal Archive';
+    }
+  } else {
+    el.textContent = 'Airing This Week';
+  }
+  // Mirror into in-scroll heading when on grid
+  const sub = document.getElementById('calArchiveHeading');
+  if (sub) {
+    if (calendarScope === 'ARCHIVE' && calArchiveStep === 'grid' && calArchiveYear && calArchiveSeason) {
+      sub.hidden = false;
+      sub.textContent = calArchiveYear + ' · ' + calSeasonLabel(calArchiveSeason);
+    } else {
+      sub.hidden = true;
+      sub.textContent = '';
+    }
+  }
+}
+
+function calArchiveSortEnum() {
+  const field = calArchiveSort === 'SCORE' ? 'SCORE' : 'POPULARITY';
+  return [field + (calArchiveSortDir === 'asc' ? '' : '_DESC')];
+  // POPULARITY / SCORE = ascending; POPULARITY_DESC / SCORE_DESC = descending
+}
+
+function syncCalArchiveSortUI() {
+  const label = document.getElementById('calArchiveSortLabel');
+  if (label) label.textContent = calArchiveSort === 'SCORE' ? 'Rating' : 'Popularity';
+  const arrow = document.getElementById('calArchiveSortArrow');
+  if (arrow) {
+    arrow.classList.toggle('desc', calArchiveSortDir === 'desc');
+    arrow.innerHTML = calArchiveSortDir === 'desc' ? '&#8595;' : '&#8593;';
+    arrow.title = calArchiveSortDir === 'desc' ? 'Descending' : 'Ascending';
+  }
+  const opts = document.getElementById('calArchiveSortOptions');
+  if (opts) {
+    opts.querySelectorAll('button[data-sort]').forEach(b => {
+      b.classList.toggle('active', b.dataset.sort === calArchiveSort);
+    });
+  }
+}
+
+// TV seasonal catalog is effectively empty on AniList before the 60s.
+const ARCHIVE_YEAR_MIN = 1960;
+const ARCHIVE_EMPTY_YEARS_KEY = 'tsukiato:archiveEmptyYears:v1';
+
+function loadArchiveEmptyYears() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(ARCHIVE_EMPTY_YEARS_KEY) || '[]');
+    return new Set(Array.isArray(raw) ? raw.map(Number) : []);
+  } catch (e) { return new Set(); }
+}
+function saveArchiveEmptyYears(set) {
+  try {
+    localStorage.setItem(ARCHIVE_EMPTY_YEARS_KEY, JSON.stringify([...set]));
+  } catch (e) {}
+}
+let archiveEmptyYears = loadArchiveEmptyYears();
+
+function archiveYearList() {
+  const now = new Date().getFullYear();
+  const years = [];
+  for (let y = now + 1; y >= ARCHIVE_YEAR_MIN; y--) {
+    if (archiveEmptyYears.has(y)) continue;
+    years.push(y);
+  }
+  return years;
+}
+
+function markArchiveYearEmpty(year) {
+  const y = Number(year);
+  if (!y) return;
+  archiveEmptyYears.add(y);
+  saveArchiveEmptyYears(archiveEmptyYears);
+  const pill = document.querySelector('#calArchiveYears .cal-year-pill[data-year="' + y + '"]');
+  if (pill) pill.remove();
+}
+
+/** Quietly drop years AniList has zero seasonYear hits for (cached). */
+function pruneEmptyArchiveYears() {
+  if (typeof isBrowserOnline === 'function' && !isBrowserOnline()) return;
+  if (typeof gql !== 'function') return;
+  const type = (typeof mediaMode !== 'undefined' && mediaMode === 'MANGA') ? 'MANGA' : 'ANIME';
+  const years = archiveYearList();
+  // Probe oldest third first — those are most likely empty
+  const probe = years.filter(y => y < 1985).slice(-24);
+  let i = 0;
+  const next = () => {
+    if (i >= probe.length) return;
+    if (calArchiveStep !== 'years') return;
+    const y = probe[i++];
+    gql(ARCHIVE_YEAR_PROBE_Q, { y: y, t: type }).then(data => {
+      const n = (data && data.Page && data.Page.media && data.Page.media.length) || 0;
+      if (n === 0) markArchiveYearEmpty(y);
+      setTimeout(next, 120);
+    }).catch(() => setTimeout(next, 120));
+  };
+  setTimeout(next, 400);
+}
+
+function showCalArchiveYears() {
+  calArchiveStep = 'years';
+  calArchiveYear = null;
+  calArchiveSeason = null;
+  const yearsEl = document.getElementById('calArchiveYears');
+  const mol = document.getElementById('calArchiveMolecule');
+  const grid = document.getElementById('calArchiveGrid');
+  const back = document.getElementById('calArchiveBack');
+  const sortCap = document.getElementById('calArchiveSortCapsule');
+  const sortOpts = document.getElementById('calArchiveSortOptions');
+  if (mol) mol.hidden = true;
+  if (grid) { grid.hidden = true; grid.innerHTML = ''; }
+  if (back) back.hidden = true;
+  if (sortCap) sortCap.hidden = true;
+  if (sortOpts) { sortOpts.hidden = true; }
+  if (yearsEl) {
+    yearsEl.hidden = false;
+    yearsEl.style.justifyContent = '';
+    yearsEl.style.cssText = '';
+    yearsEl.innerHTML = archiveYearList().map(y =>
+      `<button type="button" class="cal-year-pill" data-year="${y}">${y}</button>`
+    ).join('');
+  }
+  updateCalPopupTitle();
+  try { pruneEmptyArchiveYears(); } catch (e) {}
+}
+
+function showCalArchiveMolecule(year, fromPill) {
+  calArchiveStep = 'seasons';
+  calArchiveYear = year;
+  calArchiveSeason = null;
+  const yearsEl = document.getElementById('calArchiveYears');
+  const mol = document.getElementById('calArchiveMolecule');
+  const grid = document.getElementById('calArchiveGrid');
+  const back = document.getElementById('calArchiveBack');
+  const sortCap = document.getElementById('calArchiveSortCapsule');
+  const center = document.getElementById('calMolYear');
+  const scroll = document.getElementById('calScroll');
+
+  if (grid) { grid.hidden = true; grid.innerHTML = ''; }
+  if (back) back.hidden = false;
+  if (sortCap) {
+    sortCap.hidden = false;
+    syncCalArchiveSortUI();
+  }
+  if (center) center.textContent = String(year);
+  updateCalPopupTitle();
+
+  const clearYears = () => {
+    if (!yearsEl) return;
+    yearsEl.hidden = true;
+    yearsEl.innerHTML = '';
+    yearsEl.style.cssText = '';
+  };
+
+  const playBranches = () => {
+    if (!mol) return;
+    mol.classList.remove('cal-mol-await-branches');
+    mol.querySelectorAll('.cal-mol-node, .cal-mol-line').forEach(n => {
+      n.style.animation = 'none';
+      n.style.opacity = '';
+      void n.offsetWidth;
+      n.style.animation = '';
+    });
+  };
+
+  // Reveal real center only after the flyer has finished moving
+  const settleCenter = () => {
+    if (!center) return;
+    center.classList.add('cal-mol-settled');
+    center.classList.remove('cal-mol-await');
+    center.style.opacity = '1';
+    center.style.visibility = 'visible';
+    center.style.animation = 'none';
+  };
+
+  // Instant path (Back from grid / no pill)
+  if (!fromPill || !yearsEl || !mol || !center) {
+    clearYears();
+    if (mol) {
+      mol.hidden = false;
+      mol.classList.remove('cal-mol-await-branches');
+    }
+    if (center) {
+      center.classList.remove('cal-mol-await');
+      center.classList.remove('cal-mol-settled');
+      center.style.opacity = '';
+      center.style.visibility = '';
+      center.style.animation = '';
+      void center.offsetWidth;
+    }
+    playBranches();
+    return;
+  }
+
+  const startRect = fromPill.getBoundingClientRect();
+  const flyer = fromPill.cloneNode(true);
+  flyer.className = 'cal-year-pill cal-year-flyer is-picked';
+  flyer.style.left = startRect.left + 'px';
+  flyer.style.top = startRect.top + 'px';
+  flyer.style.width = startRect.width + 'px';
+  flyer.style.height = startRect.height + 'px';
+  flyer.style.opacity = '1';
+  document.body.appendChild(flyer);
+
+  // Collapse year grid so molecule lays out at destination (still invisible)
+  yearsEl.style.height = '0';
+  yearsEl.style.minHeight = '0';
+  yearsEl.style.overflow = 'hidden';
+  yearsEl.style.opacity = '0';
+  yearsEl.style.margin = '0';
+  yearsEl.style.padding = '0';
+  yearsEl.setAttribute('aria-hidden', 'true');
+
+  mol.hidden = false;
+  mol.classList.add('cal-mol-await-branches');
+  // Center stays fully hidden until flight ends — do NOT add settled yet
+  center.classList.add('cal-mol-await');
+  center.classList.remove('cal-mol-settled');
+  center.style.opacity = '0';
+  center.style.visibility = 'hidden';
+  center.textContent = String(year);
+  if (scroll) scroll.scrollTop = 0;
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      // Measure hidden center (still has layout box)
+      const endRect = center.getBoundingClientRect();
+      const sx = startRect.left + startRect.width / 2;
+      const sy = startRect.top + startRect.height / 2;
+      const ex = endRect.left + endRect.width / 2;
+      const ey = endRect.top + endRect.height / 2;
+      flyer.style.transform = 'translate(' + (ex - sx) + 'px, ' + (ey - sy) + 'px) scale(1.12)';
+    });
+  });
+
+  clearTimeout(showCalArchiveMolecule._flyT);
+  clearTimeout(showCalArchiveMolecule._branchT);
+  clearTimeout(showCalArchiveMolecule._landT);
+
+  // Single handoff at end of flight: flyer gone → center visible → branches
+  showCalArchiveMolecule._landT = setTimeout(() => {
+    settleCenter();
+    if (flyer.parentNode) flyer.parentNode.removeChild(flyer);
+    clearYears();
+    playBranches();
+  }, 500);
+}
+
+async function loadCalArchiveSeason(season) {
+  calArchiveStep = 'grid';
+  calArchiveSeason = season;
+  const mol = document.getElementById('calArchiveMolecule');
+  const grid = document.getElementById('calArchiveGrid');
+  const back = document.getElementById('calArchiveBack');
+  const yearsEl = document.getElementById('calArchiveYears');
+  const sortCap = document.getElementById('calArchiveSortCapsule');
+  if (yearsEl) yearsEl.hidden = true;
+  if (mol) mol.hidden = true;
+  if (back) back.hidden = false;
+  if (sortCap) {
+    sortCap.hidden = false;
+    syncCalArchiveSortUI();
+  }
+  if (!grid) return;
+  grid.hidden = false;
+  grid.innerHTML = '<div class="state loading-state" style="grid-column:1/-1"><div class="cradle-loader"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div>';
+  updateCalPopupTitle();
+
+  const type = (typeof mediaMode !== 'undefined' && mediaMode === 'MANGA') ? 'MANGA' : 'ANIME';
+  const sort = calArchiveSortEnum();
+  const yearNum = Number(calArchiveYear);
+  let items = [];
+  try {
+    let page = 1;
+    let hasNext = true;
+    while (hasNext && page <= 3) {
+      const data = await gql(SEASONAL_ARCHIVE_Q, {
+        season: season,
+        seasonYear: yearNum,
+        page: page,
+        type: type,
+        sort: sort,
+      });
+      const media = (data && data.Page && data.Page.media) || [];
+      items.push(...media);
+      hasNext = !!(data && data.Page && data.Page.pageInfo && data.Page.pageInfo.hasNextPage);
+      page++;
+    }
+  } catch (err) {
+    grid.innerHTML = `<div class="state err" style="grid-column:1/-1">Could not load season — ${escapeHtml(err.message || String(err))}</div>`;
+    return;
+  }
+
+  // Strict match — AniList can return popular junk when a season/year has no chart data
+  items = items.filter(m => {
+    if (!m) return false;
+    if (m.seasonYear != null && Number(m.seasonYear) !== yearNum) return false;
+    if (m.season && m.season !== season) return false;
+    // If API omits season fields, only keep when start year matches (still conservative)
+    if (m.seasonYear == null && m.season == null) {
+      const sy = m.startDate && m.startDate.year;
+      return sy != null && Number(sy) === yearNum;
+    }
+    if (m.seasonYear == null) return false;
+    return true;
+  });
+
+  if (!items.length) {
+    grid.innerHTML = '<div class="cal-archive-empty" style="grid-column:1/-1">No titles found in this period of time.</div>';
+    updateCalPopupTitle();
+    // Track empty seasons; if all four empty, drop the year from the list next time
+    try {
+      if (!window._archiveSeasonEmpty) window._archiveSeasonEmpty = {};
+      const key = yearNum + '';
+      if (!window._archiveSeasonEmpty[key]) window._archiveSeasonEmpty[key] = new Set();
+      window._archiveSeasonEmpty[key].add(season);
+      if (window._archiveSeasonEmpty[key].size >= 4) markArchiveYearEmpty(yearNum);
+    } catch (e) {}
+    return;
+  }
+
+  updateCalPopupTitle();
+
+  // Cards mirror homepage grid: status glow dot + score/progress.
+  // Completed (and dropped) list entries use the same treatment as Completed tab.
+  grid.innerHTML = items.map((m, i) => {
+    const cover = bestCoverUrl(m.coverImage) || '';
+    const name = (m.title && (m.title.userPreferred || m.title.romaji || m.title.english)) || '—';
+    const cached = (typeof cachedPosterFor === 'function' && cachedPosterFor(type, m.id)) || '';
+    const src = cached || cover;
+    const cls = typeof airingClass === 'function' ? airingClass(m) : '';
+
+    const found = typeof findListEntry === 'function' ? findListEntry(m.id) : null;
+    const entry = found && found.entry;
+    const listTab = found && found.tab;
+    const isFinished = listTab === 'COMPLETED' || listTab === 'DROPPED';
+    const isManga = (m.type || type) === 'MANGA';
+
+    // Completed: progress + user score (Completed-tab style).
+    // Everyone else: episode/chapter count + site/user score.
+    const scoreInfo = resolveCardScore(entry || null, m, !!isFinished);
+    const totalEps = isManga ? m.chapters : m.episodes;
+    let badges = '';
+    if (listTab === 'COMPLETED') {
+      const cur = (entry && entry.progress != null) ? entry.progress : 0;
+      const progLabel = totalEps ? (cur + '/' + totalEps) : String(cur);
+      badges += `<span>${escapeHtml(progLabel)}</span>`;
+    } else if (totalEps) {
+      // Episode/chapter count for all non-completed titles
+      badges += `<span>${escapeHtml(String(totalEps))}</span>`;
+    } else if (listTab === 'DROPPED' && entry) {
+      const cur = entry.progress != null ? entry.progress : 0;
+      badges += `<span>${escapeHtml(String(cur))}</span>`;
+    }
+    if (scoreInfo.dec) {
+      badges += `<span class="score${scoreInfo.isMine ? ' is-mine' : ''}">★ ${scoreInfo.dec}</span>`;
+    }
+
+    const fmt = m.format && typeof formatLabel === 'function' ? formatLabel(m.format) : (m.format || '');
+    const barInner =
+      `<span class="status-dot ${cls}"></span>` +
+      (fmt ? `<span class="cal-arch-fmt">${escapeHtml(fmt)}</span>` : '<span class="cal-arch-fmt"></span>');
+
+    let sub = '';
+    if (listTab === 'COMPLETED') sub = 'Completed';
+    else if (listTab === 'DROPPED') sub = 'Dropped';
+    else if (listTab === 'CURRENT') sub = isManga ? 'Reading' : 'Watching';
+    else if (listTab === 'PLANNING') sub = 'Planning';
+    else if (listTab === 'PAUSED') sub = 'Paused';
+
+    return `<div class="cal-archive-tile" data-media-id="${m.id}" data-media-type="${m.type || type}" data-list-tab="${listTab || ''}" style="animation-delay:${Math.min(i, 12) * 0.02}s">
+      <div class="cal-arch-poster">
+        <img src="${src}" alt="" loading="lazy" crossorigin="anonymous" data-card-id="${m.id}" data-poster-type="${type}" data-cover-xl="${cover}" onerror="coverCorsFallback(this)" onload="try{maybeCachePoster(this,'${m.id}');}catch(e){}">
+        ${badges ? `<div class="cal-arch-badge">${badges}</div>` : ''}
+        <div class="cal-arch-bar">${barInner}</div>
+      </div>
+      <div class="cal-arch-name">${escapeHtml(name)}</div>
+      ${sub ? `<div class="cal-arch-sub">${escapeHtml(sub)}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function enterCalArchive() {
+  calendarScope = 'ARCHIVE';
+  document.querySelectorAll('#calScopeToggle .popup-mode-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.scope === 'ARCHIVE'));
+  document.getElementById('calList').hidden = true;
+  document.getElementById('backlogSection').hidden = true;
+  const arch = document.getElementById('calArchiveView');
+  if (arch) arch.hidden = false;
+  const card = document.getElementById('calendarCard');
+  if (card) card.classList.add('archive-wide');
+  showCalArchiveYears();
+}
+
+function leaveCalArchiveTo(scope) {
+  const arch = document.getElementById('calArchiveView');
+  if (arch) arch.hidden = true;
+  const card = document.getElementById('calendarCard');
+  if (card) card.classList.remove('archive-wide');
+  calArchiveStep = 'years';
+  calArchiveYear = null;
+}
+
+function initCalArchive() {
+  const yearsEl = document.getElementById('calArchiveYears');
+  const mol = document.getElementById('calArchiveMolecule');
+  const grid = document.getElementById('calArchiveGrid');
+  const back = document.getElementById('calArchiveBack');
+  const sortCap = document.getElementById('calArchiveSortCapsule');
+  const sortToggle = document.getElementById('calArchiveSortToggle');
+  const sortOpts = document.getElementById('calArchiveSortOptions');
+  const archView = document.getElementById('calArchiveView');
+
+  // Keep calendar popup from treating archive taps as "outside"
+  if (archView) {
+    archView.addEventListener('click', (e) => e.stopPropagation());
+  }
+
+  if (yearsEl) {
+    yearsEl.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const pill = e.target.closest('.cal-year-pill');
+      if (!pill) return;
+      if (calArchiveStep === 'seasons' || calArchiveStep === 'grid') return;
+      const y = parseInt(pill.dataset.year, 10);
+      if (!y) return;
+      showCalArchiveMolecule(y, pill);
+    });
+  }
+  if (mol) {
+    mol.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const node = e.target.closest('.cal-mol-season');
+      if (!node || !calArchiveYear) return;
+      loadCalArchiveSeason(node.dataset.season);
+    });
+  }
+  if (grid) {
+    grid.addEventListener('click', (e) => {
+      const tile = e.target.closest('.cal-archive-tile');
+      if (!tile || !tile.dataset.mediaId) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const mid = parseInt(tile.dataset.mediaId, 10);
+      const mtype = tile.dataset.mediaType || 'ANIME';
+      if (mid) openDetail(mid, mtype);
+    });
+  }
+  const sortArrow = document.getElementById('calArchiveSortArrow');
+  if (sortToggle && sortOpts) {
+    sortToggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const open = sortOpts.hidden;
+      sortOpts.hidden = !open;
+      sortToggle.classList.toggle('open', open);
+    });
+    if (sortArrow) {
+      sortArrow.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        calArchiveSortDir = calArchiveSortDir === 'desc' ? 'asc' : 'desc';
+        syncCalArchiveSortUI();
+        if (calArchiveStep === 'grid' && calArchiveSeason) {
+          loadCalArchiveSeason(calArchiveSeason);
+        }
+      });
+    }
+    sortOpts.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const btn = e.target.closest('button[data-sort]');
+      if (!btn) return;
+      const next = btn.dataset.sort;
+      if (!next) return;
+      const changed = next !== calArchiveSort;
+      calArchiveSort = next;
+      syncCalArchiveSortUI();
+      sortOpts.hidden = true;
+      sortToggle.classList.remove('open');
+      if (changed && calArchiveStep === 'grid' && calArchiveSeason) {
+        loadCalArchiveSeason(calArchiveSeason);
+      }
+    });
+    document.addEventListener('click', (e) => {
+      if (!sortCap || sortCap.hidden) return;
+      if (sortCap.contains(e.target)) return;
+      sortOpts.hidden = true;
+      sortToggle.classList.remove('open');
+    });
+  }
+  if (back) {
+    back.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (calArchiveStep === 'grid') showCalArchiveMolecule(calArchiveYear);
+      else if (calArchiveStep === 'seasons') showCalArchiveYears();
+    });
+  }
+}
+
+
 function initCalendarPopup() {
   const btn   = document.getElementById('calendarBtn');
   const popup = document.getElementById('calendarPopup');
   let loaded  = false;
+
+  updateCalPopupTitle();
+  initCalArchive();
 
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -6516,9 +8744,12 @@ function initCalendarPopup() {
     closeAllTopPopups();
     if (willOpen) {
       openComicPopup(popup);
+      updateCalPopupTitle();
       if (!loaded) {
         loaded = true;
-        calendarScope === 'UNWATCHED' ? loadBacklogSection() : loadCalendarPopup();
+        if (calendarScope === 'ARCHIVE') enterCalArchive();
+        else if (calendarScope === 'UNWATCHED') loadBacklogSection();
+        else loadCalendarPopup();
       }
     }
   });
@@ -6526,9 +8757,18 @@ function initCalendarPopup() {
   document.getElementById('calScopeToggle').addEventListener('click', (e) => {
     const scopeBtn = e.target.closest('.popup-mode-btn');
     if (!scopeBtn || scopeBtn.dataset.scope === calendarScope) return;
-    calendarScope = scopeBtn.dataset.scope;
+    const next = scopeBtn.dataset.scope;
+
+    if (next === 'ARCHIVE') {
+      enterCalArchive();
+      return;
+    }
+
+    leaveCalArchiveTo(next);
+    calendarScope = next;
     document.querySelectorAll('#calScopeToggle .popup-mode-btn').forEach(b =>
       b.classList.toggle('active', b.dataset.scope === calendarScope));
+    updateCalPopupTitle();
 
     const isUnwatched = calendarScope === 'UNWATCHED';
     document.getElementById('calList').hidden = isUnwatched;
@@ -6547,9 +8787,13 @@ function initCalendarPopup() {
   });
 
   document.addEventListener('click', (e) => {
-    if (!popup.hidden && !popup.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
-      popup.hidden = true;
-    }
+    if (popup.hidden || !popup.classList.contains('is-open')) return;
+    if (popup.contains(e.target)) return;
+    if (e.target === btn || (btn && btn.contains(e.target))) return;
+    // Don't close calendar while detail sheet is open on top
+    const detail = document.getElementById('detailOverlay');
+    if (detail && !detail.hidden) return;
+    closeComicPopup(popup);
   });
 }
 
@@ -6647,7 +8891,7 @@ function resolveSearchAddLabel(m, source) {
 
 function buildSearchRow(m) {
   const title    = escapeHtml((m.title && (m.title.userPreferred || m.title.romaji || m.title.english)) || 'Unknown');
-  const cover    = (m.coverImage && (m.coverImage.medium || m.coverImage.large)) || '';
+  const cover    = (m.coverImage && (m.coverImage.extraLarge || m.coverImage.large || m.coverImage.medium)) || '';
   const label    = resolveSearchAddLabel(m, 'AL');
   const subLabel = `${formatLabel(m.format)} · ${m.type === 'MANGA' ? 'Manga' : 'Anime'}`;
   const action = label
@@ -6666,7 +8910,7 @@ function buildSearchRow(m) {
 
 function buildMalSearchRow(m) {
   const title = escapeHtml((m.title && (m.title.userPreferred || m.title.romaji || m.title.english)) || 'Unknown');
-  const cover = (m.coverImage && (m.coverImage.medium || m.coverImage.large)) || '';
+  const cover = (m.coverImage && (m.coverImage.extraLarge || m.coverImage.large || m.coverImage.medium)) || '';
   const malId = m.idMal || null;
   const alId = m._alId || null;
   const year = m.startYear ? String(m.startYear) : '';
@@ -7279,7 +9523,7 @@ async function handleSearchAddFromAl(btn, row) {
     if (malId) m.idMal = malId;
     const bucket = type === 'MANGA' ? mangaByTab : animeByTab;
     bucket.PLANNING.push(mediaToEntry(newEntry, m));
-    if (bucket === dataByTab && activeTab === 'PLANNING') renderCards();
+    if (bucket === dataByTab && activeTab === 'PLANNING') silentListRefresh(mediaId);
     updateHeader();
     saveListSnapshot(true);
 
@@ -7354,7 +9598,7 @@ function renderMalPickList(items) {
   }
   list.innerHTML = items.map(it => {
     const name = escapeHtml((it.title && (it.title.userPreferred || it.title.romaji)) || 'Unknown');
-    const cover = (it.coverImage && (it.coverImage.medium || it.coverImage.large)) || '';
+    const cover = (it.coverImage && (it.coverImage.extraLarge || it.coverImage.large || it.coverImage.medium)) || '';
     const meta = [
       it.type === 'MANGA' ? 'Manga' : 'Anime',
       it.format || null,
@@ -7525,7 +9769,7 @@ async function applyMalPickAndSync(malId, type, row, m) {
         const alEntry = await addToList(alMedia.id, 'PLANNING');
         const bucket = type === 'MANGA' ? mangaByTab : animeByTab;
         bucket.PLANNING.push(mediaToEntry(alEntry, alMedia));
-        if (bucket === dataByTab && activeTab === 'PLANNING') renderCards();
+        if (bucket === dataByTab && activeTab === 'PLANNING') silentListRefresh(mediaId);
         updateHeader();
         saveListSnapshot(true);
         alOk = true;
@@ -7704,14 +9948,205 @@ function initSearchPopup() {
   });
 }
 
+
+function countByKey(entries, keyFn) {
+  const map = new Map();
+  entries.forEach(e => {
+    const k = keyFn(e);
+    if (k == null || k === '' || k === 0) return;
+    map.set(k, (map.get(k) || 0) + 1);
+  });
+  return map;
+}
+
+function topNFromCountMap(map, n) {
+  return [...map.entries()]
+    .sort((a, b) => b[1] - a[1] || String(a[0]).localeCompare(String(b[0])))
+    .slice(0, n);
+}
+
+function yearSeriesFromMap(map, maxBars) {
+  if (!map.size) return [];
+  const years = [...map.keys()].map(Number).filter(y => y > 1900 && y < 2100).sort((a, b) => a - b);
+  if (!years.length) return [];
+  // Prefer a contiguous recent window ending at max year
+  const maxY = years[years.length - 1];
+  const minY = Math.max(years[0], maxY - (maxBars - 1));
+  const out = [];
+  for (let y = minY; y <= maxY; y++) out.push([y, map.get(y) || map.get(String(y)) || 0]);
+  return out;
+}
+
+function renderVerticalBars(el, pairs, opts) {
+  opts = opts || {};
+  if (!el) return;
+  if (!pairs.length) {
+    el.innerHTML = '<div class="chart-empty">No data yet</div>';
+    return;
+  }
+  const max = Math.max(...pairs.map(p => p[1]), 1);
+  const peak = Math.max(...pairs.map(p => p[1]));
+  el.innerHTML = pairs.map((p, i) => {
+    const [label, val] = p;
+    const h = Math.max(4, Math.round((val / max) * 64));
+    const isPeak = val === peak && val > 0;
+    const delay = (0.08 + i * 0.04).toFixed(2);
+    return `<div class="chart-col${isPeak ? ' is-peak' : ''}">
+      <span class="chart-col-val">${val || ''}</span>
+      <div class="chart-col-bar${i % 2 ? ' alt' : ''}" style="height:${h}px;animation-delay:${delay}s"></div>
+      <span class="chart-col-lbl">${escapeHtml(String(label))}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderHorizontalBars(el, pairs) {
+  if (!el) return;
+  if (!pairs.length) {
+    el.innerHTML = '<div class="chart-empty">No data yet</div>';
+    return;
+  }
+  // Bar length = this format's share of all completed titles
+  const total = pairs.reduce((sum, p) => sum + (Number(p[1]) || 0), 0) || 1;
+  const peak = Math.max(...pairs.map(p => p[1]));
+  el.innerHTML = pairs.map((p) => {
+    const [label, val] = p;
+    const pct = Math.max(val > 0 ? 3 : 0, Math.round((Number(val) / total) * 100));
+    const isPeak = val === peak && val > 0;
+    // Width set inline so nothing can zero it out after paint
+    return `<div class="chart-h-row${isPeak ? ' is-peak' : ''}">
+      <span class="chart-h-lbl">${escapeHtml(String(label))}</span>
+      <div class="chart-h-track"><div class="chart-h-fill" style="width:${pct}%"></div></div>
+      <span class="chart-h-val">${val}</span>
+    </div>`;
+  }).join('');
+}
+
+function buildCompletedInsights() {
+  const mode = typeof mediaMode !== 'undefined' ? mediaMode : 'ANIME';
+  const bucket = mode === 'MANGA'
+    ? (typeof mangaByTab !== 'undefined' ? mangaByTab : {})
+    : (typeof animeByTab !== 'undefined' ? animeByTab : {});
+  const entries = (bucket.COMPLETED || []).slice();
+
+  const finishMap = countByKey(entries, e => {
+    const y = e.completedAt && e.completedAt.year;
+    return y || null;
+  });
+  const releaseMap = countByKey(entries, e => {
+    const y = e.media && e.media.startDate && e.media.startDate.year;
+    return y || null;
+  });
+  const scoreMap = countByKey(entries, e => {
+    const raw = e.score;
+    if (raw == null || raw === '' || Number(raw) <= 0) return null;
+    let s = Number(raw);
+    if (!Number.isFinite(s) || s <= 0) return null;
+    // AniList: POINT_100 (1–100), POINT_10 (1–10), POINT_5 (1–5), POINT_3 (1–3)
+    if (s > 10) s = s / 10;
+    else if (s <= 5 && entries.length > 20) {
+      // Heuristic: if almost all scores are ≤5, treat as 5-point scale → map to 10
+      // Keep as-is for bucket; expand below
+    }
+    s = Math.max(1, Math.min(10, Math.round(s)));
+    return s;
+  });
+  // Detect 5-point scale: if max observed ≤ 5 and no values > 5 in raw data
+  let maxRaw = 0;
+  entries.forEach(e => { const n = Number(e.score); if (n > maxRaw) maxRaw = n; });
+  if (maxRaw > 0 && maxRaw <= 5) {
+    scoreMap.clear();
+    entries.forEach(e => {
+      const n = Number(e.score);
+      if (!n || n <= 0) return;
+      const bucket = Math.max(1, Math.min(10, Math.round(n * 2))); // 5→10
+      scoreMap.set(bucket, (scoreMap.get(bucket) || 0) + 1);
+    });
+  }
+
+  const formatMap = countByKey(entries, e => {
+    const f = e.media && e.media.format;
+    if (!f) return 'Other';
+    return (typeof formatLabel === 'function' ? formatLabel(f) : f) || 'Other';
+  });
+
+  const finishSeries = yearSeriesFromMap(finishMap, 10);
+  let releaseSeries = topNFromCountMap(releaseMap, 8).sort((a, b) => Number(a[0]) - Number(b[0]));
+  const scoreSeries = [];
+  if (scoreMap.size) {
+    for (let s = 1; s <= 10; s++) scoreSeries.push([String(s), scoreMap.get(s) || 0]);
+  }
+  const formatSeries = topNFromCountMap(formatMap, 8);
+
+  renderVerticalBars(document.getElementById('chartFinishYear'), finishSeries);
+  renderVerticalBars(document.getElementById('chartReleaseYear'), releaseSeries);
+  renderVerticalBars(document.getElementById('chartScores'), scoreSeries);
+  renderHorizontalBars(document.getElementById('chartFormats'), formatSeries);
+}
+
+function openAccountCharts() {
+  const main = document.getElementById('accountMainView');
+  const charts = document.getElementById('accountChartsView');
+  const popup = document.getElementById('accountPopup');
+  if (!charts) return;
+  if (main) main.hidden = true;
+  charts.hidden = false;
+  if (popup) popup.classList.add('charts-open');
+  // Restart block animations
+  charts.querySelectorAll('.chart-block').forEach(b => {
+    b.style.animation = 'none';
+    void b.offsetWidth;
+    b.style.animation = '';
+  });
+  buildCompletedInsights();
+}
+
+function closeAccountCharts() {
+  const main = document.getElementById('accountMainView');
+  const charts = document.getElementById('accountChartsView');
+  const popup = document.getElementById('accountPopup');
+  if (charts) charts.hidden = true;
+  if (main) main.hidden = false;
+  if (popup) popup.classList.remove('charts-open');
+}
+
+function initCompletedCharts() {
+  const card = document.getElementById('popupCompletedCard');
+  const back = document.getElementById('accountChartsBack');
+  if (card) {
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openAccountCharts();
+    });
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openAccountCharts();
+      }
+    });
+  }
+  if (back) {
+    back.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      closeAccountCharts();
+    });
+  }
+}
+
+
 function openAccountPopup() {
+  try { closeAccountCharts(); } catch (e) {}
   const popup = document.getElementById('accountPopup');
   if (!popup) return;
   clearTimeout(popup._closeT);
+  const viewProfileBtn = document.getElementById('viewProfileBtn');
+  if (viewProfileBtn) viewProfileBtn.classList.remove('is-leaving');
   popup.hidden = false;
   // Reflow so the opacity/transform transition actually runs
   void popup.offsetWidth;
   popup.classList.add('is-open');
+
 }
 
 function closeAccountPopup() {
@@ -7726,6 +10161,7 @@ function closeAccountPopup() {
 }
 
 function initAccountPopup() {
+  initCompletedCharts();
   const avatarImg = document.getElementById('avatarImg');
   const popup     = document.getElementById('accountPopup');
   if (!avatarImg || !popup) return;
@@ -7877,15 +10313,20 @@ function hardRefreshApp() {
     if (typeof LIST_SNAPSHOT_KEY === 'function') {
       localStorage.removeItem(LIST_SNAPSHOT_KEY());
     }
-    // Drop every account's list cache so a new login can't see the previous one
     try {
       const doomed = [];
       for (let i = 0; i < localStorage.length; i++) {
         const k = localStorage.key(i);
-        if (k && k.indexOf('anilistListSnapshot:') === 0) doomed.push(k);
+        if (k && (
+          k.indexOf('anilistListSnapshot:') === 0 ||
+          k.indexOf('posterCache:') === 0 ||
+          k.indexOf('anilistNotifSnapshot:') === 0 ||
+          k.indexOf('tsukiatoCoverPack:') === 0
+        )) doomed.push(k);
       }
       doomed.forEach(k => localStorage.removeItem(k));
     } catch (e) {}
+    try { localStorage.removeItem('tsukiatoCoverPack:v1'); } catch (e) {}
     localStorage.removeItem('notifiedEpisodes');
     localStorage.removeItem('notifiedEpisodesSeeded');
   } catch (e) {}
@@ -7896,11 +10337,131 @@ function hardRefreshApp() {
     if (typeof entityCache === 'object') Object.keys(entityCache).forEach(k => delete entityCache[k]);
   } catch (e) {}
   try {
+    if (typeof indexedDB !== 'undefined') {
+      indexedDB.deleteDatabase('tsukiato-posters-v2');
+      indexedDB.deleteDatabase('tsukiato-posters-v1');
+    }
+  } catch (e) {}
+  try {
     if (typeof caches !== 'undefined' && caches.keys) {
       caches.keys().then(keys => keys.forEach(k => caches.delete(k))).catch(() => {});
     }
   } catch (e) {}
   location.reload();
+}
+
+
+function initAccountGearPanel() {
+  const gear = document.getElementById('accountGearBtn');
+  const panel = document.getElementById('popupConnectivityPanel');
+  if (!gear || !panel) return;
+  gear.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const open = panel.hidden;
+    panel.hidden = !open;
+    gear.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) {
+      try { renderAuthSection(); } catch (err) {}
+      try { renderMalAuthSection(); } catch (err) {}
+    }
+  });
+}
+
+/** TEMP — test system notification from latest AniList notification. Remove later. */
+async function fireTestAniListNotification() {
+  const btn = document.getElementById('testNotifBtn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+  try {
+    if (!('Notification' in window)) {
+      alert('Notifications not supported in this WebView.');
+      return;
+    }
+    let perm = Notification.permission;
+    if (perm === 'default') {
+      try { perm = await Notification.requestPermission(); } catch (e) { perm = 'denied'; }
+    }
+    if (perm !== 'granted') {
+      alert('Notification permission: ' + perm + '\nEnable notifications for Tsukiato in system settings.');
+      return;
+    }
+
+    let n = null;
+    let fetchErr = '';
+    try {
+      if (hasToken()) {
+        const data = await gql(NOTIF_Q, {});
+        const list = (data && data.Page && data.Page.notifications) || [];
+        n = list[0] || null;
+      } else {
+        fetchErr = 'AniList not connected';
+      }
+    } catch (e) {
+      fetchErr = String(e.message || e);
+    }
+
+    const titleRaw = n
+      ? (typeof notifText === 'function' ? notifText(n) : 'AniList notification')
+      : 'Tsukiato test';
+    const title = titleRaw.length > 64 ? titleRaw.slice(0, 61) + '…' : titleRaw;
+    const body = n
+      ? (n.media && n.media.title && n.media.title.userPreferred
+          ? n.media.title.userPreferred
+          : (n.user && n.user.name ? n.user.name : 'Just now'))
+      : (fetchErr ? ('Sample — ' + fetchErr) : 'No AniList notifications — sample body');
+    const netCover = bestCoverUrl(n && n.media && n.media.coverImage) || '';
+    const cover = await resolveNotifCoverImage(n && n.media && n.media.id, netCover);
+
+    const opts = {
+      body: body,
+      icon: cover,
+      badge: TRACKER_NOTIF_ICON,
+      image: cover,
+      tag: 'tsukiato-test-notif-' + Date.now(),
+      renotify: true,
+      requireInteraction: false,
+    };
+
+    let shown = false;
+    // Try SW first (short timeout so AppMint WebView never hangs)
+    try {
+      if (navigator.serviceWorker) {
+        const reg = await Promise.race([
+          navigator.serviceWorker.ready,
+          new Promise((_, rej) => setTimeout(() => rej(new Error('sw-timeout')), 1200)),
+        ]);
+        if (reg && reg.showNotification) {
+          await reg.showNotification(title, opts);
+          shown = true;
+        }
+      }
+    } catch (e) { /* try page API */ }
+
+    if (!shown) {
+      try {
+        const note = new Notification(title, opts);
+        shown = true;
+        // Keep reference briefly so GC doesn't drop it on some WebViews
+        setTimeout(() => { try { note.close(); } catch (e) {} }, 8000);
+      } catch (e2) {
+        alert('Could not show notification: ' + String(e2.message || e2));
+        return;
+      }
+    }
+    if (btn) btn.textContent = 'Sent ✓';
+    setTimeout(() => { if (btn) btn.textContent = 'Test notification (temp)'; }, 1500);
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+function initTestNotifBtn() {
+  document.addEventListener('click', (e) => {
+    const btn = e.target && e.target.closest && e.target.closest('#testNotifBtn');
+    if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    fireTestAniListNotification();
+  });
 }
 
 function initCacheRefreshBtn() {
@@ -7915,6 +10476,8 @@ function initCacheRefreshBtn() {
 initAccountPopup();
 initThemeToggle();
 initCacheRefreshBtn();
+initAccountGearPanel();
+initTestNotifBtn();
 initNotifPopup();
 initCalendarPopup();
 initSearchPopup();
@@ -7991,11 +10554,16 @@ function sanitizeRichText(raw) {
   container.querySelectorAll('img').forEach(img => {
     const src = img.dataset.keepSrc || '';
     img.removeAttribute('data-keep-src');
-    if (/^https?:\/\//i.test(src)) {
-      img.setAttribute('src', src);
+    // Protocol-relative //cdn… → https:
+    let resolved = src;
+    if (/^\/\//.test(resolved)) resolved = 'https:' + resolved;
+    if (/^https?:\/\//i.test(resolved)) {
+      img.setAttribute('src', resolved);
       img.setAttribute('alt', '');
-      img.setAttribute('loading', 'lazy');
+      img.setAttribute('loading', 'eager');
+      img.setAttribute('decoding', 'async');
       img.setAttribute('referrerpolicy', 'no-referrer');
+      img.removeAttribute('crossorigin');
       img.className = 'rich-text-img';
     } else {
       img.remove();
@@ -8177,7 +10745,7 @@ async function fillDetailMusicSection(media) {
 
 function buildDetailHTML(m) {
   const title    = m.title.userPreferred || m.title.romaji || 'Unknown';
-  const cover    = m.coverImage?.large || m.coverImage?.medium || '';
+  const cover    = m.coverImage?.extraLarge || m.coverImage?.large || m.coverImage?.medium || '';
   const isManga  = m.type === 'MANGA';
   const scoreDec = m.averageScore ? (m.averageScore / 10).toFixed(1) : null;
   const nextEp   = m.nextAiringEpisode;
@@ -8226,7 +10794,7 @@ function buildDetailHTML(m) {
     .filter(e => e.node.type === 'ANIME' || e.node.type === 'MANGA')
     .map(edge => `
     <div class="detail-rel" data-rel-id="${edge.node.id}" data-rel-type="${edge.node.type}">
-      <img src="${edge.node.coverImage?.medium || ''}" alt="" loading="lazy">
+      <img src="${edge.node.coverImage?.extraLarge || edge.node.coverImage?.large || edge.node.coverImage?.medium || ''}" alt="" loading="lazy">
       <div class="detail-rel-badge">${escapeHtml(relationLabel(edge.relationType))}</div>
       <div class="detail-rel-title">${escapeHtml(edge.node.title?.userPreferred || '')}</div>
     </div>`).join('');
@@ -8777,6 +11345,26 @@ function listStatusBubbleLabel(tab, mediaType) {
   return map[tab] || tab;
 }
 
+function hideDetailListStatusBubble(quick) {
+  const bubble = document.getElementById('detailStatusBubble');
+  if (!bubble || bubble.hidden) return;
+  clearTimeout(showDetailListStatusBubble._t);
+  clearTimeout(bubble._closeT);
+  document.removeEventListener('pointerdown', showDetailListStatusBubble._dismiss, true);
+  bubble.classList.remove('is-open');
+  bubble.classList.add('is-closing');
+  if (quick) bubble.classList.add('quick-dismiss');
+  else bubble.classList.remove('quick-dismiss');
+  const ms = quick ? 200 : 900;
+  bubble._closeT = setTimeout(() => {
+    bubble.classList.remove('is-closing', 'quick-dismiss');
+    if (!bubble.classList.contains('is-open')) {
+      bubble.hidden = true;
+      bubble.setAttribute('aria-hidden', 'true');
+    }
+  }, ms);
+}
+
 function showDetailListStatusBubble(mediaId, mediaType) {
   if (!hasToken()) return;
   const key = String(mediaType || 'ANIME') + ':' + String(mediaId);
@@ -8791,26 +11379,28 @@ function showDetailListStatusBubble(mediaId, mediaType) {
   const strong = bubble.querySelector('#detailStatusBubbleText') || bubble.querySelector('strong');
   if (strong) strong.textContent = label;
 
-  // Same open/close class language as calendar / account comic popups
   clearTimeout(bubble._closeT);
-  bubble.classList.remove('is-closing');
+  clearTimeout(showDetailListStatusBubble._t);
+  document.removeEventListener('pointerdown', showDetailListStatusBubble._dismiss, true);
+  bubble.classList.remove('is-closing', 'quick-dismiss');
   bubble.hidden = false;
   bubble.setAttribute('aria-hidden', 'false');
   void bubble.offsetWidth;
   bubble.classList.add('is-open');
 
-  clearTimeout(showDetailListStatusBubble._t);
+  // Tap anywhere → dismiss immediately
+  showDetailListStatusBubble._dismiss = (ev) => {
+    hideDetailListStatusBubble(true);
+  };
+  // Next frame so the opening gesture doesn't instantly dismiss
+  setTimeout(() => {
+    document.addEventListener('pointerdown', showDetailListStatusBubble._dismiss, true);
+  }, 80);
+
+  // Hold 4s, then slow fade
   showDetailListStatusBubble._t = setTimeout(() => {
-    bubble.classList.remove('is-open');
-    bubble.classList.add('is-closing');
-    bubble._closeT = setTimeout(() => {
-      bubble.classList.remove('is-closing');
-      if (!bubble.classList.contains('is-open')) {
-        bubble.hidden = true;
-        bubble.setAttribute('aria-hidden', 'true');
-      }
-    }, 200);
-  }, 1100);
+    hideDetailListStatusBubble(false);
+  }, 4000);
 }
 
 async function openDetail(mediaId, type = 'ANIME', push = true) {
@@ -9009,7 +11599,7 @@ function buildEntityHTML({ name, image, bioStats = [], description = '', works =
           const score = n.averageScore ? (n.averageScore / 10).toFixed(1) : null;
           const icon  = n.type === 'MANGA' ? '📖' : '🎬';
           const count = n.episodes ?? n.chapters;
-          const cover = n.coverImage?.large || n.coverImage?.medium || '';
+          const cover = n.coverImage?.extraLarge || n.coverImage?.large || n.coverImage?.medium || '';
           return `
           <div class="entity-work-card" data-media-id="${n.id}" data-media-type="${n.type}">
             <div class="entity-work-cover-wrap">
@@ -9512,7 +12102,7 @@ function initListEditor() {
         editorIsNew = false;
         saveListSnapshot();
         updateHeader();
-        if (bucket === dataByTab) renderCards();
+        if (bucket === dataByTab) silentListRefresh(editorMediaId);
         // Refresh detail so the pencil still works as "edit" and list state is consistent
         const cacheKey = `${media.type || hint}:${editorMediaId}`;
         if (detailCache[cacheKey]) {
@@ -9549,7 +12139,7 @@ function initListEditor() {
           found.bucket[newStatus].push(entry);
         }
         saveListSnapshot();
-        if (found.bucket === dataByTab) renderCards();
+        if (found.bucket === dataByTab) silentListRefresh(editorMediaId);
         closeListEditor();
 
         // Dual-write to MAL (resolve idMal if missing)
@@ -9600,15 +12190,49 @@ function buildNyaaSearchUrl(mOrTitle, isManga) {
   return 'https://nyaa.si/?f=0&c=' + cat + '&q=' + encodeURIComponent(q) + '&s=seeders&o=desc';
 }
 
+function showNyaaLoading() {
+  const el = document.getElementById('nyaaLoadOverlay');
+  if (!el) return;
+  el.hidden = false;
+  el.setAttribute('aria-hidden', 'false');
+  clearTimeout(showNyaaLoading._t);
+  showNyaaLoading._t = setTimeout(hideNyaaLoading, 2200);
+}
+function hideNyaaLoading() {
+  const el = document.getElementById('nyaaLoadOverlay');
+  if (!el) return;
+  el.hidden = true;
+  el.setAttribute('aria-hidden', 'true');
+  clearTimeout(showNyaaLoading._t);
+}
+
 function openNyaaForMedia(mOrTitle, isManga) {
   const url = buildNyaaSearchUrl(mOrTitle, isManga);
-  const a = document.createElement('a');
-  a.href = url;
-  a.target = '_blank';
-  a.rel = 'noopener noreferrer';
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
+  showNyaaLoading();
+  // Brief beat so the dot animation is visible before the browser switches apps
+  setTimeout(() => {
+    try {
+      const a = document.createElement('a');
+      a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } catch (e) {
+      try { window.open(url, '_blank'); } catch (e2) {}
+    }
+    // Keep dots until tab handoff feels done
+    setTimeout(hideNyaaLoading, 900);
+  }, 280);
+  // If user returns while overlay still up
+  const onVis = () => {
+    if (document.visibilityState === 'visible') {
+      hideNyaaLoading();
+      document.removeEventListener('visibilitychange', onVis);
+    }
+  };
+  document.addEventListener('visibilitychange', onVis);
 }
 
 
@@ -9715,15 +12339,18 @@ let _snapshotTimer = null;
 // visits/scrolls paint instantly with no network request. Keyed by user
 // (same convention as the list snapshot above) so switching accounts never
 // shows someone else's posters.
+// v2 bump: old cache entries were downsampled to 320px/0.68q (blurry on high-DPI
+// screens); changing the key namespace abandons them so posters re-capture at
+// the new 640px/0.85q settings instead of serving stale low-res data-URLs.
 const POSTER_CACHE_KEY = () => {
   if (typeof hasToken === 'function' && hasToken() && activeListUser)
-    return 'posterCache:al:' + activeListUser;
+    return 'posterCache:v2:al:' + activeListUser;
   if (typeof hasMalToken === 'function' && hasMalToken() && !(typeof hasToken === 'function' && hasToken()))
-    return 'posterCache:mal';
-  return 'posterCache:guest:' + USERNAME;
+    return 'posterCache:v2:mal';
+  return 'posterCache:v2:guest:' + USERNAME;
 };
-const POSTER_CACHE_MAX_DIM = 280;   // px, long edge — plenty for a list-card thumbnail
-const POSTER_CACHE_QUALITY = 0.72;  // JPEG quality — small file, thumbnail-only use
+const POSTER_CACHE_MAX_DIM = 640;   // px, long edge — matches AniList extraLarge scale so grid/list/detail stay sharp on high-DPI screens
+const POSTER_CACHE_QUALITY = 0.85;  // JPEG — higher fidelity; storage pruning below already handles overflow
 
 // ── Last-good notifications snapshot (localStorage) ─────────────────────────
 // Same convention as LIST_SNAPSHOT_KEY: keyed by whichever account is active
@@ -9756,50 +12383,253 @@ function saveNotifCache(items) {
 let _posterCacheMem = null;
 let _posterCacheMemKey = null;
 
-function loadPosterCache() {
-  const key = POSTER_CACHE_KEY();
-  if (_posterCacheMem && _posterCacheMemKey === key) return _posterCacheMem;
+// Single durable store: IndexedDB only — one data-URL per media id.
+// Memory for sync reads. No localStorage blobs, no Cache API copies.
+const POSTER_IDB_NAME = 'tsukiato-posters-v2';
+const POSTER_IDB_STORE = 'covers';
+
+function _openPosterIdb() {
+  return new Promise((resolve, reject) => {
+    if (typeof indexedDB === 'undefined') return reject(new Error('no idb'));
+    const req = indexedDB.open(POSTER_IDB_NAME, 1);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains(POSTER_IDB_STORE)) db.createObjectStore(POSTER_IDB_STORE);
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error || new Error('idb open failed'));
+  });
+}
+
+function idbPutPoster(key, dataUrl) {
+  return _openPosterIdb().then(db => new Promise((resolve) => {
+    try {
+      const tx = db.transaction(POSTER_IDB_STORE, 'readwrite');
+      tx.objectStore(POSTER_IDB_STORE).put(dataUrl, key);
+      tx.oncomplete = () => resolve(true);
+      tx.onerror = () => resolve(false);
+    } catch (e) { resolve(false); }
+  })).catch(() => false);
+}
+
+function idbDeletePoster(key) {
+  return _openPosterIdb().then(db => new Promise((resolve) => {
+    try {
+      const tx = db.transaction(POSTER_IDB_STORE, 'readwrite');
+      tx.objectStore(POSTER_IDB_STORE).delete(key);
+      tx.oncomplete = () => resolve(true);
+      tx.onerror = () => resolve(false);
+    } catch (e) { resolve(false); }
+  })).catch(() => false);
+}
+
+function idbGetAllPosters() {
+  return _openPosterIdb().then(db => new Promise((resolve) => {
+    try {
+      const tx = db.transaction(POSTER_IDB_STORE, 'readonly');
+      const req = tx.objectStore(POSTER_IDB_STORE).openCursor();
+      const out = {};
+      req.onsuccess = () => {
+        const cur = req.result;
+        if (cur) {
+          if (cur.value) out[cur.key] = cur.value;
+          cur.continue();
+        } else resolve(out);
+      };
+      req.onerror = () => resolve(out);
+    } catch (e) { resolve({}); }
+  })).catch(() => ({}));
+}
+
+async function hydratePosterCache() {
   try {
-    const parsed = JSON.parse(localStorage.getItem(key) || '{}');
-    _posterCacheMem = (parsed && typeof parsed === 'object') ? parsed : {};
+    const idb = await idbGetAllPosters();
+    _posterCacheMem = idb && typeof idb === 'object' ? idb : {};
+    _posterCacheMemKey = 'idb:v2';
+    Object.keys(_posterCacheMem).forEach(k => {
+      const v = _posterCacheMem[k];
+      if (v && typeof v === 'string' && v.indexOf('data:') === 0) rememberSessionImg(k, v);
+    });
+    // Purge legacy multi-copy stores
+    try {
+      const kill = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.indexOf('posterCache:') === 0) kill.push(k);
+      }
+      kill.forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
+    } catch (e) {}
+    try {
+      if (typeof caches !== 'undefined' && caches.delete) caches.delete('tsukiato-img-v1').catch(() => {});
+    } catch (e) {}
   } catch (e) {
-    _posterCacheMem = {};
+    _posterCacheMem = _posterCacheMem || {};
+    _posterCacheMemKey = 'idb:v2';
   }
-  _posterCacheMemKey = key;
+}
+
+function loadPosterCache() {
+  if (_posterCacheMem) return _posterCacheMem;
+  _posterCacheMem = {};
+  _posterCacheMemKey = 'idb:v2';
   return _posterCacheMem;
 }
+
+function savePosterEntry(key, dataUrl) {
+  if (!key || !dataUrl) return false;
+  const cache = loadPosterCache();
+  cache[key] = dataUrl;
+  rememberSessionImg(key, dataUrl);
+  idbPutPoster(key, dataUrl);
+  return true;
+}
+
 function savePosterCache(cache) {
-  const key = POSTER_CACHE_KEY();
+  _posterCacheMem = cache || {};
+  _posterCacheMemKey = 'idb:v2';
   try {
-    localStorage.setItem(key, JSON.stringify(cache));
-    _posterCacheMem = cache;
-    _posterCacheMemKey = key;
-    return true;
-  } catch (e) {
-    return false; // quota exceeded / private mode — caching just stays off
-  }
+    const pri = typeof priorityPosterKeys === 'function' ? priorityPosterKeys() : new Set();
+    Object.keys(_posterCacheMem).forEach(k => {
+      if (pri.has(k)) idbPutPoster(k, _posterCacheMem[k]);
+    });
+  } catch (e) {}
+  return true;
 }
 function posterCacheKey(type, mediaId) { return type + ':' + mediaId; }
-function cachedPosterFor(type, mediaId) {
-  return loadPosterCache()[posterCacheKey(type, mediaId)] || null;
+
+const COVER_PACK_KEY = 'tsukiatoCoverPack:v1';
+
+function saveOfflineCoverPack() {
+  try {
+    const pri = typeof priorityPosterKeys === 'function' ? priorityPosterKeys() : new Set();
+    const cache = loadPosterCache();
+    const pack = {};
+    let bytes = 0;
+    const MAX = 4.5 * 1024 * 1024;
+    for (const k of pri) {
+      const v = cache[k];
+      if (!v || typeof v !== 'string' || v.indexOf('data:') !== 0) continue;
+      bytes += v.length + k.length;
+      if (bytes > MAX) break;
+      pack[k] = v;
+    }
+    localStorage.setItem(COVER_PACK_KEY, JSON.stringify(pack));
+    return Object.keys(pack).length;
+  } catch (e) {
+    try {
+      const cache = loadPosterCache();
+      const pack = {};
+      (animeByTab.CURRENT || []).forEach(e => {
+        if (!e.media) return;
+        const k = posterCacheKey('ANIME', e.media.id);
+        if (cache[k]) pack[k] = cache[k];
+      });
+      (mangaByTab.CURRENT || []).forEach(e => {
+        if (!e.media) return;
+        const k = posterCacheKey('MANGA', e.media.id);
+        if (cache[k]) pack[k] = cache[k];
+      });
+      localStorage.setItem(COVER_PACK_KEY, JSON.stringify(pack));
+      return Object.keys(pack).length;
+    } catch (e2) { return 0; }
+  }
 }
+
+function loadOfflineCoverPack() {
+  try {
+    const pack = JSON.parse(localStorage.getItem(COVER_PACK_KEY) || '{}');
+    if (!pack || typeof pack !== 'object') return 0;
+    const cache = loadPosterCache();
+    let n = 0;
+    Object.keys(pack).forEach(k => {
+      const v = pack[k];
+      if (!v || typeof v !== 'string') return;
+      cache[k] = v;
+      rememberSessionImg(k, v);
+      n++;
+    });
+    return n;
+  } catch (e) { return 0; }
+}
+
+function injectOfflineCoversIntoLists() {
+  const stamp = (entries, type) => {
+    (entries || []).forEach(e => {
+      if (!e || !e.media || e.media.id == null) return;
+      const d = cachedPosterFor(type, e.media.id);
+      if (!d) return;
+      const ci = e.media.coverImage || (e.media.coverImage = {});
+      ci.extraLarge = d;
+      ci.large = d;
+      ci.medium = d;
+    });
+  };
+  stamp(animeByTab.CURRENT, 'ANIME');
+  stamp(mangaByTab.CURRENT, 'MANGA');
+  try {
+    (lastBacklogRows || []).forEach(r => {
+      if (!r || !r.mediaId) return;
+      const d = cachedPosterFor('ANIME', r.mediaId);
+      if (d) r.cover = d;
+    });
+  } catch (e) {}
+}
+
+
+/** In-session memory: same URL / media id never hits network twice in one run. */
+const _sessionImgByKey = new Map();
+function rememberSessionImg(keys, dataUrl) {
+  if (!dataUrl) return;
+  (Array.isArray(keys) ? keys : [keys]).forEach(k => {
+    if (k) _sessionImgByKey.set(String(k), dataUrl);
+  });
+}
+function lookupSessionImg(keys) {
+  for (const k of (Array.isArray(keys) ? keys : [keys])) {
+    if (!k) continue;
+    const v = _sessionImgByKey.get(String(k));
+    if (v) return v;
+  }
+  return null;
+}
+function cachedPosterFor(type, mediaId) {
+  const k = posterCacheKey(type, mediaId);
+  return lookupSessionImg(k) || loadPosterCache()[k] || null;
+}
+
 
 /** Keep the cache to exactly what's currently in Watching/Reading — called
  *  after every list mutation (add, remove, status change) and after every
  *  fresh load, so a title's poster disappears the moment it leaves CURRENT. */
+function priorityPosterKeys() {
+  const valid = new Set();
+  (animeByTab.CURRENT || []).forEach(e => e.media && valid.add(posterCacheKey('ANIME', e.media.id)));
+  (mangaByTab.CURRENT || []).forEach(e => e.media && valid.add(posterCacheKey('MANGA', e.media.id)));
+  try {
+    (lastBacklogRows || []).forEach(r => {
+      if (r && r.mediaId) valid.add(posterCacheKey('ANIME', r.mediaId));
+    });
+  } catch (e) {}
+  return valid;
+}
+
 function syncPosterCache() {
   try {
-    const valid = new Set();
-    (animeByTab.CURRENT || []).forEach(e => e.media && valid.add(posterCacheKey('ANIME', e.media.id)));
-    (mangaByTab.CURRENT || []).forEach(e => e.media && valid.add(posterCacheKey('MANGA', e.media.id)));
+    const priority = priorityPosterKeys();
     const cache = loadPosterCache();
-    let changed = false;
-    for (const k of Object.keys(cache)) {
-      if (!valid.has(k)) { delete cache[k]; changed = true; }
-    }
-    if (changed) savePosterCache(cache);
-  } catch (e) { /* cache upkeep should never break the list */ }
+    Object.keys(cache).forEach(k => {
+      if (!priority.has(k)) {
+        delete cache[k];
+        try { idbDeletePoster(k); } catch (e) {}
+      }
+    });
+  } catch (e) {}
 }
+
+const IMG_CACHE_API = 'tsukiato-img-v1';
+
+/** Legacy no-op — single cover store is IndexedDB only. */
+function cacheImageToCacheApi(img) { /* empty */ }
 
 /** Downscale a loaded cover <img> to a small JPEG and store it. Silently
  *  skips on a tainted canvas or full storage — the visible cover on screen
@@ -9814,15 +12644,17 @@ function cachePosterFromImg(img, type, mediaId) {
     canvas.width = w; canvas.height = h;
     canvas.getContext('2d').drawImage(img, 0, 0, w, h);
     const dataUrl = canvas.toDataURL('image/jpeg', POSTER_CACHE_QUALITY);
-    const cache = loadPosterCache();
-    cache[posterCacheKey(type, mediaId)] = dataUrl;
-    if (!savePosterCache(cache)) {
-      // Storage full — drop the oldest quarter of entries and retry once.
-      const keys = Object.keys(cache);
-      keys.slice(0, Math.ceil(keys.length / 4)).forEach(k => delete cache[k]);
-      savePosterCache(cache);
-    }
-  } catch (e) { /* tainted canvas (CORS hiccup on this one cover) — skip it */ }
+    const k = posterCacheKey(type, mediaId);
+    rememberSessionImg([
+      k,
+      img.currentSrc || '',
+      img.src || '',
+      img.dataset.coverXl || '',
+      img.dataset.coverLg || '',
+      img.dataset.coverMd || '',
+    ], dataUrl);
+    savePosterEntry(k, dataUrl);
+  } catch (e) { /* tainted canvas — skip */ }
 }
 function slimCover(ci) {
   if (!ci) return null;
@@ -9881,6 +12713,7 @@ function slimUser(u) {
     name: u.name,
     avatar: u.avatar,
     bannerImage: u.bannerImage,
+    about: u.about || null,
     unreadNotificationCount: u.unreadNotificationCount,
     statistics: u.statistics,
   };
@@ -9932,13 +12765,21 @@ function _saveListSnapshotNow(opts) {
     } catch (e) {}
   }
   try {
+    try { injectOfflineCoversIntoLists(); } catch (e) {}
+    const backlogOut = (lastBacklogRows || []).map(r => {
+      const d = (r && r.mediaId && typeof cachedPosterFor === 'function')
+        ? cachedPosterFor('ANIME', r.mediaId) : null;
+      if (d) return Object.assign({}, r, { cover: d });
+      return r;
+    });
     const payload = {
       savedAt: Date.now(),
       user: slimUser(cachedUserData),
       animeByTab: slimTabBuckets(animeByTab),
       mangaByTab: slimTabBuckets(mangaByTab),
-      backlog: lastBacklogRows,
+      backlog: backlogOut,
     };
+    try { saveOfflineCoverPack(); } catch (e) {}
     localStorage.setItem(LIST_SNAPSHOT_KEY(), JSON.stringify(payload));
     snapshotSavedAt = payload.savedAt;
   } catch (e) {
@@ -9984,7 +12825,19 @@ function applyListBuckets(anime, manga) {
 function applyUserChrome(user) {
   if (!user) return;
   cachedUserData = user;
-  const avatarUrl = user.avatar?.large || user.avatar?.medium;
+  try {
+    const pack = readProfilePack();
+    if (pack && pack.user) {
+      if (!cachedUserData.about && pack.user.about) cachedUserData.about = pack.user.about;
+      if (pack.avatarData) {
+        cachedUserData.avatar = Object.assign({}, cachedUserData.avatar || {}, {
+          large: pack.avatarData, medium: pack.avatarData
+        });
+      }
+    }
+  } catch (e) {}
+  const avatarUrl = (cachedUserData.avatar?.large || cachedUserData.avatar?.medium ||
+    user.avatar?.large || user.avatar?.medium || '');
   if (avatarUrl) {
     const avatarImg = document.getElementById('avatarImg');
     if (avatarImg) {
@@ -9992,6 +12845,11 @@ function applyUserChrome(user) {
       avatarImg.style.display = 'block';
     }
   }
+  try {
+    if (typeof isBrowserOnline === 'function' ? isBrowserOnline() : navigator.onLine) {
+      setTimeout(() => { try { cacheProfilePack(cachedUserData); } catch (e) {} }, 800);
+    }
+  } catch (e) {}
   const notifBtn = document.getElementById('notifBtn');
   if (notifBtn) {
     if (hasToken()) {
@@ -10010,11 +12868,35 @@ function applySnapshot(snap) {
   applyUserChrome(snap.user);
   snapshotSavedAt = snap.savedAt || null;
   lastBacklogRows = Array.isArray(snap.backlog) ? snap.backlog : [];
+  // Seed memory from data-URL covers already stored in the snapshot / pack
+  try {
+    const seed = (entries, type) => {
+      (entries || []).forEach(e => {
+        const id = e && e.media && e.media.id;
+        const c = e && e.media && e.media.coverImage &&
+          (e.media.coverImage.extraLarge || e.media.coverImage.large);
+        if (id != null && c && String(c).indexOf('data:') === 0) {
+          savePosterEntry(posterCacheKey(type, id), c);
+        }
+      });
+    };
+    seed(snap.animeByTab && snap.animeByTab.CURRENT, 'ANIME');
+    seed(snap.mangaByTab && snap.mangaByTab.CURRENT, 'MANGA');
+    (snap.backlog || []).forEach(r => {
+      if (r && r.mediaId && r.cover && String(r.cover).indexOf('data:') === 0) {
+        savePosterEntry(posterCacheKey('ANIME', r.mediaId), r.cover);
+      }
+    });
+  } catch (e) {}
+  try { loadOfflineCoverPack(); } catch (e) {}
+  try { injectOfflineCoversIntoLists(); } catch (e) {}
   hasCachedData = true;
   listHydrated = true;
   updateHeader();
   renderSortCapsule();
   renderCards();
+  try { schedulePosterCaching(); } catch (e) {}
+  try { setTimeout(function(){ try { warmMissingPosterCache(); } catch(e){} }, 500); } catch (e) {}
   const subLine = document.getElementById('subLine');
   if (subLine && snap.savedAt) {
     const when = new Date(snap.savedAt).toLocaleString('en-GB', {
@@ -10199,18 +13081,38 @@ async function load() {
     replaceSnapshotAfterFullLoad();
     try { setTimeout(function () { flushPendingMalSync(); }, 2000); } catch (e) {}
 
+    // Proactively warm the offline poster cache for every CURRENT/PAUSED/PLANNING
+    // entry (not just whatever happens to scroll into view) and pre-cache the
+    // Unwatched/backlog covers too, so offline mode doesn't depend on the user
+    // having manually visited every tab or the backlog popup beforehand.
+    try { warmMissingPosterCache(); } catch (e) {}
+    try { warmBacklogForOffline(); } catch (e) {}
+
 
   } catch (err) {
+    // Last-chance: if boot raced, still try to paint a stored snapshot
+    if (!hasCachedData) {
+      try {
+        const snap = (typeof readListSnapshot === 'function') ? readListSnapshot() : null;
+        if (snap) applySnapshot(snap);
+      } catch (e) {}
+    }
     if (hasCachedData) {
       const when = snapshotSavedAt
         ? new Date(snapshotSavedAt).toLocaleString('en-GB', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' })
         : null;
       const offline = (typeof navigator !== 'undefined' && navigator.onLine === false);
+      const msg = (err && err.message) ? String(err.message) : '';
+      const soft = /abort|timed out|Failed to fetch|NetworkError/i.test(msg);
       subLine.textContent = when
-        ? ((offline ? 'Offline · snapshot ' : 'Refresh failed — snapshot from ') + when)
+        ? ((offline ? 'Offline · snapshot ' : (soft ? 'Refresh delayed — snapshot ' : 'Refresh failed — snapshot from ')) + when)
         : (offline ? 'Offline — showing saved list' : 'Refresh failed — showing last loaded data.');
     } else {
-      listEl.innerHTML = '<div class="state err">Could not load list — ' + err.message + '</div>';
+      const msg = (err && err.message) ? String(err.message) : 'Unknown error';
+      const pretty = /abort/i.test(msg) ? 'Connection interrupted — try again'
+        : /timed out/i.test(msg) ? 'Request timed out — try again'
+        : msg;
+      listEl.innerHTML = '<div class="state err">Could not load list — ' + pretty + '</div>';
       subLine.textContent = 'Failed to fetch.';
     }
   } finally {
@@ -10286,23 +13188,45 @@ async function checkForNewEpisodeNotifications() {
   fresh.forEach(r => notified.add(`${r.mediaId}:${r.episode}`));
   saveNotifiedEpisodes(notified);
 
+  // Android WebViews often ignore remote URLs for notification images —
+  // rasterize cover to a data-URL. Use cover for both icon + image so the
+  // large right-side slot is the title art on ColorOS / stock Android.
+  const coverImg = await resolveNotifCoverImage(latest.mediaId, latest.cover);
+
+  const notifOpts = {
+    body: 'Just aired',
+    icon: coverImg,
+    badge: TRACKER_NOTIF_ICON,
+    image: coverImg,
+    tag: 'anilist-tracker-latest',
+    renotify: true,
+  };
+
   try {
-    new Notification(`${latest.title} — Episode ${latest.episode}`, {
-      body: 'Just aired',
-      icon: TRACKER_NOTIF_ICON,
-      badge: TRACKER_NOTIF_ICON,
-      // image is shown as large picture on some Android skins
-      image: TRACKER_NOTIF_ICON,
-      tag: 'anilist-tracker-latest',
-      renotify: true,
-    });
+    if (navigator.serviceWorker) {
+      try {
+        const reg = await Promise.race([
+          navigator.serviceWorker.ready,
+          new Promise((_, rej) => setTimeout(() => rej(new Error('sw-timeout')), 1200)),
+        ]);
+        if (reg && reg.showNotification) {
+          await reg.showNotification(`${latest.title} — Episode ${latest.episode}`, notifOpts);
+          return;
+        }
+      } catch (e) {}
+    }
+  } catch (e) {}
+
+  try {
+    new Notification(`${latest.title} — Episode ${latest.episode}`, notifOpts);
   } catch (e) {
     try {
       new Notification(`${latest.title} — Episode ${latest.episode}`, {
         body: 'Just aired',
+        icon: coverImg,
         tag: 'anilist-tracker-latest',
       });
-    } catch (e2) { /* WebView may block notifications entirely */ }
+    } catch (e2) {}
   }
 }
 
@@ -10391,46 +13315,67 @@ async function runScheduledNotifCheckIfDue(force) {
 }
 
 function initEpisodeNotifications() {
-  const tick = () => { runScheduledNotifCheckIfDue(false); };
+  // AppMint / ColorOS: background timers are killed. Rely on
+  // (1) every open/focus check  (2) foreground interval  (3) 6h checkpoints
+  // checkForNewEpisodeNotifications() already de-dupes via notified set.
+  const softTick = () => { runScheduledNotifCheckIfDue(false); };
+  const hardTick = () => {
+    try { checkForNewEpisodeNotifications(); } catch (e) {}
+  };
 
-  // On boot: if a 6h window is due, check once
-  tick();
+  // Boot — always scan backlog for newly aired eps (not only at 03/09/15/21)
+  hardTick();
+  softTick();
 
-  // Align a timer to the next 03/09/15/21 checkpoint
+  // Align a timer to the next 03/09/15/21 checkpoint while process lives
   let timer = null;
   const arm = () => {
     if (timer) clearTimeout(timer);
-    const ms = Math.max(15 * 1000, nextNotifCheckpoint() - Date.now() + 2000);
+    const ms = Math.max(30 * 1000, nextNotifCheckpoint() - Date.now() + 2000);
     timer = setTimeout(async () => {
-      await runScheduledNotifCheckIfDue(false);
+      try { await checkForNewEpisodeNotifications(); } catch (e) {}
+      markScheduledNotifCheckDone();
       arm();
     }, ms);
   };
   arm();
 
-  // Safety net — timers are heavily throttled in background on ColorOS
-  setInterval(tick, 30 * 60 * 1000);
+  // Foreground safety net every 15 min (WebView keeps this while app is open)
+  setInterval(() => {
+    if (document.visibilityState === 'visible') hardTick();
+  }, 15 * 60 * 1000);
+
+  // Coarser net for when OS throttles (still often blocked when fully killed)
+  setInterval(softTick, 30 * 60 * 1000);
 
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') tick();
+    if (document.visibilityState === 'visible') hardTick();
   });
-  window.addEventListener('focus', tick);
+  window.addEventListener('focus', hardTick);
+  window.addEventListener('online', () => { setTimeout(hardTick, 1500); });
+  document.addEventListener('resume', hardTick, false); // Cordova / some WebViews
 
-  // Periodic Background Sync (Chrome/Android when granted) — every ≥6h
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.ready.then((reg) => {
       try {
         if (reg.periodicSync && typeof reg.periodicSync.register === 'function') {
+          // Request the shortest the browser allows (Chrome often floors at ~1h–12h)
           reg.periodicSync.register('episode-check', {
-            minInterval: 6 * 60 * 60 * 1000,
-          }).catch(() => { /* unsupported / permission */ });
+            minInterval: 60 * 60 * 1000,
+          }).catch(() => {
+            try {
+              reg.periodicSync.register('episode-check', {
+                minInterval: 6 * 60 * 60 * 1000,
+              }).catch(() => {});
+            } catch (e2) {}
+          });
         }
       } catch (e) {}
     }).catch(() => {});
 
     navigator.serviceWorker.addEventListener('message', (ev) => {
       if (ev && ev.data && ev.data.type === 'episode-check') {
-        runScheduledNotifCheckIfDue(true);
+        hardTick();
       }
     });
   }
@@ -10597,16 +13542,31 @@ function initGuestTip() {
         || parseSnap(localStorage.getItem('anilistListSnapshot:' + USERNAME));
     } catch (e) { snap = null; }
   }
+  // Apply snapshot SYNCHRONOUSLY so load() sees hasCachedData and never
+  // blank-screens if a network refresh fails.
+  try { loadOfflineCoverPack(); } catch (e) {}
   if (snap) {
     try {
       applySnapshot(snap);
-      // listHydrated already true from applySnapshot
     } catch (e) {
       console.warn('Snapshot restore failed', e);
       listHydrated = false;
       hasCachedData = false;
     }
   }
+  // Hydrate IDB covers in the background (non-blocking)
+  try {
+    if (typeof hydratePosterCache === 'function') {
+      hydratePosterCache().then(() => {
+        try { injectOfflineCoversIntoLists(); } catch (e) {}
+        try {
+          if (hasCachedData && typeof renderCards === 'function') {
+            renderCards({ skipDeal: true });
+          }
+        } catch (e) {}
+      }).catch(() => {});
+    }
+  } catch (e) {}
 })();
 
 function isBrowserOnline() {
@@ -10770,15 +13730,35 @@ query($threadId: Int) {
 const SAVE_THREAD_COMMENT_M = `
 mutation($threadId: Int!, $comment: String!) {
   SaveThreadComment(threadId: $threadId, comment: $comment) {
-    id comment(asHtml: true) createdAt likeCount
+    id comment(asHtml: true) createdAt likeCount isLiked
     user { id name avatar { large } }
   }
 }`;
 const SAVE_THREAD_REPLY_M = `
 mutation($threadId: Int!, $comment: String!, $parentCommentId: Int!) {
   SaveThreadComment(threadId: $threadId, comment: $comment, parentCommentId: $parentCommentId) {
-    id comment(asHtml: true) createdAt likeCount
+    id comment(asHtml: true) createdAt likeCount isLiked
     user { id name avatar { large } }
+  }
+}`;
+
+const TOGGLE_LIKE_M = `
+mutation($id: Int, $type: LikeableType) {
+  ToggleLikeV2(id: $id, type: $type) {
+    __typename
+    ... on ThreadComment {
+      id likeCount isLiked
+    }
+    ... on Thread {
+      id likeCount isLiked
+    }
+  }
+}`;
+
+const RATE_REVIEW_M = `
+mutation($reviewId: Int, $rating: ReviewRating) {
+  RateReview(reviewId: $reviewId, rating: $rating) {
+    id rating ratingAmount userRating
   }
 }`;
 
@@ -10836,6 +13816,16 @@ function parseChildComments(raw) {
   return [];
 }
 
+function renderCommentLikeBtn(id, likeCount, isLiked, likeType) {
+  const count = likeCount || 0;
+  const liked = !!isLiked;
+  const label = count ? ('♥ ' + count) : '♥';
+  if (!hasToken()) {
+    return `<span class="comment-like${liked ? ' is-liked' : ''}">${label}</span>`;
+  }
+  return `<button type="button" class="comment-like${liked ? ' is-liked' : ''}" data-like-id="${id}" data-like-type="${likeType || 'THREAD_COMMENT'}" data-liked="${liked ? '1' : '0'}" data-like-count="${count}" aria-label="${liked ? 'Unlike' : 'Like'}">${label}</button>`;
+}
+
 function renderCommentNode(c, depth) {
   depth = depth || 0;
   const user = c.user || {};
@@ -10846,6 +13836,7 @@ function renderCommentNode(c, depth) {
   const replyBtn = (!c.isLocked && hasToken())
     ? `<button type="button" class="comment-reply-btn" data-comment-id="${c.id}" data-comment-user="${name}">Reply</button>`
     : '';
+  const likeBtn = renderCommentLikeBtn(c.id, c.likeCount, c.isLiked, 'THREAD_COMMENT');
   let html = `
     <div class="comment-item${depth ? ' is-reply' : ''}" data-comment-id="${c.id}">
       <div class="comment-meta">
@@ -10856,7 +13847,7 @@ function renderCommentNode(c, depth) {
       <div class="comment-body">${body || '<span style="opacity:.5">—</span>'}</div>
       <div class="comment-actions">
         ${replyBtn}
-        <span class="comment-like">${c.likeCount ? '♥ ' + c.likeCount : ''}</span>
+        ${likeBtn}
       </div>
     </div>`;
   kids.forEach(ch => { html += renderCommentNode(ch, depth + 1); });
@@ -11101,6 +14092,84 @@ function wireCommentReplies() {
   });
 }
 
+
+function updateLikeButtonEl(btn, likeCount, isLiked) {
+  if (!btn) return;
+  const count = likeCount || 0;
+  btn.dataset.likeCount = String(count);
+  btn.dataset.liked = isLiked ? '1' : '0';
+  btn.classList.toggle('is-liked', !!isLiked);
+  btn.textContent = count ? ('♥ ' + count) : '♥';
+  btn.setAttribute('aria-label', isLiked ? 'Unlike' : 'Like');
+}
+
+async function toggleLikeable(id, type, btn) {
+  if (!hasToken()) {
+    alert('Connect your AniList account to like.');
+    return;
+  }
+  if (!id || !type) return;
+  if (btn) btn.disabled = true;
+  const prevLiked = btn && btn.dataset.liked === '1';
+  const prevCount = btn ? (parseInt(btn.dataset.likeCount || '0', 10) || 0) : 0;
+  if (btn) {
+    const nextLiked = !prevLiked;
+    const nextCount = Math.max(0, prevCount + (nextLiked ? 1 : -1));
+    updateLikeButtonEl(btn, nextCount, nextLiked);
+  }
+  try {
+    const data = await gql(TOGGLE_LIKE_M, { id: parseInt(id, 10), type });
+    const node = data && data.ToggleLikeV2;
+    if (node && btn) updateLikeButtonEl(btn, node.likeCount, node.isLiked);
+  } catch (err) {
+    if (btn) updateLikeButtonEl(btn, prevCount, prevLiked);
+    alert('Could not like: ' + (err.message || err));
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+function appendLiveComment(created, parentId) {
+  if (!created || !created.id) return;
+  const list = document.getElementById('commentsList') || document.querySelector('.comments-list');
+  if (!list) return;
+  const empty = list.querySelector('.comments-empty');
+  if (empty) empty.remove();
+  const html = renderCommentNode(created, parentId ? 1 : 0);
+  const wrap = document.createElement('div');
+  wrap.innerHTML = html.trim();
+  const node = wrap.firstElementChild;
+  if (!node) return;
+  node.style.animation = 'none';
+  node.style.opacity = '0';
+  node.style.transition = 'opacity 0.25s ease';
+  if (parentId) {
+    const parent = list.querySelector('.comment-item[data-comment-id="' + parentId + '"]');
+    if (parent) parent.insertAdjacentElement('afterend', node);
+    else list.appendChild(node);
+  } else {
+    const op = list.querySelector('.comment-item.is-op');
+    if (op) op.insertAdjacentElement('afterend', node);
+    else list.insertBefore(node, list.firstChild);
+  }
+  requestAnimationFrame(() => { node.style.opacity = '1'; });
+  try { wireCommentActions(); } catch (e) {}
+  try { wireCommentLikes(); } catch (e) {}
+}
+
+function wireCommentLikes() {
+  const root = document.getElementById('commentsContent') || document;
+  root.querySelectorAll('button.comment-like[data-like-id]').forEach(btn => {
+    if (btn.dataset.likeWired === '1') return;
+    btn.dataset.likeWired = '1';
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleLikeable(btn.dataset.likeId, btn.dataset.likeType || 'THREAD_COMMENT', btn);
+    });
+  });
+}
+
 function wireCommentsCompose() {
   const send = document.getElementById('commentsSend');
   const input = document.getElementById('commentsInput');
@@ -11117,32 +14186,39 @@ function wireCommentsCompose() {
     const textVal = input.value.trim();
     if (!textVal) return;
     send.disabled = true;
+    const parentId = commentsState.replyToId && Number.isFinite(commentsState.replyToId)
+      ? commentsState.replyToId
+      : null;
     try {
-      const parentId = commentsState.replyToId && Number.isFinite(commentsState.replyToId)
-        ? commentsState.replyToId
-        : null;
+      let created = null;
       if (parentId) {
-        await gql(SAVE_THREAD_REPLY_M, {
+        const data = await gql(SAVE_THREAD_REPLY_M, {
           threadId: commentsState.threadId,
           comment: textVal,
           parentCommentId: parentId,
         });
+        created = data && data.SaveThreadComment;
       } else {
-        await gql(SAVE_THREAD_COMMENT_M, {
+        const data = await gql(SAVE_THREAD_COMMENT_M, {
           threadId: commentsState.threadId,
           comment: textVal,
         });
+        created = data && data.SaveThreadComment;
       }
       input.value = '';
       commentsState.replyToId = null;
       commentsState.replyToName = '';
-      await openThreadView(commentsState.threadId);
+      const hint = document.getElementById('commentsComposeHint');
+      if (hint) hint.textContent = hasToken() ? 'Markdown ok' : 'Connect AniList to post comments';
+      if (created) appendLiveComment(created, parentId);
+      else await openThreadView(commentsState.threadId);
     } catch (err) {
       const msg = String(err.message || err);
       const tip = /validat|auth|unauthorized|login/i.test(msg)
-        ? '\\n\\nTip: reconnect AniList from the avatar menu if the token is old.'
+        ? '\n\nTip: reconnect AniList from the avatar menu if the token is old.'
         : '';
       alert('Could not post: ' + msg + tip);
+    } finally {
       send.disabled = false;
     }
   };
@@ -11154,7 +14230,7 @@ query($mediaId: Int, $page: Int) {
   Page(page: $page, perPage: 20) {
     pageInfo { hasNextPage }
     reviews(mediaId: $mediaId, sort: RATING_DESC) {
-      id summary body(asHtml: true) score rating ratingAmount createdAt siteUrl
+      id summary body(asHtml: true) score rating ratingAmount userRating createdAt siteUrl
       user { id name avatar { large } }
     }
   }
@@ -11227,10 +14303,49 @@ function renderReviewFull(r) {
       </div>
       <div class="comment-body review-body">${body || '<span style="opacity:.5">—</span>'}</div>
       <div class="comment-actions">
-        ${helpful ? `<span class="comment-like">${escapeHtml(helpful)}</span>` : ''}
+        ${helpful ? `<span class="comment-like" style="cursor:default">${escapeHtml(helpful)}</span>` : ''}
+        ${hasToken() ? `<button type="button" class="comment-like review-like-btn${r.userRating === 'UP_VOTE' ? ' is-liked' : ''}" data-review-id="${r.id}" data-user-rating="${r.userRating || 'NO_VOTE'}" aria-label="Mark helpful">♥ Helpful</button>` : ''}
         ${r.siteUrl ? `<a href="${r.siteUrl}" target="_blank" rel="noopener" class="comment-like" style="margin-left:auto">AniList ↗</a>` : ''}
       </div>
     </div>`;
+}
+
+
+function wireReviewLikes() {
+  document.querySelectorAll('button.review-like-btn[data-review-id]').forEach(btn => {
+    if (btn.dataset.likeWired === '1') return;
+    btn.dataset.likeWired = '1';
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!hasToken()) {
+        alert('Connect your AniList account to rate reviews.');
+        return;
+      }
+      const id = parseInt(btn.dataset.reviewId, 10);
+      const cur = btn.dataset.userRating || 'NO_VOTE';
+      const next = cur === 'UP_VOTE' ? 'NO_VOTE' : 'UP_VOTE';
+      btn.disabled = true;
+      try {
+        const data = await gql(RATE_REVIEW_M, { reviewId: id, rating: next });
+        const rr = data && data.RateReview;
+        if (rr) {
+          btn.dataset.userRating = rr.userRating || next;
+          btn.classList.toggle('is-liked', (rr.userRating || next) === 'UP_VOTE');
+          // Update helpful summary if present
+          const item = btn.closest('.review-item');
+          const summary = item && item.querySelector('.comment-like:not(button):not(a)');
+          if (summary && rr.rating != null && rr.ratingAmount != null) {
+            summary.textContent = rr.rating + '/' + rr.ratingAmount + ' found helpful';
+          }
+        }
+      } catch (err) {
+        alert('Could not rate review: ' + (err.message || err));
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  });
 }
 
 function renderReviewsChrome(bodyHtml) {
@@ -11306,6 +14421,7 @@ async function openReviewsPanel(mediaId, mediaTitle, mediaType) {
 
   content.innerHTML = renderReviewsChrome(
     '<div class="state loading-state"><div class="cradle-loader"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div><div class="loading-label">Loading</div></div>');
+    try { wireReviewLikes(); } catch (e) {}
   overlay.hidden = false;
   requestAnimationFrame(() => overlay.classList.add('open'));
 
