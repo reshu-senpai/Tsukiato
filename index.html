@@ -3907,7 +3907,267 @@ button.comment-like:disabled { opacity: 0.55; cursor: default; }
   font-weight: 500;
 }
 
+/* ── Local manga library (folder scan) ─────────────────── */
+.local-fab {
+  position: fixed; right: 16px; bottom: 88px; z-index: 90;
+  width: 48px; height: 48px; border-radius: 50%;
+  border: 1px solid rgba(217,79,128,0.45);
+  background: rgba(217,79,128,0.92); color: #fff;
+  display: none; align-items: center; justify-content: center;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  cursor: pointer;
+}
+.local-fab.visible { display: flex; }
+.local-fab:active { transform: scale(0.94); }
+.local-fab svg { width: 22px; height: 22px; }
 
+.local-overlay {
+  position: fixed; inset: 0; z-index: 120;
+  background: rgba(0,0,0,0.45);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.28s ease;
+}
+.local-overlay.open {
+  opacity: 1; pointer-events: auto;
+}
+.local-overlay[hidden] { display: none !important; }
+.local-page {
+  position: absolute; left: 0; right: 0; bottom: 0; top: 6%;
+  width: 100%; max-width: none; max-height: none;
+  background: rgb(var(--card-rgb, 28 26 36));
+  color: rgb(var(--ink-rgb, 232 230 240));
+  border-radius: 18px 18px 0 0;
+  border: 1px solid rgba(217,79,128,0.28);
+  display: flex; flex-direction: column;
+  transform: translateY(105%);
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  overflow: hidden;
+}
+.local-overlay.open .local-page { transform: translateY(0); }
+.local-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 16px 10px; border-bottom: 1px solid rgba(232,230,240,0.08);
+}
+.local-head h2 { flex: 1; margin: 0; font-size: 16px; font-weight: 650; }
+.local-head button {
+  border: none; background: rgba(232,230,240,0.08); color: inherit;
+  width: 34px; height: 34px; border-radius: 50%; font-size: 18px; cursor: pointer;
+}
+.local-actions { display: flex; gap: 8px; padding: 10px 16px; flex-wrap: wrap; }
+.local-actions button, .local-actions label {
+  border: 1px solid rgba(217,79,128,0.35);
+  background: rgba(217,79,128,0.12); color: var(--rose, #d94f80);
+  border-radius: 999px; padding: 8px 12px; font-size: 12px; font-weight: 600;
+  cursor: pointer;
+}
+.local-lib {
+  flex: 1; overflow: auto; padding: 8px 16px 24px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.local-series {
+  display: flex; gap: 12px; align-items: center;
+  padding: 10px; border-radius: 12px;
+  background: rgba(232,230,240,0.04);
+  border: 1px solid rgba(232,230,240,0.06);
+  cursor: pointer; text-align: left; color: inherit; width: 100%;
+}
+.local-series-cover {
+  width: 48px; height: 64px; border-radius: 6px;
+  background: rgba(0,0,0,0.25) center/cover no-repeat; flex-shrink: 0;
+}
+.local-series-meta { flex: 1; min-width: 0; }
+.local-series-title { font-size: 13px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.local-series-sub { font-size: 11px; opacity: 0.6; margin-top: 2px; }
+.local-empty { text-align: center; opacity: 0.55; padding: 28px 12px; font-size: 13px; line-height: 1.5; }
+
+/* Title detail inside local library */
+.local-title-view { padding: 0 0 20px; }
+.local-title-card {
+  display: flex; gap: 12px; padding: 12px 16px 8px; align-items: flex-start;
+}
+.local-title-card img {
+  width: 72px; height: 100px; object-fit: cover; border-radius: 8px;
+  background: rgba(0,0,0,0.25);
+}
+.local-title-info { flex: 1; min-width: 0; }
+.local-title-info h3 { margin: 0 0 4px; font-size: 15px; font-weight: 700; }
+.local-title-info .local-title-meta { font-size: 11px; opacity: 0.65; line-height: 1.4; }
+.local-unit-toggle {
+  display: inline-flex; gap: 4px; margin-top: 8px;
+  background: rgba(232,230,240,0.06); border-radius: 999px; padding: 3px;
+}
+.local-unit-toggle button {
+  border: none; background: transparent; color: inherit;
+  font-size: 11px; font-weight: 650; padding: 5px 10px; border-radius: 999px; cursor: pointer;
+}
+.local-unit-toggle button.active {
+  background: rgba(217,79,128,0.22); color: var(--rose);
+}
+.local-ch-list { padding: 8px 16px 16px; display: flex; flex-direction: column; gap: 6px; }
+.local-ch-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 12px;
+  border: 1px solid rgba(232,230,240,0.08);
+  background: rgba(232,230,240,0.03);
+  color: inherit; text-align: left; width: 100%;
+  font-size: 13px; cursor: default; opacity: 0.4;
+}
+.local-ch-row.available {
+  opacity: 1; cursor: pointer;
+  border-color: rgba(217,79,128,0.35);
+  background: rgba(217,79,128,0.08);
+}
+.local-ch-row.available:active { transform: scale(0.99); }
+.local-ch-row .ch-num { color: var(--rose); font-weight: 700; min-width: 2.2em; }
+.local-ch-row .ch-name { flex: 1; }
+.local-ch-row .ch-badge {
+  font-size: 10px; padding: 2px 7px; border-radius: 999px;
+  background: rgba(217,79,128,0.2); color: var(--rose);
+}
+.local-ch-row:not(.available) .ch-badge {
+  background: rgba(232,230,240,0.08); color: inherit; opacity: 0.7;
+}
+
+.local-reader {
+  position: fixed; inset: 0; z-index: 140;
+  background: #000; color: #f2f2f5;
+  display: flex; flex-direction: column;
+  touch-action: manipulation;
+  overflow: hidden;
+}
+.local-reader[hidden] { display: none !important; }
+.local-reader.bg-gray { background: #2a2a2e; }
+.local-reader.bg-white { background: #f4f4f6; color: #111; }
+.local-reader-chrome {
+  position: absolute; left: 0; right: 0; z-index: 5;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.88), rgba(0,0,0,0));
+  padding: 10px 12px 32px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.local-reader-chrome.show { opacity: 1; pointer-events: auto; }
+.local-reader-chrome.bottom {
+  top: auto; bottom: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.92), rgba(0,0,0,0));
+  padding: 28px 12px 16px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.local-reader-bar {
+  display: flex; align-items: center; gap: 8px; width: 100%;
+}
+.local-reader-bar button, .local-reader-chrome button {
+  border: none; background: rgba(255,255,255,0.12); color: #fff;
+  min-width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 15px;
+}
+.local-reader.bg-white .local-reader-bar button,
+.local-reader.bg-white .local-reader-chrome button { color: #111; background: rgba(0,0,0,0.08); }
+.local-reader-title { flex: 1; font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.local-reader-pages {
+  flex: 1; overflow: auto; -webkit-overflow-scrolling: touch; background: transparent;
+  position: relative; z-index: 1;
+}
+.local-reader-pages.mode-ltr, .local-reader-pages.mode-rtl {
+  display: flex; flex-direction: row; overflow-x: auto; overflow-y: hidden;
+  scroll-snap-type: x mandatory; height: 100%;
+}
+.local-reader-pages.mode-rtl { flex-direction: row-reverse; }
+.local-reader-pages.mode-vertical img,
+.local-reader-pages.mode-webtoon img {
+  display: block; width: 100%; height: auto; margin: 0 auto; background: transparent;
+  max-width: 100%;
+}
+.local-reader-pages.scale-fit img {
+  width: auto !important; max-width: 100%; max-height: 100vh; object-fit: contain;
+}
+.local-reader-pages.crop-borders img {
+  object-fit: cover; width: 100%;
+}
+.local-reader-pages.mode-ltr img, .local-reader-pages.mode-rtl img {
+  flex: 0 0 100%; width: 100%; height: 100%; object-fit: contain;
+  scroll-snap-align: center; background: transparent;
+}
+.local-reader-slider-row {
+  display: flex; align-items: center; gap: 8px; width: 100%;
+}
+.local-reader-slider {
+  flex: 1; height: 28px; margin: 0;
+  accent-color: #d94f80;
+  touch-action: none;
+}
+.local-reader-meta { font-size: 12px; opacity: 0.85; text-align: center; width: 100%; font-weight: 600; }
+.local-reader-modes {
+  display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;
+}
+.local-reader-modes button {
+  border-radius: 999px !important; min-width: 0 !important;
+  padding: 0 10px !important; height: 30px !important; font-size: 11px !important; font-weight: 650;
+}
+.local-reader-modes button.active { background: rgba(217,79,128,0.55) !important; }
+.local-reader-tools {
+  display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;
+}
+.local-reader-tools button {
+  border-radius: 999px !important; min-width: 0 !important;
+  padding: 0 10px !important; height: 30px !important; font-size: 11px !important; font-weight: 650;
+}
+.local-reader-tools button.active { background: rgba(217,79,128,0.45) !important; }
+.local-reader-brightness {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: #000; opacity: 0;
+}
+.local-reader-toast {
+  position: absolute; left: 50%; top: 18%; transform: translateX(-50%);
+  z-index: 6; background: rgba(0,0,0,0.72); color: #fff;
+  border: 1px solid rgba(217,79,128,0.4); border-radius: 999px;
+  padding: 8px 14px; font-size: 12px; font-weight: 650;
+  opacity: 0; transition: opacity 0.25s ease; pointer-events: none;
+  white-space: nowrap;
+}
+.local-reader-toast.show { opacity: 1; }
+.local-reader-settings {
+  position: absolute; right: 12px; top: 56px; z-index: 7;
+  width: min(280px, calc(100vw - 24px));
+  background: rgba(20,18,26,0.96); border: 1px solid rgba(217,79,128,0.35);
+  border-radius: 14px; padding: 12px; color: #f2f2f5;
+  display: none; flex-direction: column; gap: 10px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.45);
+}
+.local-reader-settings.open { display: flex; }
+.local-reader-settings h4 {
+  margin: 0; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--rose, #d94f80);
+}
+.local-reader-settings label {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  font-size: 12px;
+}
+.local-reader-settings input[type="range"] { flex: 1; accent-color: #d94f80; }
+.local-reader-settings select {
+  background: rgba(255,255,255,0.08); color: inherit; border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px; padding: 4px 8px; font-size: 12px;
+}
+.local-reader-ch-drawer {
+  position: absolute; left: 0; top: 0; bottom: 0; z-index: 7;
+  width: min(280px, 82vw);
+  background: rgba(16,14,22,0.97); border-right: 1px solid rgba(217,79,128,0.3);
+  transform: translateX(-105%); transition: transform 0.28s ease;
+  display: flex; flex-direction: column; padding: 12px;
+}
+.local-reader-ch-drawer.open { transform: translateX(0); }
+.local-reader-ch-drawer h4 { margin: 0 0 8px; color: var(--rose,#d94f80); font-size: 13px; }
+.local-reader-ch-list { flex: 1; overflow: auto; display: flex; flex-direction: column; gap: 4px; }
+.local-reader-ch-list button {
+  text-align: left; border: none; background: rgba(255,255,255,0.04); color: #eee;
+  padding: 10px 10px; border-radius: 10px; font-size: 12px; cursor: pointer;
+}
+.local-reader-ch-list button.active { background: rgba(217,79,128,0.25); color: #fff; }
+.local-reader-page-pill {
+  position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%);
+  z-index: 3; background: rgba(0,0,0,0.55); color: #fff;
+  border-radius: 999px; padding: 4px 10px; font-size: 11px; font-weight: 650;
+  pointer-events: none; opacity: 0.85;
+}
+.local-reader.chrome-hidden .local-reader-page-pill { opacity: 0.55; }
 </style>
 </head>
 <body>
@@ -4192,6 +4452,90 @@ button.comment-like:disabled { opacity: 0.55; cursor: default; }
     <span id="fetchTime">—</span>
   </div>
 
+</div>
+
+<button type="button" class="local-fab" id="localReaderFab" aria-label="Local manga library" title="Local manga">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/><path d="M12 6v8"/><path d="M8 10h8"/></svg>
+</button>
+
+<div class="local-overlay" id="localLibOverlay" hidden>
+  <div class="local-page" role="dialog" aria-modal="true" aria-label="Local manga">
+    <div class="local-head">
+      <button type="button" id="localLibBack" aria-label="Back" hidden>←</button>
+      <h2 id="localLibTitle">Local manga</h2>
+      <button type="button" id="localLibClose" aria-label="Close">×</button>
+    </div>
+    <div class="local-actions" id="localLibActions">
+      <label class="local-file-label" id="localPickFolderBtn" for="localFolderInput">Choose folder</label>
+      <label class="local-file-label" for="localFilesInput">Pick files</label>
+      <button type="button" id="localRescanBtn">Rescan</button>
+      <button type="button" id="localProbeNativeBtn">Probe APIs</button>
+      <input type="file" id="localFolderInput" webkitdirectory directory multiple style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden">
+      <input type="file" id="localFilesInput" accept=".cbz,.zip,image/*,application/zip" multiple style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden">
+    </div>
+    <div id="localPickerHint" class="local-empty" style="padding:8px 16px 0;font-size:11px;display:none"></div>
+    <div class="local-lib" id="localLibList">
+      <div class="local-empty">Choose a folder that contains one subfolder per manga title.<br>Each title folder can hold .cbz, .zip, or chapter image folders.</div>
+    </div>
+  </div>
+</div>
+
+<div class="local-reader" id="localReader" hidden>
+  <div class="local-reader-brightness" id="localReaderBrightness"></div>
+  <div class="local-reader-toast" id="localReaderToast"></div>
+  <div class="local-reader-chrome top" id="localReaderChromeTop">
+    <div class="local-reader-bar">
+      <button type="button" id="localReaderClose" aria-label="Close">×</button>
+      <button type="button" id="localReaderChList" aria-label="Chapters" title="Chapters">☰</button>
+      <div class="local-reader-title" id="localReaderTitle">Reading</div>
+      <button type="button" id="localReaderSettingsBtn" aria-label="Settings" title="Settings">⚙</button>
+      <button type="button" id="localReaderSync" aria-label="Sync progress" title="Sync to list">↑</button>
+    </div>
+  </div>
+  <div class="local-reader-ch-drawer" id="localReaderChDrawer">
+    <h4>On device</h4>
+    <div class="local-reader-ch-list" id="localReaderChList"></div>
+  </div>
+  <div class="local-reader-settings" id="localReaderSettings">
+    <h4>Reader settings</h4>
+    <label>Brightness <input type="range" id="localBrightSlider" min="0" max="70" value="0"></label>
+    <label>Background
+      <select id="localBgSelect">
+        <option value="black">Black</option>
+        <option value="gray">Gray</option>
+        <option value="white">White</option>
+      </select>
+    </label>
+    <label>Scale
+      <select id="localScaleSelect">
+        <option value="width">Fit width</option>
+        <option value="fit">Fit screen</option>
+      </select>
+    </label>
+    <label>Crop borders <input type="checkbox" id="localCropBorders"></label>
+    <label>Keep screen on <input type="checkbox" id="localKeepScreen" checked></label>
+    <label>Show page pill <input type="checkbox" id="localPagePill" checked></label>
+  </div>
+  <div class="local-reader-pages mode-webtoon" id="localReaderPages"></div>
+  <div class="local-reader-page-pill" id="localReaderPagePill">1 / 1</div>
+  <div class="local-reader-chrome bottom" id="localReaderChromeBottom">
+    <div class="local-reader-meta" id="localReaderFoot">Page 1</div>
+    <div class="local-reader-slider-row">
+      <button type="button" id="localReaderPrevPage" aria-label="Prev page">‹</button>
+      <input type="range" class="local-reader-slider" id="localReaderSlider" min="0" max="0" value="0" step="1">
+      <button type="button" id="localReaderNextPage" aria-label="Next page">›</button>
+    </div>
+    <div class="local-reader-modes" id="localReaderModes">
+      <button type="button" data-mode="webtoon" class="active">Webtoon</button>
+      <button type="button" data-mode="vertical">Vertical</button>
+      <button type="button" data-mode="rtl">RTL</button>
+      <button type="button" data-mode="ltr">LTR</button>
+    </div>
+    <div class="local-reader-tools">
+      <button type="button" id="localReaderPrevCh">Prev ch</button>
+      <button type="button" id="localReaderNextCh">Next ch</button>
+    </div>
+  </div>
 </div>
 
 <div class="detail-overlay" id="detailOverlay" hidden>
@@ -5324,6 +5668,10 @@ async function setEntryProgressAbsolute(mediaId, newProgress, opts = {}) {
   saveListSnapshot(); // debounced
   if (found.bucket === dataByTab) refreshCardOrList(entry.media?.id || mediaId);
   pruneBacklogAfterWatch(entry.media?.id || mediaId, newProgress);
+  try {
+    const isManga = mediaType === 'MANGA';
+    prependLocalProfileActivity(entry, isManga ? 'read chapter' : 'watched episode', newProgress);
+  } catch (e) {}
 
   const writes = [];
   if (isAniListEntry) {
@@ -6041,6 +6389,7 @@ function updateTabLabels() {
 function setMediaMode(mode) {
   if (mode === mediaMode) return;
   mediaMode  = mode;
+  try { updateLocalFabVisibility(); } catch (e) {}
   dataByTab  = byTabForMode(mode);
   sortMode   = sortModeForMode(mode);
   document.querySelectorAll('#popupModeToggle .popup-mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
@@ -6253,7 +6602,7 @@ function bestCoverUrl(ci) {
 
 /** Load a remote cover into a data-URL (Android notifications often block http images). */
 function coverToDataUrl(url, maxDim) {
-  maxDim = maxDim || 320;
+  maxDim = maxDim || 768;
   if (!url) return Promise.resolve('');
   if (String(url).indexOf('data:') === 0) return Promise.resolve(url);
   return new Promise((resolve) => {
@@ -6261,17 +6610,21 @@ function coverToDataUrl(url, maxDim) {
     img.crossOrigin = 'anonymous';
     let done = false;
     const finish = (v) => { if (done) return; done = true; resolve(v || ''); };
-    const timer = setTimeout(() => finish(''), 2800);
+    const timer = setTimeout(() => finish(''), 5000);
     img.onload = () => {
       clearTimeout(timer);
       try {
+        // Keep high-DPI sharpness — notification image slots get upscaled on ColorOS
         const scale = Math.min(1, maxDim / Math.max(img.naturalWidth || 1, 1));
         const w = Math.max(1, Math.round((img.naturalWidth || maxDim) * scale));
         const h = Math.max(1, Math.round((img.naturalHeight || maxDim) * scale));
         const c = document.createElement('canvas');
         c.width = w; c.height = h;
-        c.getContext('2d').drawImage(img, 0, 0, w, h);
-        finish(c.toDataURL('image/jpeg', 0.85));
+        const ctx = c.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, w, h);
+        finish(c.toDataURL('image/jpeg', 0.92));
       } catch (e) { finish(''); }
     };
     img.onerror = () => { clearTimeout(timer); finish(''); };
@@ -6280,16 +6633,32 @@ function coverToDataUrl(url, maxDim) {
 }
 
 async function resolveNotifCoverImage(mediaId, coverUrl) {
-  // 1) Offline poster cache (already data-URL)
+  // Prefer sharp network extraLarge first — offline cache may be softer JPEG
+  const urls = [];
+  try {
+    const found = (typeof findListEntry === 'function' && mediaId)
+      ? findListEntry(mediaId) : null;
+    const ci = found && found.entry && found.entry.media && found.entry.media.coverImage;
+    if (ci) {
+      const best = ci.extraLarge || ci.large || ci.medium || '';
+      if (best) urls.push(best);
+    }
+  } catch (e) {}
+  if (coverUrl && urls.indexOf(coverUrl) < 0) urls.push(coverUrl);
+
+  for (let i = 0; i < urls.length; i++) {
+    const data = await coverToDataUrl(urls[i], 768);
+    if (data) return data;
+  }
+
+  // Fallback: offline poster cache
   try {
     if (mediaId && typeof cachedPosterFor === 'function') {
       const c = cachedPosterFor('ANIME', mediaId) || cachedPosterFor('MANGA', mediaId);
       if (c) return c;
     }
   } catch (e) {}
-  // 2) Rasterize network XL/large/medium into data-URL for WebView notifications
-  const data = await coverToDataUrl(coverUrl || '', 360);
-  if (data) return data;
+
   if (coverUrl) return coverUrl;
   return TRACKER_NOTIF_ICON;
 }
@@ -7399,8 +7768,8 @@ function populateAccountPopup(user, tabs) {
 }
 
 
-// ── Permanent offline profile pack (avatar GIF, banner, about) ─────────────
-// Recent activity is the only piece refetched each session when opening profile.
+// ── Permanent offline profile pack (avatar GIF, banner, about, activity) ──
+// Profile chrome is permanent offline; recent activity is cached + live-updated.
 const PROFILE_PACK_KEY = () => {
   try {
     if (typeof hasToken === 'function' && hasToken() && activeListUser)
@@ -7445,12 +7814,39 @@ function writeProfilePack(pack) {
       const slim = Object.assign({}, pack, { aboutImgMap: {} });
       localStorage.setItem(PROFILE_PACK_KEY(), JSON.stringify(slim));
       return true;
-    } catch (e2) { return false; }
+    } catch (e2) {
+      try {
+        const slim2 = Object.assign({}, pack, {
+          aboutImgMap: {},
+          aboutOfflineHtml: pack.aboutOfflineHtml || null,
+          activities: (pack.activities || []).slice(0, 4)
+        });
+        localStorage.setItem(PROFILE_PACK_KEY(), JSON.stringify(slim2));
+        return true;
+      } catch (e3) { return false; }
+    }
   }
 }
 
-async function cacheProfilePack(user) {
-  if (!user || (typeof isBrowserOnline === 'function' && !isBrowserOnline())) return null;
+function rewriteAboutHtmlWithMap(aboutHtml, aboutImgMap) {
+  if (!aboutHtml) return aboutHtml || '';
+  if (!aboutImgMap) return aboutHtml;
+  let out = String(aboutHtml);
+  Object.keys(aboutImgMap).forEach(src => {
+    const data = aboutImgMap[src];
+    if (!data || !src) return;
+    const esc = src.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    try {
+      out = out.replace(new RegExp('src=([\"\\\'])' + esc + '\\1', 'gi'), 'src=$1' + data + '$1');
+      out = out.replace(new RegExp('data-src=([\"\\\'])' + esc + '\\1', 'gi'), 'data-src=$1' + data + '$1');
+    } catch (e) {}
+  });
+  return out;
+}
+
+async function cacheProfilePack(user, extra) {
+  if (!user) return null;
+  const online = typeof isBrowserOnline === 'function' ? isBrowserOnline() : navigator.onLine;
   const prev = readProfilePack() || {};
   const pack = {
     savedAt: Date.now(),
@@ -7466,36 +7862,45 @@ async function cacheProfilePack(user) {
     avatarData: prev.avatarData || '',
     bannerData: prev.bannerData || '',
     aboutImgMap: Object.assign({}, prev.aboutImgMap || {}),
+    aboutOfflineHtml: prev.aboutOfflineHtml || null,
+    activities: Array.isArray(prev.activities) ? prev.activities.slice() : [],
     avatarSrc: prev.avatarSrc || '',
     bannerSrc: prev.bannerSrc || '',
   };
-
-  const av = user.avatar?.large || user.avatar?.medium || '';
-  if (av && (!pack.avatarData || pack.avatarSrc !== av)) {
-    const d = await urlToDataUrlPreserve(av);
-    if (d) { pack.avatarData = d; pack.avatarSrc = av; }
-  }
-  if (user.bannerImage && (!pack.bannerData || pack.bannerSrc !== user.bannerImage)) {
-    const d = await urlToDataUrlPreserve(user.bannerImage);
-    if (d) { pack.bannerData = d; pack.bannerSrc = user.bannerImage; }
+  if (extra && Array.isArray(extra.activities)) {
+    pack.activities = extra.activities.slice(0, 12);
   }
 
-  const aboutHtml = user.about || '';
-  if (aboutHtml) {
-    try {
-      const tmp = document.createElement('div');
-      tmp.innerHTML = aboutHtml;
-      const srcs = [];
-      tmp.querySelectorAll('img').forEach(img => {
-        const s = img.getAttribute('src') || img.getAttribute('data-src') || img.getAttribute('data-lazy-src') || '';
-        if (s && s.indexOf('data:') !== 0) srcs.push(s);
-      });
-      for (const s of srcs.slice(0, 24)) {
-        if (pack.aboutImgMap[s]) continue;
-        const d = await urlToDataUrlPreserve(s);
-        if (d) pack.aboutImgMap[s] = d;
-      }
-    } catch (e) {}
+  if (online) {
+    const av = user.avatar?.large || user.avatar?.medium || '';
+    if (av && (!pack.avatarData || pack.avatarSrc !== av)) {
+      const d = await urlToDataUrlPreserve(av);
+      if (d) { pack.avatarData = d; pack.avatarSrc = av; }
+    }
+    if (user.bannerImage && (!pack.bannerData || pack.bannerSrc !== user.bannerImage)) {
+      const d = await urlToDataUrlPreserve(user.bannerImage);
+      if (d) { pack.bannerData = d; pack.bannerSrc = user.bannerImage; }
+    }
+
+    const aboutHtml = user.about || pack.user.about || '';
+    if (aboutHtml) {
+      try {
+        const tmp = document.createElement('div');
+        tmp.innerHTML = aboutHtml;
+        const srcs = [];
+        tmp.querySelectorAll('img').forEach(img => {
+          const s = img.getAttribute('src') || img.getAttribute('data-src') || img.getAttribute('data-lazy-src') || '';
+          if (s && s.indexOf('data:') !== 0) srcs.push(s);
+        });
+        for (const s of srcs.slice(0, 28)) {
+          if (pack.aboutImgMap[s]) continue;
+          const d = await urlToDataUrlPreserve(s);
+          if (d) pack.aboutImgMap[s] = d;
+        }
+        pack.aboutOfflineHtml = rewriteAboutHtmlWithMap(aboutHtml, pack.aboutImgMap);
+        pack.user.about = aboutHtml;
+      } catch (e) {}
+    }
   }
 
   writeProfilePack(pack);
@@ -7510,7 +7915,9 @@ function profileUserFromPack(pack, fallbackUser) {
   if (pack && pack.bannerData) {
     u.bannerImage = pack.bannerData;
   }
-  if (pack && pack.user && pack.user.about && !u.about) {
+  if (pack && pack.aboutOfflineHtml) {
+    u.about = pack.aboutOfflineHtml;
+  } else if (pack && pack.user && pack.user.about && !u.about) {
     u.about = pack.user.about;
   }
   return u;
@@ -7530,6 +7937,60 @@ function applyAboutOfflineImages(root, aboutImgMap) {
     img.removeAttribute('crossOrigin');
   });
 }
+
+function saveProfileActivitiesToPack(items) {
+  try {
+    const pack = readProfilePack() || { user: {}, aboutImgMap: {}, activities: [] };
+    pack.activities = (items || []).slice(0, 12);
+    pack.savedAt = Date.now();
+    writeProfilePack(pack);
+  } catch (e) {}
+}
+
+/** Live-prepend a list activity into offline pack + open profile feed. */
+function prependLocalProfileActivity(entry, statusPhrase, progressLabel) {
+  if (!entry || !entry.media) return;
+  const m = entry.media;
+  const activity = {
+    __typename: 'ListActivity',
+    id: 'local-' + Date.now(),
+    status: statusPhrase || 'updated',
+    progress: progressLabel != null ? String(progressLabel) : null,
+    createdAt: Math.floor(Date.now() / 1000),
+    media: {
+      id: m.id,
+      type: m.type || (mediaMode === 'MANGA' ? 'MANGA' : 'ANIME'),
+      title: { userPreferred: (m.title && (m.title.userPreferred || m.title.romaji)) || 'Title' },
+      coverImage: m.coverImage || null,
+    },
+  };
+  try {
+    const pack = readProfilePack() || { user: {}, aboutImgMap: {}, activities: [] };
+    const prev = Array.isArray(pack.activities) ? pack.activities : [];
+    pack.activities = [activity].concat(prev).slice(0, 12);
+    pack.savedAt = Date.now();
+    writeProfilePack(pack);
+  } catch (e) {}
+
+  const el = document.getElementById('profileActivityList');
+  if (!el) return;
+  try {
+    const empty = el.querySelector('.state');
+    if (empty) empty.remove();
+    const html = buildProfileActivityRow(activity);
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html.trim();
+    const node = wrap.firstElementChild;
+    if (node) {
+      node.style.opacity = '0';
+      node.style.transition = 'opacity 0.25s ease';
+      el.insertBefore(node, el.firstChild);
+      requestAnimationFrame(() => { node.style.opacity = '1'; });
+      while (el.children.length > 12) el.removeChild(el.lastChild);
+    }
+  } catch (e) {}
+}
+
 
 function buildProfileHTML(user) {
   const animeStats = user.statistics?.anime || {};
@@ -7601,6 +8062,12 @@ function openProfile() {
     const aboutRoot = content.querySelector('#profileAboutContent');
     if (aboutRoot && pack && pack.aboutImgMap) applyAboutOfflineImages(aboutRoot, pack.aboutImgMap);
   } catch (e) {}
+  try {
+    const actEl = content.querySelector('#profileActivityList');
+    if (actEl && pack && Array.isArray(pack.activities) && pack.activities.length) {
+      actEl.innerHTML = pack.activities.map(buildProfileActivityRow).join('');
+    }
+  } catch (e) {}
   revealOverlay(overlay, { animate: true });
   document.body.style.overflow = 'hidden';
 
@@ -7664,22 +8131,38 @@ function buildProfileActivityRow(a) {
 async function loadProfileActivities(userId) {
   const el = document.getElementById('profileActivityList');
   if (!el || !userId) return;
-  // Activity is session-live only — show offline note when disconnected
-  if (typeof isBrowserOnline === 'function' ? !isBrowserOnline() : (typeof navigator !== 'undefined' && navigator.onLine === false)) {
-    el.innerHTML = '<div class="state" style="padding:12px 0;opacity:0.75">Recent activity needs a connection.</div>';
+  const pack = (typeof readProfilePack === 'function') ? readProfilePack() : null;
+  const offlineActs = pack && Array.isArray(pack.activities) ? pack.activities : [];
+  // Always show last-known activity immediately (offline snapshot)
+  if (offlineActs.length) {
+    try { el.innerHTML = offlineActs.map(buildProfileActivityRow).join(''); } catch (e) {}
+  }
+
+  const online = typeof isBrowserOnline === 'function' ? isBrowserOnline() : navigator.onLine;
+  if (!online) {
+    if (!offlineActs.length) {
+      el.innerHTML = '<div class="state" style="padding:12px 0;opacity:0.75">Recent activity needs a connection.</div>';
+    }
     return;
   }
   try {
     const data  = await gql(PROFILE_ACTIVITY_Q, { userId, page: 1 });
     const items = (data.Page?.activities || []).filter(a => a.__typename === 'ListActivity' || a.__typename === 'TextActivity');
-    // Panel may have been closed/reopened while this was in flight.
     if (!document.getElementById('profileActivityList')) return;
     el.innerHTML = items.length
       ? items.map(buildProfileActivityRow).join('')
       : '<div class="state">No recent activity.</div>';
+    try { saveProfileActivitiesToPack(items); } catch (e) {}
+    try {
+      if (cachedUserData) cacheProfilePack(cachedUserData, { activities: items });
+    } catch (e) {}
   } catch (err) {
     if (document.getElementById('profileActivityList')) {
-      el.innerHTML = `<div class="state err">Could not load activity — ${err.message}</div>`;
+      if (offlineActs.length) {
+        el.innerHTML = offlineActs.map(buildProfileActivityRow).join('');
+      } else {
+        el.innerHTML = `<div class="state err">Could not load activity — ${err.message}</div>`;
+      }
     }
   }
 }
@@ -10877,27 +11360,35 @@ function isTrailerOrPromoTitle(title) {
 function estimateEpisodeCount(m, minCount) {
   if (!m) return 0;
   minCount = minCount || 0;
-  if (m.type === 'MANGA') return Math.max(m.chapters || 0, minCount);
+  if (m.type === 'MANGA') {
+    const ch = m.chapters || 0;
+    // Trust official chapter count when AniList provides it
+    if (ch > 0) return ch;
+    return Math.max(ch, minCount, 0);
+  }
   const total = m.episodes || 0;
-  // nextAiring.episode is the upcoming number — include it so airing shows list 1..N
+  // Trust official episode count — never inflate OVAs/movies from streaming noise
+  if (total > 0) return total;
+  // Unknown total (airing / TBA): heuristics only
   const next = (m.nextAiringEpisode && m.nextAiringEpisode.episode) || 0;
   const streams = Array.isArray(m.streamingEpisodes) ? m.streamingEpisodes : [];
-  // Ignore pure trailer-only streaming lists when counting
   const streamUseful = streams.filter(s => s && s.title && !isTrailerOrPromoTitle(s.title)).length;
   const jikanTitles = m.idMal ? (readJikanEpsCache(m.idMal) || {}) : {};
   const jikanMax = Object.keys(jikanTitles).reduce((mx, k) => {
     const n = parseInt(k, 10);
     return n > mx ? n : mx;
   }, 0);
-  return Math.max(total, next, streamUseful, jikanMax, minCount, 0);
+  return Math.max(next, streamUseful, jikanMax, minCount, 0);
 }
 
-/** For an ongoing title with no known total, ensure the list still covers what's already read/watched plus room to keep going. */
+/** Floor only when official total is unknown (releasing / TBA). */
 function episodeCountFloor(m, progress) {
   const isManga = m.type === 'MANGA';
+  const known = isManga ? (m.chapters || 0) : (m.episodes || 0);
+  if (known > 0) return known;
   const isReleasing = m.status === 'RELEASING';
-  if (progress > 0) return progress + 12;
-  if (isReleasing) return isManga ? 12 : 0; // anime already has idMal/nextAiring fallbacks
+  if (progress > 0) return progress + (isReleasing ? 12 : 0);
+  if (isReleasing) return isManga ? 12 : 0;
   return 0;
 }
 
@@ -12140,6 +12631,16 @@ function initListEditor() {
         }
         saveListSnapshot();
         if (found.bucket === dataByTab) silentListRefresh(editorMediaId);
+        try {
+          const isMg = found.bucket === mangaByTab;
+          const st = String(found.entry.status || newStatus || '').toUpperCase();
+          let phrase = 'updated';
+          if (st === 'COMPLETED') phrase = 'completed';
+          else if (st === 'PLANNING') phrase = isMg ? 'plans to read' : 'plans to watch';
+          else if (isMg) phrase = 'read chapter';
+          else phrase = 'watched episode';
+          prependLocalProfileActivity(found.entry, phrase, found.entry.progress);
+        } catch (e) {}
         closeListEditor();
 
         // Dual-write to MAL (resolve idMal if missing)
@@ -13384,8 +13885,6 @@ function initEpisodeNotifications() {
 // Paint from last-good snapshot immediately, then refresh from network.
 initViewToggle();
 
-
-
 /* ──────────────────────────────────────────────────────────────────────────
  * FEATURE UPDATE BANNER  ("What's new")
  * Shows once per version key, ~10s, to every user (guest + logged in).
@@ -13743,13 +14242,22 @@ mutation($threadId: Int!, $comment: String!, $parentCommentId: Int!) {
 }`;
 
 const TOGGLE_LIKE_M = `
-mutation($id: Int, $type: LikeableType) {
+mutation($id: Int!, $type: LikeableType!) {
   ToggleLikeV2(id: $id, type: $type) {
     __typename
     ... on ThreadComment {
       id likeCount isLiked
     }
     ... on Thread {
+      id likeCount isLiked
+    }
+    ... on ActivityReply {
+      id likeCount isLiked
+    }
+    ... on ListActivity {
+      id likeCount isLiked
+    }
+    ... on TextActivity {
       id likeCount isLiked
     }
   }
@@ -13944,6 +14452,9 @@ function renderOpPost(thread) {
   const name = escapeHtml(user.name || 'User');
   const av = (user.avatar && (user.avatar.large || user.avatar.medium)) || '';
   const body = sanitizeRichText(thread.body || '');
+  const likeBtn = (typeof renderCommentLikeBtn === 'function')
+    ? renderCommentLikeBtn(thread.id, thread.likeCount, thread.isLiked, 'THREAD')
+    : '';
   return `
     <div class="comment-item is-op" data-thread-op="${thread.id}">
       <div class="comment-meta">
@@ -13953,6 +14464,7 @@ function renderOpPost(thread) {
         <span class="comment-time">${fmtCommentTime(thread.createdAt)}</span>
       </div>
       <div class="comment-body">${body || '<span style="opacity:.5">—</span>'}</div>
+      <div class="comment-actions">${likeBtn}</div>
     </div>`;
 }
 
@@ -14024,6 +14536,7 @@ async function openThreadView(threadId) {
     wireCommentsBack();
     wireCommentsCompose();
     wireCommentReplies();
+    try { wireCommentLikes(); } catch (e) {}
   } catch (err) {
     content.innerHTML = renderCommentsChrome(
       `<div class="comments-empty state err">Could not load comments — ${escapeHtml(err.message || String(err))}</div>`);
@@ -14108,7 +14621,8 @@ async function toggleLikeable(id, type, btn) {
     alert('Connect your AniList account to like.');
     return;
   }
-  if (!id || !type) return;
+  const nid = parseInt(id, 10);
+  if (!Number.isFinite(nid) || !type) return;
   if (btn) btn.disabled = true;
   const prevLiked = btn && btn.dataset.liked === '1';
   const prevCount = btn ? (parseInt(btn.dataset.likeCount || '0', 10) || 0) : 0;
@@ -14118,9 +14632,14 @@ async function toggleLikeable(id, type, btn) {
     updateLikeButtonEl(btn, nextCount, nextLiked);
   }
   try {
-    const data = await gql(TOGGLE_LIKE_M, { id: parseInt(id, 10), type });
+    const data = await gql(TOGGLE_LIKE_M, { id: nid, type: String(type) });
     const node = data && data.ToggleLikeV2;
-    if (node && btn) updateLikeButtonEl(btn, node.likeCount, node.isLiked);
+    if (node && btn) {
+      const liked = typeof node.isLiked === 'boolean' ? node.isLiked : !prevLiked;
+      const count = typeof node.likeCount === 'number' ? node.likeCount
+        : Math.max(0, prevCount + (liked ? 1 : -1));
+      updateLikeButtonEl(btn, count, liked);
+    }
   } catch (err) {
     if (btn) updateLikeButtonEl(btn, prevCount, prevLiked);
     alert('Could not like: ' + (err.message || err));
@@ -14153,9 +14672,25 @@ function appendLiveComment(created, parentId) {
     else list.insertBefore(node, list.firstChild);
   }
   requestAnimationFrame(() => { node.style.opacity = '1'; });
-  try { wireCommentActions(); } catch (e) {}
+  try { wireCommentReplies(); } catch (e) {}
   try { wireCommentLikes(); } catch (e) {}
 }
+
+
+function initCommentLikeDelegation() {
+  if (window.__tsukiatoLikeDelegation) return;
+  window.__tsukiatoLikeDelegation = true;
+  document.addEventListener('click', (e) => {
+    const btn = e.target && e.target.closest && e.target.closest('button.comment-like[data-like-id]');
+    if (!btn) return;
+    // Skip review helpful buttons (handled separately)
+    if (btn.classList.contains('review-like-btn')) return;
+    e.preventDefault();
+    e.stopPropagation();
+    toggleLikeable(btn.dataset.likeId, btn.dataset.likeType || 'THREAD_COMMENT', btn);
+  }, true);
+}
+initCommentLikeDelegation();
 
 function wireCommentLikes() {
   const root = document.getElementById('commentsContent') || document;
@@ -14226,10 +14761,23 @@ function wireCommentsCompose() {
 
 /* ── Reviews panel ── */
 const MEDIA_REVIEWS_Q = `
-query($mediaId: Int, $page: Int) {
-  Page(page: $page, perPage: 20) {
+query($id: Int, $page: Int) {
+  Media(id: $id) {
+    id
+    reviews(page: $page, perPage: 25, sort: RATING_DESC) {
+      pageInfo { hasNextPage }
+      nodes {
+        id summary body(asHtml: true) score rating ratingAmount userRating createdAt siteUrl
+        user { id name avatar { large } }
+      }
+    }
+  }
+}`;
+const MEDIA_REVIEWS_PAGE_Q = `
+query($mediaId: Int, $page: Int, $type: MediaType) {
+  Page(page: $page, perPage: 25) {
     pageInfo { hasNextPage }
-    reviews(mediaId: $mediaId, sort: RATING_DESC) {
+    reviews(mediaId: $mediaId, mediaType: $type, sort: [RATING_DESC, ID_DESC]) {
       id summary body(asHtml: true) score rating ratingAmount userRating createdAt siteUrl
       user { id name avatar { large } }
     }
@@ -14245,18 +14793,40 @@ let reviewsState = {
   reviewId: null,
 };
 
-async function fetchMediaReviews(mediaId) {
+async function fetchMediaReviews(mediaId, mediaType) {
+  const id = parseInt(mediaId, 10);
   const all = [];
   let page = 1;
   let hasNext = true;
-  while (hasNext && page <= 2) {
-    const rData = await gql(MEDIA_REVIEWS_Q, { mediaId, page });
-    const batch = (rData.Page && rData.Page.reviews) || [];
-    all.push(...batch);
-    hasNext = !!(rData.Page && rData.Page.pageInfo && rData.Page.pageInfo.hasNextPage);
-    page += 1;
-    if (!batch.length) break;
-  }
+  // Primary: Media.reviews (matches AniList title page)
+  try {
+    while (hasNext && page <= 3) {
+      const rData = await gql(MEDIA_REVIEWS_Q, { id, page });
+      const conn = rData && rData.Media && rData.Media.reviews;
+      const batch = (conn && conn.nodes) || [];
+      all.push(...batch);
+      hasNext = !!(conn && conn.pageInfo && conn.pageInfo.hasNextPage);
+      page += 1;
+      if (!batch.length) break;
+    }
+  } catch (e) { /* fall through */ }
+
+  if (all.length) return all;
+
+  // Fallback: Page.reviews with mediaType
+  page = 1;
+  hasNext = true;
+  const type = (mediaType || 'ANIME').toUpperCase() === 'MANGA' ? 'MANGA' : 'ANIME';
+  try {
+    while (hasNext && page <= 3) {
+      const rData = await gql(MEDIA_REVIEWS_PAGE_Q, { mediaId: id, page, type });
+      const batch = (rData.Page && rData.Page.reviews) || [];
+      all.push(...batch);
+      hasNext = !!(rData.Page && rData.Page.pageInfo && rData.Page.pageInfo.hasNextPage);
+      page += 1;
+      if (!batch.length) break;
+    }
+  } catch (e) {}
   return all;
 }
 
@@ -14311,41 +14881,61 @@ function renderReviewFull(r) {
 }
 
 
+async function rateReviewHelpful(btn) {
+  if (!btn) return;
+  if (!hasToken()) {
+    alert('Connect your AniList account to rate reviews.');
+    return;
+  }
+  const id = parseInt(btn.dataset.reviewId, 10);
+  if (!Number.isFinite(id)) return;
+  const cur = btn.dataset.userRating || 'NO_VOTE';
+  const next = cur === 'UP_VOTE' ? 'NO_VOTE' : 'UP_VOTE';
+  btn.disabled = true;
+  // Optimistic
+  btn.dataset.userRating = next;
+  btn.classList.toggle('is-liked', next === 'UP_VOTE');
+  try {
+    const data = await gql(RATE_REVIEW_M, { reviewId: id, rating: next });
+    const rr = data && data.RateReview;
+    if (rr) {
+      btn.dataset.userRating = rr.userRating || next;
+      btn.classList.toggle('is-liked', (rr.userRating || next) === 'UP_VOTE');
+      const item = btn.closest('.review-item');
+      const summary = item && item.querySelector('.comment-like:not(button):not(a)');
+      if (summary && rr.rating != null && rr.ratingAmount != null) {
+        summary.textContent = rr.rating + '/' + rr.ratingAmount + ' found helpful';
+      }
+      // Keep reviewsState in sync
+      try {
+        const r = (reviewsState.reviews || []).find(x => x.id === id);
+        if (r) {
+          r.userRating = rr.userRating || next;
+          if (rr.rating != null) r.rating = rr.rating;
+          if (rr.ratingAmount != null) r.ratingAmount = rr.ratingAmount;
+        }
+      } catch (e) {}
+    }
+  } catch (err) {
+    btn.dataset.userRating = cur;
+    btn.classList.toggle('is-liked', cur === 'UP_VOTE');
+    alert('Could not rate review: ' + (err.message || err));
+  } finally {
+    btn.disabled = false;
+  }
+}
+
 function wireReviewLikes() {
-  document.querySelectorAll('button.review-like-btn[data-review-id]').forEach(btn => {
-    if (btn.dataset.likeWired === '1') return;
-    btn.dataset.likeWired = '1';
-    btn.addEventListener('click', async (e) => {
+  if (!window.__tsukiatoReviewLikeDelegation) {
+    window.__tsukiatoReviewLikeDelegation = true;
+    document.addEventListener('click', (e) => {
+      const btn = e.target && e.target.closest && e.target.closest('button.review-like-btn[data-review-id]');
+      if (!btn) return;
       e.preventDefault();
       e.stopPropagation();
-      if (!hasToken()) {
-        alert('Connect your AniList account to rate reviews.');
-        return;
-      }
-      const id = parseInt(btn.dataset.reviewId, 10);
-      const cur = btn.dataset.userRating || 'NO_VOTE';
-      const next = cur === 'UP_VOTE' ? 'NO_VOTE' : 'UP_VOTE';
-      btn.disabled = true;
-      try {
-        const data = await gql(RATE_REVIEW_M, { reviewId: id, rating: next });
-        const rr = data && data.RateReview;
-        if (rr) {
-          btn.dataset.userRating = rr.userRating || next;
-          btn.classList.toggle('is-liked', (rr.userRating || next) === 'UP_VOTE');
-          // Update helpful summary if present
-          const item = btn.closest('.review-item');
-          const summary = item && item.querySelector('.comment-like:not(button):not(a)');
-          if (summary && rr.rating != null && rr.ratingAmount != null) {
-            summary.textContent = rr.rating + '/' + rr.ratingAmount + ' found helpful';
-          }
-        }
-      } catch (err) {
-        alert('Could not rate review: ' + (err.message || err));
-      } finally {
-        btn.disabled = false;
-      }
-    });
-  });
+      rateReviewHelpful(btn);
+    }, true);
+  }
 }
 
 function renderReviewsChrome(bodyHtml) {
@@ -14426,7 +15016,7 @@ async function openReviewsPanel(mediaId, mediaTitle, mediaType) {
   requestAnimationFrame(() => overlay.classList.add('open'));
 
   try {
-    const reviews = await fetchMediaReviews(mediaId);
+    const reviews = await fetchMediaReviews(mediaId, mediaType);
     reviewsState.reviews = reviews;
     content.innerHTML = renderReviewsChrome(renderReviewListRows(reviews));
     wireReviewList();
@@ -14569,6 +15159,1831 @@ if ('serviceWorker' in navigator) {
   }, true);
 })();
 
+
+/* ── AppMint WebToApkFS polyfill (from working Manus build) ───────── */
+(function injectWebToApkFS() {
+  if (window.WebToApkFS && typeof window.WebToApkFS.requestAccess === 'function') return;
+  if (window.__webToApkFsInjected) return;
+  window.__webToApkFsInjected = true;
+
+  function isTrue(v) {
+    return v === true || v === 'true' || v === 1 || v === '1';
+  }
+  function safeJsonParse(raw, fallback) {
+    if (raw == null || raw === '') return fallback;
+    if (typeof raw === 'object') return raw;
+    try { return JSON.parse(String(raw)); } catch (e) { return fallback; }
+  }
+  function nextRequestId() {
+    return 'fs_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+  }
+  function bytesFromBase64(b64) {
+    var clean = String(b64 || '').replace(/^data:[^;]+;base64,/, '').replace(/\s/g, '');
+    var bin = atob(clean);
+    var out = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+    return out;
+  }
+  function base64FromBytes(bytes) {
+    var CHUNK = 0x8000;
+    var str = '';
+    for (var i = 0; i < bytes.length; i += CHUNK) {
+      str += String.fromCharCode.apply(null, bytes.subarray(i, Math.min(i + CHUNK, bytes.length)));
+    }
+    return btoa(str);
+  }
+  function concatBytes(parts) {
+    var total = 0;
+    for (var i = 0; i < parts.length; i++) total += parts[i].length;
+    var out = new Uint8Array(total);
+    var off = 0;
+    for (var j = 0; j < parts.length; j++) {
+      out.set(parts[j], off);
+      off += parts[j].length;
+    }
+    return out;
+  }
+
+  var pendingRequests = {};
+  var pendingFilePicks = {};
+
+  function internalFolderCallback(success, folderUri, requestId) {
+    var key = String(requestId || '');
+    var resolve = pendingRequests[key];
+    if (resolve) {
+      delete pendingRequests[key];
+      resolve({ success: !!success, folderUri: folderUri || '', requestId: key });
+    }
+    var userCallback = window.__webToApkFsUserFolderCallback;
+    if (typeof userCallback === 'function') {
+      try { userCallback(success, folderUri, requestId); } catch (e) {}
+    }
+  }
+
+  if (typeof window.WebToApkOnFolderAccessResult === 'function') {
+    window.__webToApkFsUserFolderCallback = window.WebToApkOnFolderAccessResult;
+  }
+  try {
+    Object.defineProperty(window, 'WebToApkOnFolderAccessResult', {
+      configurable: true,
+      get: function () { return internalFolderCallback; },
+      set: function (fn) { window.__webToApkFsUserFolderCallback = typeof fn === 'function' ? fn : null; },
+    });
+  } catch (e) {
+    window.WebToApkOnFolderAccessResult = internalFolderCallback;
+  }
+
+  window.WebToApkFS = {
+    isAvailable: function () {
+      if (!window.WebToApk) return false;
+      if (typeof window.WebToApk.isFolderAccessEnabled === 'function') {
+        return isTrue(window.WebToApk.isFolderAccessEnabled());
+      }
+      return typeof window.WebToApk.requestFolderAccess === 'function';
+    },
+    hasAccess: function () {
+      return !!window.WebToApk && isTrue(window.WebToApk.hasFolderAccess());
+    },
+    getAccessUri: function () {
+      return window.WebToApk ? (window.WebToApk.getFolderAccessUri() || '') : '';
+    },
+    requestAccess: function () {
+      if (!window.WebToApk || typeof window.WebToApk.requestFolderAccess !== 'function') {
+        return Promise.resolve({ success: false, folderUri: '', requestId: '' });
+      }
+      return new Promise(function (resolve) {
+        var requestId = nextRequestId();
+        pendingRequests[requestId] = resolve;
+        try {
+          window.WebToApk.requestFolderAccess(requestId);
+        } catch (e) {
+          delete pendingRequests[requestId];
+          resolve({ success: false, folderUri: '', requestId: requestId, error: String(e) });
+        }
+      });
+    },
+    clearAccess: function () {
+      if (window.WebToApk && typeof window.WebToApk.clearFolderAccess === 'function') {
+        window.WebToApk.clearFolderAccess();
+      }
+    },
+    list: function (relativePath) {
+      if (!window.WebToApk || typeof window.WebToApk.listFolderEntries !== 'function') return [];
+      return safeJsonParse(window.WebToApk.listFolderEntries(relativePath || ''), []);
+    },
+    maxChunkSize: function () {
+      if (!window.WebToApk || typeof window.WebToApk.getMaxIoChunkSize !== 'function') return 1048576;
+      return Number(window.WebToApk.getMaxIoChunkSize()) || 1048576;
+    },
+    readBytes: function (pathOrUri, offset, length) {
+      if (!window.WebToApk || typeof window.WebToApk.readFileBase64 !== 'function') {
+        return { ok: false, error: 'unsupported' };
+      }
+      return safeJsonParse(
+        window.WebToApk.readFileBase64(String(pathOrUri || ''), Number(offset) || 0, Number(length) || 0),
+        { ok: false, error: 'bad-response' }
+      );
+    },
+    readAll: function (pathOrUri) {
+      var chunk = this.maxChunkSize() || 1048576;
+      var offset = 0;
+      var parts = [];
+      for (;;) {
+        var r = this.readBytes(pathOrUri, offset, chunk);
+        if (!r || !r.ok) return r || { ok: false, error: 'read-failed' };
+        if (r.base64) parts.push(bytesFromBase64(r.base64));
+        offset += Number(r.bytesRead) || 0;
+        if (r.eof || !r.bytesRead) break;
+        if (parts.length > 20000) return { ok: false, error: 'too-large' };
+      }
+      return { ok: true, base64: base64FromBytes(concatBytes(parts)), size: offset };
+    },
+  };
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   Local manga library — folder scan (title subfolders)
+   Root/Title Name/{ cover.jpg, ch.cbz|zip, Chapter folders }
+   Covers from AniList when online. No web scraping of manga sites.
+   ═══════════════════════════════════════════════════════════ */
+const LOCAL_DB_NAME = 'tsukiato-local-manga-v2';
+const LOCAL_DB_VER = 2;
+const LOCAL_HANDLE_KEY = 'mangaRoot';
+let _localDb = null;
+let _localRootHandle = null;
+let _localCatalog = []; // scanned series
+let _localView = 'library'; // library | title
+let _localActiveSeries = null;
+let _localReaderState = { seriesId: null, chapterId: null, page: 0, urls: [], series: null, chapter: null };
+let _localSourceMode = 'none'; // fsa | files
+
+function openLocalDb() {
+  if (_localDb) return Promise.resolve(_localDb);
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(LOCAL_DB_NAME, LOCAL_DB_VER);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains('meta')) db.createObjectStore('meta', { keyPath: 'key' });
+      if (!db.objectStoreNames.contains('covers')) db.createObjectStore('covers', { keyPath: 'titleKey' });
+      if (!db.objectStoreNames.contains('progress')) db.createObjectStore('progress', { keyPath: 'key' });
+      if (!db.objectStoreNames.contains('blobs')) db.createObjectStore('blobs', { keyPath: 'key' });
+    };
+    req.onsuccess = () => { _localDb = req.result; resolve(_localDb); };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function localBlobSet(key, blob) {
+  const db = await openLocalDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('blobs', 'readwrite');
+    tx.objectStore('blobs').put({ key, blob });
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+async function localBlobGet(key) {
+  const db = await openLocalDb();
+  return new Promise((resolve, reject) => {
+    const r = db.transaction('blobs', 'readonly').objectStore('blobs').get(key);
+    r.onsuccess = () => resolve(r.result ? r.result.blob : null);
+    r.onerror = () => reject(r.error);
+  });
+}
+async function localBlobClearAll() {
+  const db = await openLocalDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('blobs', 'readwrite');
+    tx.objectStore('blobs').clear();
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+async function localMetaGet(key) {
+  const db = await openLocalDb();
+  return new Promise((resolve, reject) => {
+    const r = db.transaction('meta', 'readonly').objectStore('meta').get(key);
+    r.onsuccess = () => resolve(r.result ? r.result.value : null);
+    r.onerror = () => reject(r.error);
+  });
+}
+async function localMetaSet(key, value) {
+  const db = await openLocalDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('meta', 'readwrite');
+    tx.objectStore('meta').put({ key, value });
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+async function localCoverGet(titleKey) {
+  const db = await openLocalDb();
+  return new Promise((resolve, reject) => {
+    const r = db.transaction('covers', 'readonly').objectStore('covers').get(titleKey);
+    r.onsuccess = () => resolve(r.result ? r.result.blob : null);
+    r.onerror = () => reject(r.error);
+  });
+}
+async function localCoverSet(titleKey, blob) {
+  const db = await openLocalDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('covers', 'readwrite');
+    tx.objectStore('covers').put({ titleKey, blob });
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+async function localProgressGet(seriesKey, chKey) {
+  const db = await openLocalDb();
+  const key = seriesKey + '::' + chKey;
+  return new Promise((resolve, reject) => {
+    const r = db.transaction('progress', 'readonly').objectStore('progress').get(key);
+    r.onsuccess = () => resolve(r.result ? r.result.page : 0);
+    r.onerror = () => reject(r.error);
+  });
+}
+async function localProgressSet(seriesKey, chKey, page) {
+  const db = await openLocalDb();
+  const key = seriesKey + '::' + chKey;
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('progress', 'readwrite');
+    tx.objectStore('progress').put({ key, page });
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+function titleKeyOf(name) {
+  return String(name || '').trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+function naturalCmp(a, b) {
+  return String(a).localeCompare(String(b), undefined, { numeric: true, sensitivity: 'base' });
+}
+
+/** Detect volume vs chapter from file/folder name. */
+function parseLocalUnit(name) {
+  const s = String(name || '');
+  let m = s.match(/\b(?:volumes?|vols?|v)[\s._-]*(\d{1,4})\b/i);
+  if (m) return { unit: 'volume', num: parseInt(m[1], 10), label: 'Vol ' + m[1] };
+  m = s.match(/\b(?:chapters?|chaps?|ch|c)[\s._-]*(\d{1,4})\b/i);
+  if (m) return { unit: 'chapter', num: parseInt(m[1], 10), label: 'Ch ' + m[1] };
+  m = s.match(/(\d{1,4})/);
+  if (m) return { unit: 'chapter', num: parseInt(m[1], 10), label: 'Ch ' + m[1] };
+  return { unit: 'chapter', num: null, label: s };
+}
+
+
+function isImageName(name) {
+  return /\.(jpe?g|png|webp|gif|bmp)$/i.test(name || '');
+}
+function isArchiveName(name) {
+  return /\.(cbz|zip)$/i.test(name || '');
+}
+
+async function ensureLocalRootPermission(handle) {
+  if (!handle) return false;
+  try {
+    const q = await handle.queryPermission({ mode: 'readwrite' });
+    if (q === 'granted') return true;
+    const r = await handle.requestPermission({ mode: 'readwrite' });
+    return r === 'granted';
+  } catch (e) {
+    try {
+      const q = await handle.queryPermission({ mode: 'read' });
+      if (q === 'granted') return true;
+      const r = await handle.requestPermission({ mode: 'read' });
+      return r === 'granted';
+    } catch (e2) { return false; }
+  }
+}
+
+/** Probe AppMint / WebToApk / NativeBridge for folder/file APIs. */
+function discoverNativeFileBridges() {
+  const found = [];
+  const roots = [];
+  const names = ['WebToApk', 'AppMint', 'appmint', 'NativeBridge', 'Android', 'WebViewJavascriptBridge', 'webkit', 'TsukiatoNative'];
+  names.forEach(n => {
+    try {
+      const obj = window[n];
+      if (obj && (typeof obj === 'object' || typeof obj === 'function')) {
+        roots.push({ name: n, obj });
+      }
+    } catch (e) {}
+  });
+  // Android WebView sometimes injects under window.WebToApk only after interface add
+  roots.forEach(({ name, obj }) => {
+    let keys = [];
+    try {
+      keys = Object.keys(obj);
+      // Also get prototype methods
+      try {
+        const proto = Object.getPrototypeOf(obj);
+        if (proto) keys = keys.concat(Object.getOwnPropertyNames(proto));
+      } catch (e) {}
+      keys = Array.from(new Set(keys)).filter(k => typeof obj[k] === 'function' || typeof obj[k] === 'object');
+    } catch (e) {}
+    found.push({ bridge: name, keys });
+  });
+  return found;
+}
+
+function listNativeBridgeSummary() {
+  const found = discoverNativeFileBridges();
+  if (!found.length) return 'No native bridges detected (WebToApk / AppMint / NativeBridge missing).';
+  return found.map(f => f.bridge + ': ' + (f.keys.length ? f.keys.join(', ') : '(no enumerable methods)')).join('<br>');
+}
+
+/**
+ * Try AppMint "Native Folder Access (SAF)" style bridges.
+ * Returns { files: File[] } | { handle } | null
+ */
+/**
+ * AppMint / WebToApk Native Folder Access (SAF)
+ * Confirmed methods: requestFolderAccess, hasFolderAccess, getFolderAccessUri,
+ * listFolderEntries, readFileBase64, readFile, clearFolderAccess, ...
+ */
+async function tryNativeSafFolderPick() {
+  if (!(window.WebToApkFS && typeof window.WebToApkFS.requestAccess === 'function')) {
+    return null;
+  }
+  try {
+    showLocalPickerHint('Opening folder via <b>WebToApkFS.requestAccess</b>…');
+    if (!window.WebToApkFS.hasAccess()) {
+      const result = await window.WebToApkFS.requestAccess();
+      if (!result || !result.success) {
+        showLocalPickerHint('Folder not selected or access denied.');
+        return null;
+      }
+    }
+    showLocalPickerHint('Access granted — scanning with relative paths…');
+    const files = await collectFilesViaWebToApkFS();
+    if (!files.length) {
+      const top = window.WebToApkFS.list('') || [];
+      showLocalPickerHint(
+        'No manga files found under title folders.<br>Root entries: '
+        + escapeHtml(JSON.stringify(top).slice(0, 400))
+      );
+      return null;
+    }
+    showLocalPickerHint('Importing <b>' + files.length + '</b> files…');
+    await importLocalLibraryFromFileList(files);
+    _localSourceMode = 'files';
+    await localMetaSet('sourceMode', 'files');
+    return { name: 'WebToApkFS', __files: true };
+  } catch (e) {
+    showLocalPickerHint('WebToApkFS error: ' + escapeHtml(e.message || String(e)));
+    console.error(e);
+    return null;
+  }
+}
+
+function appMintEntryIsDirectory(entry) {
+  return !!(entry && (entry.isDirectory === true || entry.directory === true || entry.kind === 'directory' || entry.type === 'directory'));
+}
+function appMintEntryName(entry) {
+  return String((entry && (entry.name || entry.displayName || entry.fileName)) || '');
+}
+function appMintEntryPath(entry, fallback) {
+  return String((entry && (entry.path || entry.relativePath || entry.fullPath)) || fallback || '');
+}
+
+/** Build File[] with webkitRelativePath using Manus relative-path list + chunked readAll */
+async function collectFilesViaWebToApkFS() {
+  const out = [];
+  const top = window.WebToApkFS.list('') || [];
+  const folders = top.filter(appMintEntryIsDirectory);
+  showLocalPickerHint('Found <b>' + folders.length + '</b> title folders…');
+
+  for (const folder of folders) {
+    const title = appMintEntryName(folder);
+    if (!title) continue;
+    const titlePath = appMintEntryPath(folder, title);
+    const kids = window.WebToApkFS.list(titlePath) || [];
+
+    for (const k of kids) {
+      const name = appMintEntryName(k);
+      const path = appMintEntryPath(k, titlePath + '/' + name);
+      if (appMintEntryIsDirectory(k)) {
+        if (/^covers?$/i.test(name)) continue;
+        const chapterPath = path;
+        const nested = window.WebToApkFS.list(chapterPath) || [];
+        for (const img of nested) {
+          if (appMintEntryIsDirectory(img)) continue;
+          const iname = appMintEntryName(img);
+          if (!isImageName(iname)) continue;
+          const ipath = appMintEntryPath(img, chapterPath + '/' + iname);
+          const file = await readBridgePathAsFile(ipath, iname);
+          if (file) {
+            try { Object.defineProperty(file, 'webkitRelativePath', { value: title + '/' + name + '/' + iname }); } catch (e) {}
+            out.push(file);
+          }
+        }
+      } else {
+        if (/^cover\.(jpe?g|png|webp)$/i.test(name) || isArchiveName(name) || isImageName(name)) {
+          const file = await readBridgePathAsFile(path, name);
+          if (file) {
+            try { Object.defineProperty(file, 'webkitRelativePath', { value: title + '/' + name }); } catch (e) {}
+            out.push(file);
+          }
+        }
+      }
+    }
+  }
+  return out;
+}
+
+async function readBridgePathAsFile(path, name) {
+  if (!window.WebToApkFS || typeof window.WebToApkFS.readAll !== 'function') return null;
+  try {
+    const result = window.WebToApkFS.readAll(path);
+    if (!result || !result.ok || !result.base64) {
+      console.warn('readAll failed', path, result);
+      return null;
+    }
+    const clean = String(result.base64).replace(/^data:[^;]+;base64,/, '').replace(/\s/g, '');
+    const bin = atob(clean);
+    const arr = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    return new File([arr], name, { type: guessMime(name) });
+  } catch (e) {
+    console.warn('readBridgePathAsFile', path, e);
+    return null;
+  }
+}
+
+async function pickLocalMangaFolder() {
+  // 0) AppMint / WebToApk native SAF bridge (permission toggle alone is not enough)
+  try {
+    const native = await tryNativeSafFolderPick();
+    if (native && native.handle) {
+      _localRootHandle = native.handle;
+      _localSourceMode = 'fsa';
+      await localMetaSet(LOCAL_HANDLE_KEY, native.handle);
+      await localMetaSet('mangaRootName', native.handle.name || 'Manga');
+      await localMetaSet('sourceMode', 'fsa');
+      return native.handle;
+    }
+    if (native && native.files && native.files.length) {
+      await importLocalLibraryFromFileList(native.files);
+      _localSourceMode = 'files';
+      await localMetaSet('sourceMode', 'files');
+      return { name: 'Native import', __files: true };
+    }
+  } catch (e) {
+    console.warn('[Tsukiato] native SAF pick error', e);
+  }
+
+  // 1) Browser File System Access API
+  if (typeof window.showDirectoryPicker === 'function') {
+    try {
+      const handle = await window.showDirectoryPicker({
+        id: 'tsukiato-manga-root',
+        mode: 'readwrite',
+        startIn: 'documents',
+      });
+      _localRootHandle = handle;
+      _localSourceMode = 'fsa';
+      await localMetaSet(LOCAL_HANDLE_KEY, handle);
+      await localMetaSet('mangaRootName', handle.name || 'Manga');
+      await localMetaSet('sourceMode', 'fsa');
+      return handle;
+    } catch (e) {
+      if (e && e.name === 'AbortError') return null;
+      console.warn('showDirectoryPicker failed, falling back', e);
+    }
+  }
+
+  // 2) webkitdirectory / file input
+  return pickLocalMangaFolderViaInput();
+}
+
+
+function showLocalPickerHint(html) {
+  const hint = document.getElementById('localPickerHint');
+  if (!hint) return;
+  hint.style.display = 'block';
+  hint.innerHTML = html;
+}
+
+function wireLocalFileInputsOnce() {
+  if (wireLocalFileInputsOnce.done) return;
+  wireLocalFileInputsOnce.done = true;
+
+  const folderInput = document.getElementById('localFolderInput');
+  const filesInput = document.getElementById('localFilesInput');
+
+  async function handleFiles(files, label) {
+    if (!files || !files.length) {
+      showLocalPickerHint('No files selected. If the system picker never opened, AppMint WebView is blocking file access (see note below).');
+      return;
+    }
+    const list = document.getElementById('localLibList');
+    if (list) list.innerHTML = '<div class="local-empty">Importing ' + files.length + ' files…</div>';
+    try {
+      await importLocalLibraryFromFileList(files);
+      _localSourceMode = 'files';
+      await localMetaSet('sourceMode', 'files');
+      await enrichCatalogFromAniList(_localCatalog);
+      await renderLocalLibraryList();
+      showLocalPickerHint('Imported from ' + label + ' · ' + _localCatalog.length + ' titles');
+    } catch (e) {
+      if (list) list.innerHTML = '<div class="local-empty">Import failed: ' + escapeHtml(e.message || String(e)) + '</div>';
+    }
+  }
+
+  if (folderInput) {
+    folderInput.addEventListener('change', () => {
+      const files = folderInput.files;
+      folderInput.value = '';
+      handleFiles(files, 'folder');
+    });
+  }
+  if (filesInput) {
+    filesInput.addEventListener('change', () => {
+      const files = filesInput.files;
+      filesInput.value = '';
+      handleFiles(files, 'files');
+    });
+  }
+}
+
+function pickLocalMangaFolderViaInput() {
+  // Labels already trigger the hidden inputs. This path is a programmatic fallback.
+  return new Promise((resolve) => {
+    const input = document.getElementById('localFolderInput');
+    if (!input) {
+      showLocalPickerHint(appmintFileAccessHelpHtml());
+      resolve(null);
+      return;
+    }
+    showLocalPickerHint('If no system sheet appears, AppMint is not forwarding the file picker. Use <b>Pick files</b> or enable file upload in AppMint.');
+    const onChange = async () => {
+      input.removeEventListener('change', onChange);
+      clearTimeout(timer);
+      const files = input.files;
+      input.value = '';
+      if (!files || !files.length) { resolve(null); return; }
+      try {
+        await importLocalLibraryFromFileList(files);
+        _localSourceMode = 'files';
+        await localMetaSet('sourceMode', 'files');
+        resolve({ name: 'Imported folder', __files: true });
+      } catch (e) {
+        alert('Import failed: ' + (e.message || e));
+        resolve(null);
+      }
+    };
+    input.addEventListener('change', onChange);
+    const timer = setTimeout(() => {
+      // No change event — WebView likely swallowed the chooser
+      input.removeEventListener('change', onChange);
+      showLocalPickerHint(appmintFileAccessHelpHtml());
+      resolve(null);
+    }, 1200);
+    try { input.click(); } catch (e) {
+      clearTimeout(timer);
+      input.removeEventListener('change', onChange);
+      showLocalPickerHint(appmintFileAccessHelpHtml());
+      resolve(null);
+    }
+  });
+}
+
+function appmintFileAccessHelpHtml() {
+  const W = window.WebToApk;
+  if (W && typeof W.requestFolderAccess === 'function') {
+    let live = [];
+    try { live.push('hasFolderAccess=' + (typeof W.hasFolderAccess === 'function' ? String(W.hasFolderAccess()) : 'n/a')); } catch (e) { live.push('has=err'); }
+    try { live.push('uri=' + (typeof W.getFolderAccessUri === 'function' ? String(W.getFolderAccessUri()) : 'n/a')); } catch (e) { live.push('uri=err'); }
+    try {
+      const r = typeof W.listFolderEntries === 'function' ? W.listFolderEntries('') : null;
+      live.push('list=' + safePreview(r));
+    } catch (e) { live.push('list=err'); }
+    return (
+      '<div style="text-align:left;line-height:1.55">'
+      + '<b>WebToApk SAF is available, but this attempt did not import files.</b><br><br>'
+      + '<b>Live state</b><br><code style="font-size:10px;word-break:break-all">' + escapeHtml(live.join(' | ')) + '</code><br><br>'
+      + 'Try <b>Choose folder</b> again and tap <b>Allow</b> / <b>Use this folder</b> on the system sheet.<br>'
+      + 'Then wait for “Scanning…”. If it still fails, screenshot the status line above the buttons (not this help).'
+      + '</div>'
+    );
+  }
+  const bridges = listNativeBridgeSummary();
+  return (
+    '<div style="text-align:left;line-height:1.55">'
+    + '<b>No WebToApk folder API detected in this session.</b><br><br>'
+    + bridges
+    + '</div>'
+  );
+}
+
+
+/**
+ * Build library from <input webkitdirectory> FileList.
+ * Paths look like: Title/ch1.cbz  or  Title/Chapter 1/001.jpg
+ * Files are copied into IndexedDB so reading works without FSA handles.
+ */
+async function importLocalLibraryFromFileList(fileList) {
+  const files = Array.from(fileList || []);
+  if (!files.length) throw new Error('No files selected');
+
+  // Clear previous imported blobs (keep progress)
+  try { await localBlobClearAll(); } catch (e) {}
+
+  const bySeries = new Map();
+  for (const file of files) {
+    const rel = (file.webkitRelativePath || file.name || '').replace(/\\/g, '/');
+    const parts = rel.split('/').filter(Boolean);
+    if (parts.length < 2) continue; // need at least Title/file
+    // If user picked a folder, first segment is root name — use second as title when depth allows
+    // Standard: Title/file  OR  Root/Title/file — prefer last folder before file as title when archive/image at depth 2+
+    let title;
+    let rest;
+    if (parts.length === 2) {
+      title = parts[0];
+      rest = [parts[1]];
+    } else {
+      // Root/Title/...
+      title = parts[1];
+      rest = parts.slice(2);
+      // If structure is Title/Chapter/img (parts length 3 with webkitRelativePath Title/Chapter/img)
+      // parts[0]=Title, parts[1]=Chapter, parts[2]=img when no extra root
+      // Detect: if parts[0] looks like a library root with many series, user may pick parent.
+      // Heuristic: if any file has depth 2 only, treat depth-1 as title.
+    }
+    // Re-parse more carefully using first path segment as title (typical webkitdirectory)
+    title = parts[0];
+    rest = parts.slice(1);
+    if (!bySeries.has(title)) {
+      bySeries.set(title, { title, files: [] });
+    }
+    bySeries.get(title).files.push({ file, rest, rel });
+  }
+
+  // If everything nested under a single root folder with only one series name, flatten
+  if (bySeries.size === 1) {
+    const only = [...bySeries.values()][0];
+    const deeper = only.files.filter(f => f.rest.length >= 2);
+    // keep as-is
+  }
+
+  const catalog = [];
+  for (const [title, group] of bySeries.entries()) {
+    const seriesId = titleKeyOf(title);
+    const series = {
+      id: seriesId,
+      title,
+      source: 'idb',
+      chapters: [],
+      coverBlob: null,
+      alMediaId: null,
+      alChapters: null,
+      format: null,
+      averageScore: null,
+    };
+
+    // Group files under series
+    const archives = [];
+    const folderMap = new Map(); // chapter folder name -> images[]
+    for (const item of group.files) {
+      const rest = item.rest;
+      const name = rest[rest.length - 1] || '';
+      if (rest.length === 1) {
+        if (/^cover\.(jpe?g|png|webp)$/i.test(name)) {
+          series.coverBlob = item.file;
+          await localCoverSet(seriesId, item.file);
+          continue;
+        }
+        if (isArchiveName(name)) {
+          archives.push({ name: name.replace(/\.(cbz|zip)$/i, ''), file: item.file });
+          continue;
+        }
+        if (isImageName(name)) {
+          // loose images in title root → one chapter "Chapter 1"
+          if (!folderMap.has('__root__')) folderMap.set('__root__', []);
+          folderMap.get('__root__').push(item.file);
+          continue;
+        }
+      } else {
+        const folderName = rest[0];
+        const leaf = rest[rest.length - 1];
+        if (isImageName(leaf)) {
+          if (!folderMap.has(folderName)) folderMap.set(folderName, []);
+          folderMap.get(folderName).push(item.file);
+        } else if (isArchiveName(leaf) && rest.length === 2) {
+          archives.push({ name: leaf.replace(/\.(cbz|zip)$/i, ''), file: item.file });
+        }
+      }
+    }
+
+    for (const arch of archives) {
+      const unit = parseLocalUnit(arch.name);
+      const chapterId = titleKeyOf(arch.name + '.cbz');
+      const key = seriesId + '/' + chapterId + '/archive';
+      await localBlobSet(key, arch.file);
+      series.chapters.push({
+        id: chapterId,
+        title: arch.name,
+        kind: 'archive-idb',
+        available: true,
+        unit: unit.unit,
+        num: unit.num,
+        label: unit.label,
+        blobKey: key,
+      });
+    }
+
+    for (const [folderName, imgs] of folderMap.entries()) {
+      const sorted = imgs.slice().sort((a, b) => naturalCmp(a.name, b.name));
+      const chTitle = folderName === '__root__' ? 'Chapter 1' : folderName;
+      const unit = parseLocalUnit(chTitle);
+      const chapterId = titleKeyOf(chTitle);
+      for (let i = 0; i < sorted.length; i++) {
+        await localBlobSet(seriesId + '/' + chapterId + '/' + i, sorted[i]);
+      }
+      series.chapters.push({
+        id: chapterId,
+        title: chTitle,
+        kind: 'folder-idb',
+        available: true,
+        unit: unit.unit,
+        num: unit.num,
+        label: unit.label,
+        pageCount: sorted.length,
+      });
+    }
+
+    series.chapters.sort((a, b) => {
+      if (a.num != null && b.num != null && a.num !== b.num) return a.num - b.num;
+      return naturalCmp(a.title, b.title);
+    });
+    const volN = series.chapters.filter(c => c.unit === 'volume').length;
+    const chN = series.chapters.filter(c => c.unit !== 'volume').length;
+    series.preferredUnit = volN > chN ? 'volume' : 'chapter';
+    series.viewUnit = series.preferredUnit;
+    if (series.chapters.length) catalog.push(series);
+  }
+
+  catalog.sort((a, b) => naturalCmp(a.title, b.title));
+  _localCatalog = catalog;
+  await localMetaSet('catalogCache', catalog.map(s => ({
+    id: s.id,
+    title: s.title,
+    preferredUnit: s.preferredUnit,
+    chapters: s.chapters.map(c => ({
+      id: c.id, title: c.title, kind: c.kind, unit: c.unit, num: c.num, label: c.label,
+      pageCount: c.pageCount, blobKey: c.blobKey, available: true,
+    })),
+  })));
+  return catalog;
+}
+
+async function restoreIdbCatalog() {
+  const cached = await localMetaGet('catalogCache');
+  if (!cached || !cached.length) return [];
+  const catalog = [];
+  for (const s of cached) {
+    const series = Object.assign({}, s, {
+      source: 'idb',
+      coverBlob: null,
+      chapters: (s.chapters || []).map(c => Object.assign({}, c, { available: true })),
+      viewUnit: s.preferredUnit || 'chapter',
+    });
+    try {
+      const cover = await localCoverGet(series.id);
+      if (cover) series.coverBlob = cover;
+    } catch (e) {}
+    catalog.push(series);
+  }
+  _localCatalog = catalog;
+  _localSourceMode = 'files';
+  return catalog;
+}
+
+
+async function restoreLocalRootHandle() {
+  if (_localRootHandle) {
+    if (await ensureLocalRootPermission(_localRootHandle)) return _localRootHandle;
+  }
+  try {
+    const handle = await localMetaGet(LOCAL_HANDLE_KEY);
+    if (handle) {
+      if (await ensureLocalRootPermission(handle)) {
+        _localRootHandle = handle;
+        return handle;
+      }
+    }
+  } catch (e) {}
+  return null;
+}
+
+async function listDirHandles(dirHandle) {
+  const entries = [];
+  for await (const [name, handle] of dirHandle.entries()) {
+    entries.push({ name, handle, kind: handle.kind });
+  }
+  return entries;
+}
+
+/** Scan root: each subdirectory = one title. */
+async function scanLocalMangaLibrary(rootHandle) {
+  const catalog = [];
+  const top = await listDirHandles(rootHandle);
+  const folders = top.filter(e => e.kind === 'directory').sort((a, b) => naturalCmp(a.name, b.name));
+
+  for (const folder of folders) {
+    const series = {
+      id: titleKeyOf(folder.name),
+      title: folder.name,
+      dirHandle: folder.handle,
+      chapters: [],
+      coverUrl: null,
+      coverBlob: null,
+      alMediaId: null,
+      alChapters: null,
+      format: null,
+      averageScore: null,
+    };
+    const kids = await listDirHandles(folder.handle);
+    // cover file in folder
+    for (const k of kids) {
+      if (k.kind === 'file' && /^cover\.(jpe?g|png|webp)$/i.test(k.name)) {
+        try {
+          const file = await k.handle.getFile();
+          series.coverBlob = file;
+        } catch (e) {}
+      }
+    }
+    // archives as chapters
+    for (const k of kids) {
+      if (k.kind === 'file' && isArchiveName(k.name)) {
+        const base = k.name.replace(/\.(cbz|zip)$/i, '');
+        const unit = parseLocalUnit(base);
+        series.chapters.push({
+          id: titleKeyOf(k.name),
+          title: base,
+          kind: 'archive',
+          fileHandle: k.handle,
+          available: true,
+          unit: unit.unit,
+          num: unit.num,
+          label: unit.label,
+        });
+      }
+    }
+    // subfolders of images as chapters
+    for (const k of kids) {
+      if (k.kind !== 'directory') continue;
+      if (/^covers?$/i.test(k.name)) continue;
+      const nested = await listDirHandles(k.handle);
+      const imgs = nested.filter(n => n.kind === 'file' && isImageName(n.name));
+      if (!imgs.length) continue;
+      const unit = parseLocalUnit(k.name);
+      series.chapters.push({
+        id: titleKeyOf(k.name),
+        title: k.name,
+        kind: 'folder',
+        dirHandle: k.handle,
+        available: true,
+        unit: unit.unit,
+        num: unit.num,
+        label: unit.label,
+        imageHandles: imgs.sort((a, b) => naturalCmp(a.name, b.name)).map(i => i.handle),
+      });
+    }
+    series.chapters.sort((a, b) => {
+      if (a.num != null && b.num != null && a.num !== b.num) return a.num - b.num;
+      return naturalCmp(a.title, b.title);
+    });
+    const volN = series.chapters.filter(c => c.unit === 'volume').length;
+    const chN = series.chapters.filter(c => c.unit !== 'volume').length;
+    series.preferredUnit = volN > chN ? 'volume' : 'chapter';
+    series.viewUnit = series.preferredUnit;
+    catalog.push(series);
+  }
+  _localCatalog = catalog;
+  await localMetaSet('catalogTitles', catalog.map(s => ({ id: s.id, title: s.title, chapterCount: s.chapters.length })));
+  return catalog;
+}
+
+const LOCAL_COVER_SEARCH_Q = `
+query ($search: String) {
+  Media(search: $search, type: MANGA, sort: SEARCH_MATCH) {
+    id
+    title { userPreferred romaji english native }
+    coverImage { extraLarge large medium }
+    chapters
+    format
+    averageScore
+  }
+}`;
+
+async function fetchAniListMangaMeta(title) {
+  try {
+    const data = await gql(LOCAL_COVER_SEARCH_Q, { search: title });
+    return data && data.Media ? data.Media : null;
+  } catch (e) { return null; }
+}
+
+async function downloadCoverToSeries(series, media) {
+  const url = media && media.coverImage && (media.coverImage.extraLarge || media.coverImage.large || media.coverImage.medium);
+  if (!url) return;
+  try {
+    const res = await fetch(url, { mode: 'cors', credentials: 'omit' });
+    if (!res.ok) return;
+    const blob = await res.blob();
+    series.coverBlob = blob;
+    await localCoverSet(series.id, blob);
+    // Write into title folder when we have readwrite permission
+    if (series.dirHandle) {
+      try {
+        const fh = await series.dirHandle.getFileHandle('cover.jpg', { create: true });
+        const w = await fh.createWritable();
+        await w.write(blob);
+        await w.close();
+      } catch (e) { /* read-only or unsupported */ }
+    }
+  } catch (e) {}
+}
+
+async function enrichCatalogFromAniList(catalog) {
+  const online = typeof isBrowserOnline === 'function' ? isBrowserOnline() : navigator.onLine;
+  if (!online) {
+    // hydrate covers from IDB
+    for (const s of catalog) {
+      if (s.coverBlob) continue;
+      try {
+        const b = await localCoverGet(s.id);
+        if (b) s.coverBlob = b;
+      } catch (e) {}
+    }
+    return;
+  }
+  for (const s of catalog) {
+    const media = await fetchAniListMangaMeta(s.title);
+    if (!media) {
+      try {
+        const b = await localCoverGet(s.id);
+        if (b) s.coverBlob = b;
+      } catch (e) {}
+      continue;
+    }
+    s.alMediaId = media.id;
+    s.alChapters = media.chapters;
+    s.format = media.format;
+    s.averageScore = media.averageScore;
+    if (!s.coverBlob) await downloadCoverToSeries(s, media);
+    else await localCoverSet(s.id, s.coverBlob);
+  }
+}
+
+function buildChapterSlots(series, unit) {
+  unit = unit || series.viewUnit || series.preferredUnit || 'chapter';
+  const available = (series.chapters || []).filter(ch => {
+    if (unit === 'volume') return ch.unit === 'volume';
+    return ch.unit !== 'volume';
+  });
+  const total = (unit === 'chapter' && series.alChapters) ? series.alChapters : 0;
+  if (!total || total < available.length) {
+    return available.map((ch, i) => Object.assign({ index: ch.num != null ? ch.num : (i + 1), available: true }, ch));
+  }
+  const slots = [];
+  const used = new Set();
+  for (let n = 1; n <= total; n++) {
+    let match = available.find(ch => {
+      if (used.has(ch.id)) return false;
+      return ch.num === n;
+    });
+    if (match) {
+      used.add(match.id);
+      slots.push(Object.assign({ index: n, available: true }, match));
+    } else {
+      slots.push({ id: 'missing-' + n, title: (unit === 'volume' ? 'Volume ' : 'Chapter ') + n, index: n, available: false });
+    }
+  }
+  available.forEach(ch => {
+    if (!used.has(ch.id)) slots.push(Object.assign({ index: ch.num != null ? ch.num : (slots.length + 1), available: true }, ch));
+  });
+  return slots;
+}
+
+async function renderLocalLibraryList() {
+  const list = document.getElementById('localLibList');
+  const actions = document.getElementById('localLibActions');
+  const back = document.getElementById('localLibBack');
+  const titleEl = document.getElementById('localLibTitle');
+  if (!list) return;
+  _localView = 'library';
+  _localActiveSeries = null;
+  if (back) back.hidden = true;
+  if (actions) actions.style.display = '';
+  if (titleEl) titleEl.textContent = 'Local manga';
+
+  if (!_localCatalog.length) {
+    list.innerHTML = '<div class="local-empty">Choose a folder that contains one subfolder per manga title.<br>Each title folder can hold .cbz, .zip, or chapter image folders.</div>';
+    return;
+  }
+  list.innerHTML = '';
+  for (const s of _localCatalog) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'local-series';
+    const cover = document.createElement('div');
+    cover.className = 'local-series-cover';
+    if (s.coverBlob) {
+      const url = URL.createObjectURL(s.coverBlob);
+      cover.style.backgroundImage = 'url(' + url + ')';
+    }
+    const meta = document.createElement('div');
+    meta.className = 'local-series-meta';
+    meta.innerHTML = '<div class="local-series-title"></div><div class="local-series-sub"></div>';
+    meta.querySelector('.local-series-title').textContent = s.title;
+    const avail = (s.chapters || []).length;
+    const unit = s.preferredUnit === 'volume' ? 'vol' : 'ch';
+    const total = s.alChapters && unit === 'ch'
+      ? (avail + ' / ' + s.alChapters + ' ch')
+      : (avail + ' ' + unit + (avail === 1 ? '' : (unit === 'ch' ? 's' : 's')));
+    meta.querySelector('.local-series-sub').textContent = total + (s.format ? ' · ' + s.format : '');
+    btn.appendChild(cover);
+    btn.appendChild(meta);
+    btn.addEventListener('click', () => openLocalTitleView(s));
+    list.appendChild(btn);
+  }
+}
+
+async function openLocalTitleView(series) {
+  const list = document.getElementById('localLibList');
+  const actions = document.getElementById('localLibActions');
+  const back = document.getElementById('localLibBack');
+  const titleEl = document.getElementById('localLibTitle');
+  if (!list) return;
+  _localView = 'title';
+  _localActiveSeries = series;
+  if (back) back.hidden = false;
+  if (actions) actions.style.display = 'none';
+  if (titleEl) titleEl.textContent = series.title;
+
+  const unit = series.viewUnit || series.preferredUnit || 'chapter';
+  const slots = buildChapterSlots(series, unit);
+  const score = series.averageScore != null ? (series.averageScore / 10).toFixed(1) + ' / 10' : '';
+  let coverUrl = '';
+  if (series.coverBlob) coverUrl = URL.createObjectURL(series.coverBlob);
+
+  const unitWord = unit === 'volume' ? 'volumes' : 'chapters';
+  const avail = (series.chapters || []).filter(c => (unit === 'volume' ? c.unit === 'volume' : c.unit !== 'volume') || unit === 'chapter').length;
+  // Count available for current unit preference
+  const availUnit = (series.chapters || []).filter(c => (unit === 'volume') ? c.unit === 'volume' : (c.unit !== 'volume')).length;
+
+  let chHtml = slots.map(ch => {
+    const cls = 'local-ch-row' + (ch.available ? ' available' : '');
+    const badge = ch.available ? 'On device' : 'Missing';
+    const name = ch.available ? (ch.label || ch.title) : ((unit === 'volume' ? 'Volume ' : 'Chapter ') + ch.index);
+    return '<button type="button" class="' + cls + '" data-ch-id="' + escapeHtml(String(ch.id)) + '" data-available="' + (ch.available ? '1' : '0') + '">'
+      + '<span class="ch-num">' + ch.index + '</span>'
+      + '<span class="ch-name">' + escapeHtml(name) + '</span>'
+      + '<span class="ch-badge">' + badge + '</span></button>';
+  }).join('');
+
+  list.innerHTML = '<div class="local-title-view">'
+    + '<div class="local-title-card">'
+    + (coverUrl ? '<img src="' + coverUrl + '" alt="">' : '<div style="width:84px;height:118px;border-radius:10px;background:rgba(0,0,0,0.25)"></div>')
+    + '<div class="local-title-info"><h3>' + escapeHtml(series.title) + '</h3>'
+    + '<div class="local-title-meta">'
+    + (series.format ? escapeHtml(String(series.format)) : 'Manga')
+    + (score ? ' · ★ ' + score : '')
+    + (series.alChapters ? ' · ' + series.alChapters + ' ch on AniList' : '')
+    + '<br>' + availUnit + ' ' + unitWord + ' on device'
+    + (series.alMediaId ? '<br><span style="color:var(--rose)">AniList linked</span>' : '')
+    + '</div>'
+    + '<div class="local-unit-toggle">'
+    + '<button type="button" data-unit="chapter" class="' + (unit === 'chapter' ? 'active' : '') + '">Chapters</button>'
+    + '<button type="button" data-unit="volume" class="' + (unit === 'volume' ? 'active' : '') + '">Volumes</button>'
+    + '</div></div></div>'
+    + '<div class="local-ch-list">' + chHtml + '</div></div>';
+
+  list.querySelectorAll('.local-unit-toggle button').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      series.viewUnit = btn.getAttribute('data-unit');
+      openLocalTitleView(series);
+    });
+  });
+
+  list.querySelectorAll('.local-ch-row.available').forEach(row => {
+    row.addEventListener('click', () => {
+      const id = row.getAttribute('data-ch-id');
+      const ch = (series.chapters || []).find(c => String(c.id) === String(id));
+      if (ch) openLocalChapterReader(series, ch);
+    });
+  });
+}
+
+/** ZIP/CBZ via central directory (fixes blank pages from data descriptors). */
+async function extractZipImageBlobs(arrayBuffer) {
+  const u8 = new Uint8Array(arrayBuffer);
+  const view = new DataView(arrayBuffer);
+  const out = [];
+  if (u8.length < 22) return out;
+
+  let eocd = -1;
+  for (let i = u8.length - 22; i >= Math.max(0, u8.length - 0x10000); i--) {
+    if (view.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+  }
+  const entries = [];
+  if (eocd >= 0) {
+    const total = view.getUint16(eocd + 10, true);
+    let cdOff = view.getUint32(eocd + 16, true);
+    for (let n = 0; n < total; n++) {
+      if (cdOff + 46 > u8.length || view.getUint32(cdOff, true) !== 0x02014b50) break;
+      const method = view.getUint16(cdOff + 10, true);
+      const compSize = view.getUint32(cdOff + 20, true);
+      const nameLen = view.getUint16(cdOff + 28, true);
+      const extraLen = view.getUint16(cdOff + 30, true);
+      const commentLen = view.getUint16(cdOff + 32, true);
+      const localOff = view.getUint32(cdOff + 42, true);
+      let name = '';
+      try { name = new TextDecoder().decode(u8.subarray(cdOff + 46, cdOff + 46 + nameLen)); } catch (e) {}
+      entries.push({ method, compSize, localOff, name });
+      cdOff += 46 + nameLen + extraLen + commentLen;
+    }
+  } else {
+    let i = 0;
+    while (i + 30 < u8.length) {
+      if (view.getUint32(i, true) !== 0x04034b50) break;
+      const method = view.getUint16(i + 8, true);
+      const compSize = view.getUint32(i + 18, true);
+      const nameLen = view.getUint16(i + 26, true);
+      const extraLen = view.getUint16(i + 28, true);
+      let name = '';
+      try { name = new TextDecoder().decode(u8.subarray(i + 30, i + 30 + nameLen)); } catch (e) {}
+      entries.push({ method, compSize, localOff: i, name });
+      if (!compSize) break;
+      i = i + 30 + nameLen + extraLen + compSize;
+    }
+  }
+
+  for (const ent of entries) {
+    const lower = (ent.name || '').toLowerCase();
+    if (!ent.name || ent.name.endsWith('/') || !isImageName(lower) || lower.includes('__macosx')) continue;
+    const lo = ent.localOff;
+    if (lo + 30 > u8.length || view.getUint32(lo, true) !== 0x04034b50) continue;
+    const method = view.getUint16(lo + 8, true);
+    let compSize = view.getUint32(lo + 18, true);
+    if (!compSize) compSize = ent.compSize || 0;
+    const nameLen = view.getUint16(lo + 26, true);
+    const extraLen = view.getUint16(lo + 28, true);
+    const dataStart = lo + 30 + nameLen + extraLen;
+    if (!compSize || dataStart + compSize > u8.length) continue;
+    const payload = u8.subarray(dataStart, dataStart + compSize);
+    let raw = null;
+    if (method === 0) {
+      raw = payload;
+    } else if (method === 8 && typeof DecompressionStream !== 'undefined') {
+      try {
+        const ds = new DecompressionStream('deflate-raw');
+        raw = new Uint8Array(await new Response(new Blob([payload]).stream().pipeThrough(ds)).arrayBuffer());
+      } catch (e1) {
+        try {
+          const ds2 = new DecompressionStream('deflate');
+          raw = new Uint8Array(await new Response(new Blob([payload]).stream().pipeThrough(ds2)).arrayBuffer());
+        } catch (e2) { raw = null; }
+      }
+    }
+    if (raw && raw.length) {
+      const ext = (lower.match(/\.(jpe?g|png|webp|gif|bmp)$/) || [])[1] || 'jpeg';
+      const mime = ext.startsWith('jp') ? 'image/jpeg' : ('image/' + ext.replace('jpg', 'jpeg'));
+      out.push({ name: ent.name, blob: new Blob([raw], { type: mime }) });
+    }
+  }
+  out.sort((a, b) => naturalCmp(a.name, b.name));
+  return out;
+}
+
+async function loadChapterImageBlobs(chapter) {
+  if (chapter.kind === 'folder' && chapter.imageHandles && chapter.imageHandles.length) {
+    const blobs = [];
+    for (const fh of chapter.imageHandles) {
+      try {
+        const file = await fh.getFile();
+        if (file && file.size) blobs.push(file);
+      } catch (e) { console.warn('page file failed', e); }
+    }
+    return blobs;
+  }
+  if (chapter.kind === 'archive' && chapter.fileHandle) {
+    const file = await chapter.fileHandle.getFile();
+    const buf = await file.arrayBuffer();
+    const images = await extractZipImageBlobs(buf);
+    if (!images.length) throw new Error('No images extracted (unsupported ZIP compression?)');
+    return images.map(x => x.blob);
+  }
+  // IndexedDB imports (AppMint / webkitdirectory fallback)
+  if (chapter.kind === 'folder-idb') {
+    const blobs = [];
+    const n = chapter.pageCount || 0;
+    const seriesId = (_localReaderState.series && _localReaderState.series.id) || (_localActiveSeries && _localActiveSeries.id);
+    const sid = seriesId || (chapter.seriesId);
+    for (let i = 0; i < n; i++) {
+      const b = await localBlobGet((sid || '') + '/' + chapter.id + '/' + i);
+      if (b) blobs.push(b);
+    }
+    // try with active series id from catalog search
+    if (!blobs.length) {
+      for (const s of _localCatalog) {
+        if ((s.chapters || []).some(c => c.id === chapter.id)) {
+          for (let i = 0; i < n; i++) {
+            const b = await localBlobGet(s.id + '/' + chapter.id + '/' + i);
+            if (b) blobs.push(b);
+          }
+          break;
+        }
+      }
+    }
+    return blobs;
+  }
+  if (chapter.kind === 'archive-idb' && chapter.blobKey) {
+    const file = await localBlobGet(chapter.blobKey);
+    if (!file) throw new Error('Archive missing from local storage');
+    const buf = await file.arrayBuffer();
+    const images = await extractZipImageBlobs(buf);
+    if (!images.length) throw new Error('No images extracted (unsupported ZIP compression?)');
+    return images.map(x => x.blob);
+  }
+  return [];
+}
+
+function localReaderPref(key, fallback) {
+  try {
+    const v = localStorage.getItem('tsukiatoReader:' + key);
+    if (v == null) return fallback;
+    if (fallback === true || fallback === false) return v === '1' || v === 'true';
+    return v;
+  } catch (e) { return fallback; }
+}
+function setLocalReaderPref(key, val) {
+  try {
+    localStorage.setItem('tsukiatoReader:' + key, typeof val === 'boolean' ? (val ? '1' : '0') : String(val));
+  } catch (e) {}
+}
+
+function showLocalReaderToast(msg) {
+  const el = document.getElementById('localReaderToast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(showLocalReaderToast._t);
+  showLocalReaderToast._t = setTimeout(() => el.classList.remove('show'), 1400);
+}
+
+function setLocalReaderMode(mode) {
+  const pagesEl = document.getElementById('localReaderPages');
+  if (!pagesEl) return;
+  mode = mode || 'webtoon';
+  pagesEl.classList.remove('mode-webtoon', 'mode-vertical', 'mode-rtl', 'mode-ltr');
+  pagesEl.classList.add('mode-' + mode);
+  document.querySelectorAll('#localReaderModes button').forEach(b => {
+    b.classList.toggle('active', b.getAttribute('data-mode') === mode);
+  });
+  setLocalReaderPref('mode', mode);
+  showLocalReaderToast({
+    webtoon: 'Webtoon', vertical: 'Vertical', rtl: 'Right to left', ltr: 'Left to right'
+  }[mode] || mode);
+  // Re-snap current page after mode change
+  requestAnimationFrame(() => goToLocalPage(_localReaderState.page || 0, false));
+}
+
+function applyLocalReaderDisplayPrefs() {
+  const reader = document.getElementById('localReader');
+  const pagesEl = document.getElementById('localReaderPages');
+  const bright = document.getElementById('localReaderBrightness');
+  if (!reader || !pagesEl) return;
+  const bg = localReaderPref('bg', 'black');
+  reader.classList.remove('bg-gray', 'bg-white');
+  if (bg === 'gray') reader.classList.add('bg-gray');
+  if (bg === 'white') reader.classList.add('bg-white');
+  const scale = localReaderPref('scale', 'width');
+  pagesEl.classList.toggle('scale-fit', scale === 'fit');
+  pagesEl.classList.toggle('crop-borders', !!localReaderPref('crop', false));
+  const b = parseInt(localReaderPref('brightness', '0'), 10) || 0;
+  if (bright) bright.style.opacity = String(Math.min(0.7, Math.max(0, b / 100)));
+  const pill = document.getElementById('localReaderPagePill');
+  if (pill) pill.style.display = localReaderPref('pagePill', true) ? '' : 'none';
+  try {
+    if (localReaderPref('keepScreen', true) && reader && !reader.hidden) {
+      // best-effort: Wake Lock API
+      if (!_localReaderState.wakeLock && navigator.wakeLock) {
+        navigator.wakeLock.request('screen').then(lock => { _localReaderState.wakeLock = lock; }).catch(() => {});
+      }
+    } else if (_localReaderState.wakeLock) {
+      try { _localReaderState.wakeLock.release(); } catch (e) {}
+      _localReaderState.wakeLock = null;
+    }
+  } catch (e) {}
+}
+
+function toggleLocalReaderChrome(force) {
+  const top = document.getElementById('localReaderChromeTop');
+  const bot = document.getElementById('localReaderChromeBottom');
+  const reader = document.getElementById('localReader');
+  if (!top || !bot) return;
+  const show = force != null ? force : !top.classList.contains('show');
+  top.classList.toggle('show', show);
+  bot.classList.toggle('show', show);
+  if (reader) reader.classList.toggle('chrome-hidden', !show);
+  if (!show) {
+    const settings = document.getElementById('localReaderSettings');
+    const drawer = document.getElementById('localReaderChDrawer');
+    if (settings) settings.classList.remove('open');
+    if (drawer) drawer.classList.remove('open');
+  }
+}
+
+function updateLocalPageUI(page) {
+  const total = (_localReaderState.urls || []).length || 1;
+  page = Math.max(0, Math.min(total - 1, page || 0));
+  _localReaderState.page = page;
+  const foot = document.getElementById('localReaderFoot');
+  const pill = document.getElementById('localReaderPagePill');
+  const slider = document.getElementById('localReaderSlider');
+  if (foot) foot.textContent = 'Page ' + (page + 1) + ' / ' + total;
+  if (pill) pill.textContent = (page + 1) + ' / ' + total;
+  if (slider && !_localReaderState.sliderDragging) {
+    slider.max = String(Math.max(0, total - 1));
+    slider.value = String(page);
+  }
+}
+
+function goToLocalPage(page, smooth) {
+  const pagesEl = document.getElementById('localReaderPages');
+  if (!pagesEl) return;
+  const total = (_localReaderState.urls || []).length;
+  if (!total) return;
+  page = Math.max(0, Math.min(total - 1, parseInt(page, 10) || 0));
+  const target = pagesEl.querySelector('img[data-page="' + page + '"]');
+  updateLocalPageUI(page);
+  if (!target) return;
+  const mode = (pagesEl.className.match(/mode-(\w+)/) || [])[1] || 'webtoon';
+  try {
+    if (mode === 'ltr' || mode === 'rtl') {
+      target.scrollIntoView({ inline: 'center', block: 'nearest', behavior: smooth ? 'smooth' : 'auto' });
+    } else {
+      target.scrollIntoView({ block: 'start', behavior: smooth ? 'smooth' : 'auto' });
+    }
+  } catch (e) {
+    // fallback
+    if (mode === 'ltr' || mode === 'rtl') pagesEl.scrollLeft = target.offsetLeft;
+    else pagesEl.scrollTop = target.offsetTop;
+  }
+}
+
+function detectLocalPageFromScroll() {
+  if (_localReaderState.sliderDragging) return;
+  const pagesEl = document.getElementById('localReaderPages');
+  if (!pagesEl) return;
+  const imgs = pagesEl.querySelectorAll('img');
+  if (!imgs.length) return;
+  let best = 0, bestDist = Infinity;
+  const mode = (pagesEl.className.match(/mode-(\w+)/) || [])[1] || 'webtoon';
+  if (mode === 'ltr' || mode === 'rtl') {
+    const mid = pagesEl.scrollLeft + pagesEl.clientWidth / 2;
+    imgs.forEach((img, idx) => {
+      const c = img.offsetLeft + img.offsetWidth / 2;
+      const d = Math.abs(c - mid);
+      if (d < bestDist) { bestDist = d; best = idx; }
+    });
+  } else {
+    const top = pagesEl.scrollTop + Math.min(80, pagesEl.clientHeight * 0.15);
+    imgs.forEach((img, idx) => {
+      const d = Math.abs(img.offsetTop - top);
+      if (d < bestDist) { bestDist = d; best = idx; }
+    });
+  }
+  updateLocalPageUI(best);
+}
+
+function wireLocalReaderSlider() {
+  const slider = document.getElementById('localReaderSlider');
+  if (!slider || slider.dataset.wired === '1') return;
+  slider.dataset.wired = '1';
+  const startDrag = () => { _localReaderState.sliderDragging = true; };
+  const endDrag = () => {
+    _localReaderState.sliderDragging = false;
+    goToLocalPage(parseInt(slider.value, 10) || 0, false);
+  };
+  slider.addEventListener('pointerdown', startDrag);
+  slider.addEventListener('touchstart', startDrag, { passive: true });
+  slider.addEventListener('pointerup', endDrag);
+  slider.addEventListener('touchend', endDrag);
+  slider.addEventListener('change', endDrag);
+  slider.addEventListener('input', () => {
+    _localReaderState.sliderDragging = true;
+    const p = parseInt(slider.value, 10) || 0;
+    // live scrub without fighting scroll handler
+    const foot = document.getElementById('localReaderFoot');
+    const pill = document.getElementById('localReaderPagePill');
+    const total = (_localReaderState.urls || []).length || 1;
+    if (foot) foot.textContent = 'Page ' + (p + 1) + ' / ' + total;
+    if (pill) pill.textContent = (p + 1) + ' / ' + total;
+    goToLocalPage(p, false);
+  });
+}
+
+function fillLocalReaderChapterDrawer(series, current) {
+  const list = document.getElementById('localReaderChList');
+  if (!list || !series) return;
+  list.innerHTML = '';
+  (series.chapters || []).forEach(ch => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = ch.label || ch.title || 'Chapter';
+    if (current && ch.id === current.id) b.classList.add('active');
+    b.addEventListener('click', () => {
+      document.getElementById('localReaderChDrawer')?.classList.remove('open');
+      openLocalChapterReader(series, ch);
+    });
+    list.appendChild(b);
+  });
+}
+
+async function openLocalChapterReader(series, chapter) {
+  const reader = document.getElementById('localReader');
+  const pagesEl = document.getElementById('localReaderPages');
+  const titleEl = document.getElementById('localReaderTitle');
+  if (!reader || !pagesEl) return;
+
+  (_localReaderState.urls || []).forEach(u => { try { URL.revokeObjectURL(u); } catch (e) {} });
+  if (titleEl) titleEl.textContent = (series.title || '') + ' · ' + (chapter.title || '');
+  pagesEl.innerHTML = '';
+  updateLocalPageUI(0);
+  reader.hidden = false;
+  document.body.style.overflow = 'hidden';
+  toggleLocalReaderChrome(true);
+  document.getElementById('localReaderSettings')?.classList.remove('open');
+  document.getElementById('localReaderChDrawer')?.classList.remove('open');
+
+  const mode = localReaderPref('mode', 'webtoon');
+  setLocalReaderMode(mode);
+  applyLocalReaderDisplayPrefs();
+  fillLocalReaderChapterDrawer(series, chapter);
+  wireLocalReaderSlider();
+
+  // Sync settings controls
+  try {
+    const bs = document.getElementById('localBrightSlider');
+    if (bs) bs.value = String(localReaderPref('brightness', '0'));
+    const bg = document.getElementById('localBgSelect');
+    if (bg) bg.value = localReaderPref('bg', 'black');
+    const sc = document.getElementById('localScaleSelect');
+    if (sc) sc.value = localReaderPref('scale', 'width');
+    const crop = document.getElementById('localCropBorders');
+    if (crop) crop.checked = !!localReaderPref('crop', false);
+    const ks = document.getElementById('localKeepScreen');
+    if (ks) ks.checked = !!localReaderPref('keepScreen', true);
+    const pp = document.getElementById('localPagePill');
+    if (pp) pp.checked = !!localReaderPref('pagePill', true);
+  } catch (e) {}
+
+  let blobs = [];
+  try {
+    blobs = await loadChapterImageBlobs(chapter);
+  } catch (e) {
+    updateLocalPageUI(0);
+    alert('Could not open: ' + (e.message || e));
+    return;
+  }
+  if (!blobs.length) {
+    alert('No readable pages in this chapter/volume.');
+    return;
+  }
+
+  const urls = [];
+  for (let i = 0; i < blobs.length; i++) {
+    const url = URL.createObjectURL(blobs[i]);
+    urls.push(url);
+    const img = document.createElement('img');
+    img.src = url;
+    img.alt = 'Page ' + (i + 1);
+    img.dataset.page = String(i);
+    img.decoding = 'async';
+    img.loading = i < 4 ? 'eager' : 'lazy';
+    img.draggable = false;
+    img.onerror = () => { img.style.minHeight = '30vh'; img.style.opacity = '0.4'; };
+    pagesEl.appendChild(img);
+  }
+
+  const savedPage = await localProgressGet(series.id, chapter.id);
+  _localReaderState = Object.assign(_localReaderState || {}, {
+    seriesId: series.id, chapterId: chapter.id, page: savedPage || 0,
+    urls, series, chapter, total: urls.length, sliderDragging: false,
+  });
+
+  const slider = document.getElementById('localReaderSlider');
+  if (slider) {
+    slider.min = '0';
+    slider.max = String(Math.max(0, urls.length - 1));
+    slider.step = '1';
+    slider.value = String(Math.min(savedPage || 0, urls.length - 1));
+  }
+
+  requestAnimationFrame(() => {
+    goToLocalPage(Math.min(savedPage || 0, urls.length - 1), false);
+  });
+
+  pagesEl.onclick = (e) => {
+    // ignore clicks on chrome
+    if (e.target.closest && e.target.closest('.local-reader-chrome, .local-reader-settings, .local-reader-ch-drawer')) return;
+    const rect = pagesEl.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const w = rect.width || 1;
+    if (x > w * 0.28 && x < w * 0.72) {
+      toggleLocalReaderChrome();
+      return;
+    }
+    const modeNow = localReaderPref('mode', 'webtoon');
+    if (modeNow === 'rtl' || modeNow === 'ltr') {
+      let p = _localReaderState.page || 0;
+      if (modeNow === 'rtl') p += (x < w * 0.28 ? 1 : -1);
+      else p += (x < w * 0.28 ? -1 : 1);
+      goToLocalPage(p, true);
+    } else {
+      // webtoon/vertical: edge tap ≈ one viewport
+      const dir = x < w * 0.28 ? -1 : 1;
+      pagesEl.scrollBy({ top: dir * pagesEl.clientHeight * 0.9, behavior: 'smooth' });
+    }
+  };
+
+  // double-tap zoom
+  let lastTap = 0;
+  pagesEl.ondblclick = (e) => {
+    const img = e.target.closest('img');
+    if (!img) return;
+    if (img.style.transform === 'scale(1.8)') {
+      img.style.transform = '';
+      img.style.transformOrigin = '';
+    } else {
+      const r = img.getBoundingClientRect();
+      const ox = ((e.clientX - r.left) / r.width) * 100;
+      const oy = ((e.clientY - r.top) / r.height) * 100;
+      img.style.transformOrigin = ox + '% ' + oy + '%';
+      img.style.transform = 'scale(1.8)';
+      img.style.transition = 'transform 0.2s ease';
+    }
+  };
+
+  pagesEl.onscroll = () => detectLocalPageFromScroll();
+}
+
+async function closeLocalReader() {
+  const reader = document.getElementById('localReader');
+  if (reader) reader.hidden = true;
+  document.body.style.overflow = '';
+  try {
+    if (_localReaderState && _localReaderState.wakeLock) {
+      await _localReaderState.wakeLock.release();
+      _localReaderState.wakeLock = null;
+    }
+  } catch (e) {}
+  document.getElementById('localReaderSettings')?.classList.remove('open');
+  document.getElementById('localReaderChDrawer')?.classList.remove('open');
+  if (_localReaderState.seriesId && _localReaderState.chapterId) {
+    try {
+      await localProgressSet(_localReaderState.seriesId, _localReaderState.chapterId, _localReaderState.page || 0);
+    } catch (e) {}
+  }
+  (_localReaderState.urls || []).forEach(u => { try { URL.revokeObjectURL(u); } catch (e) {} });
+  _localReaderState.urls = [];
+}
+
+async function syncLocalReaderProgressToList() {
+  if (typeof canEditProgress === 'function' && !canEditProgress()) {
+    alert('Connect AniList or MAL to sync progress.');
+    return;
+  }
+  const series = _localReaderState.series;
+  if (!series) return;
+  let mediaId = series.alMediaId;
+  if (!mediaId) {
+    alert('No AniList link for this title. Re-scan online so covers/metadata can link.');
+    return;
+  }
+  const chNum = parseInt(prompt('Chapter number to set on your list?', '1'), 10);
+  if (!Number.isFinite(chNum) || chNum < 0) return;
+  try {
+    await setEntryProgressAbsolute(mediaId, chNum, { mediaType: 'MANGA' });
+    alert('Progress set to chapter ' + chNum + '.');
+  } catch (err) {
+    alert('Could not sync: ' + (err.message || err));
+  }
+}
+
+async function runLocalScanAndRender() {
+  const list = document.getElementById('localLibList');
+  if (list) list.innerHTML = '<div class="local-empty">Scanning…</div>';
+  try {
+    const mode = await localMetaGet('sourceMode');
+    // Prefer live FSA handle
+    const root = await restoreLocalRootHandle();
+    if (root && !root.__files) {
+      const catalog = await scanLocalMangaLibrary(root);
+      await enrichCatalogFromAniList(catalog);
+      await renderLocalLibraryList();
+      return;
+    }
+    // IDB / webkitdirectory catalog
+    if (mode === 'files' || _localSourceMode === 'files') {
+      if (!_localCatalog.length) await restoreIdbCatalog();
+      if (_localCatalog.length) {
+        await enrichCatalogFromAniList(_localCatalog);
+        await renderLocalLibraryList();
+        return;
+      }
+    }
+    if (list) {
+      list.innerHTML = '<div class="local-empty">No folder selected yet.<br>Tap <b>Choose folder</b> to import your manga directory.<br><span style="opacity:0.75">AppMint uses the system folder picker (files are stored on-device for reading).</span></div>';
+    }
+  } catch (e) {
+    if (list) list.innerHTML = '<div class="local-empty">Scan failed: ' + escapeHtml(e.message || String(e)) + '</div>';
+  }
+}
+
+function navigateLocalChapter(delta) {
+  const series = _localReaderState.series;
+  const chapter = _localReaderState.chapter;
+  if (!series || !chapter) return;
+  const list = series.chapters || [];
+  const idx = list.findIndex(c => c.id === chapter.id);
+  if (idx < 0) return;
+  const next = list[idx + delta];
+  if (!next) return;
+  closeLocalReader();
+  openLocalChapterReader(series, next);
+}
+
+function updateLocalFabVisibility() {
+  const fab = document.getElementById('localReaderFab');
+  if (!fab) return;
+  fab.classList.toggle('visible', typeof mediaMode !== 'undefined' && mediaMode === 'MANGA');
+}
+
+function initLocalMangaReader() {
+  const fab = document.getElementById('localReaderFab');
+  const overlay = document.getElementById('localLibOverlay');
+  if (!fab || !overlay) {
+    console.warn('local reader: FAB/overlay not in DOM yet');
+    return;
+  }
+  if (fab.dataset.localWired === '1') {
+    updateLocalFabVisibility();
+    return;
+  }
+  fab.dataset.localWired = '1';
+
+  fab.addEventListener('click', async () => {
+    try {
+      overlay.hidden = false;
+      requestAnimationFrame(() => overlay.classList.add('open'));
+      const list = document.getElementById('localLibList');
+      const root = await restoreLocalRootHandle();
+      if (!root) {
+        const picked = await pickLocalMangaFolder();
+        if (!picked) {
+          if (list) {
+            list.innerHTML = '<div class="local-empty">Choose a folder that contains one subfolder per manga title.<br>Each title folder can hold .cbz, .zip, or chapter image folders.</div>';
+          }
+          return;
+        }
+        await runLocalScanAndRender();
+        return;
+      }
+      if (!_localCatalog.length) await runLocalScanAndRender();
+      else if (_localView === 'title' && _localActiveSeries) await openLocalTitleView(_localActiveSeries);
+      else await renderLocalLibraryList();
+    } catch (err) {
+      console.error('local library open failed', err);
+      const list = document.getElementById('localLibList');
+      if (list) {
+        list.innerHTML = '<div class="local-empty">Could not open library.<br>' + escapeHtml(err.message || String(err)) + '</div>';
+      }
+    }
+  });
+
+  function closeLocalLibOverlay() {
+    overlay.classList.remove('open');
+    setTimeout(() => { overlay.hidden = true; }, 300);
+  }
+  document.getElementById('localLibClose')?.addEventListener('click', closeLocalLibOverlay);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeLocalLibOverlay(); });
+  document.getElementById('localLibBack')?.addEventListener('click', () => renderLocalLibraryList());
+  wireLocalFileInputsOnce();
+  document.getElementById('localProbeNativeBtn')?.addEventListener('click', () => {
+    const W = window.WebToApk;
+    let live = [];
+    if (W) {
+      try { live.push('hasFolderAccess=' + (typeof W.hasFolderAccess === 'function' ? String(W.hasFolderAccess()) : 'n/a')); } catch (e) { live.push('hasFolderAccess=err'); }
+      try { live.push('getFolderAccessUri=' + (typeof W.getFolderAccessUri === 'function' ? String(W.getFolderAccessUri()) : 'n/a')); } catch (e) { live.push('uri=err'); }
+      try { live.push('isFolderAccessEnabled=' + (typeof W.isFolderAccessEnabled === 'function' ? String(W.isFolderAccessEnabled()) : 'n/a')); } catch (e) {}
+      try {
+        const r = typeof W.listFolderEntries === 'function' ? W.listFolderEntries('') : null;
+        live.push('listFolderEntries("")=' + safePreview(r));
+      } catch (e) { live.push('listFolderEntries=err ' + (e.message || e)); }
+    }
+    const summary = listNativeBridgeSummary();
+    showLocalPickerHint(
+      '<b>Native API probe</b> (not an error)<br><br>'
+      + '<b>Live SAF state</b><br><code style="font-size:10px;word-break:break-all">' + escapeHtml(live.join(' | ')) + '</code><br><br>'
+      + '<b>Methods</b><br>' + summary
+    );
+    console.log('[Tsukiato] bridge probe', discoverNativeFileBridges(), live);
+  });
+  // Label triggers folder input directly (best chance in WebView).
+  // Also try FSA when present.
+  document.getElementById('localPickFolderBtn')?.addEventListener('click', async (e) => {
+    // Always try native SAF + FSA first; prevent label default if we handle it
+    e.preventDefault();
+    const list = document.getElementById('localLibList');
+    if (list) list.innerHTML = '<div class="local-empty">Opening folder picker…</div>';
+    showLocalPickerHint('Probing native SAF / directory picker…');
+    const picked = await pickLocalMangaFolder();
+    if (picked && !picked.__files) await runLocalScanAndRender();
+    else if (picked && picked.__files) {
+      await enrichCatalogFromAniList(_localCatalog);
+      await renderLocalLibraryList();
+      showLocalPickerHint('Imported <b>' + _localCatalog.length + '</b> titles.');
+    } else if (!_localCatalog.length) {
+      // Keep existing diagnostic from tryNativeSafFolderPick if present
+      const hint = document.getElementById('localPickerHint');
+      const hasDiag = hint && hint.style.display !== 'none' && hint.textContent
+        && !/Opening folder picker/i.test(hint.textContent);
+      if (!hasDiag) showLocalPickerHint(appmintFileAccessHelpHtml());
+      if (list) list.innerHTML = '<div class="local-empty">No folder imported yet.</div>';
+    }
+  });
+  document.getElementById('localRescanBtn')?.addEventListener('click', () => runLocalScanAndRender());
+  document.getElementById('localReaderClose')?.addEventListener('click', () => closeLocalReader());
+  document.getElementById('localReaderSync')?.addEventListener('click', () => syncLocalReaderProgressToList());
+  document.querySelectorAll('#localReaderModes button').forEach(btn => {
+    btn.addEventListener('click', () => setLocalReaderMode(btn.getAttribute('data-mode') || 'webtoon'));
+  });
+  document.getElementById('localReaderPrevCh')?.addEventListener('click', () => navigateLocalChapter(-1));
+  document.getElementById('localReaderNextCh')?.addEventListener('click', () => navigateLocalChapter(1));
+  document.getElementById('localReaderPrevPage')?.addEventListener('click', () => goToLocalPage((_localReaderState.page || 0) - 1, true));
+  document.getElementById('localReaderNextPage')?.addEventListener('click', () => goToLocalPage((_localReaderState.page || 0) + 1, true));
+  document.getElementById('localReaderSettingsBtn')?.addEventListener('click', () => {
+    document.getElementById('localReaderChDrawer')?.classList.remove('open');
+    document.getElementById('localReaderSettings')?.classList.toggle('open');
+    toggleLocalReaderChrome(true);
+  });
+  document.getElementById('localReaderChList')?.addEventListener('click', () => {
+    document.getElementById('localReaderSettings')?.classList.remove('open');
+    document.getElementById('localReaderChDrawer')?.classList.toggle('open');
+    toggleLocalReaderChrome(true);
+  });
+  document.getElementById('localBrightSlider')?.addEventListener('input', (e) => {
+    setLocalReaderPref('brightness', e.target.value);
+    applyLocalReaderDisplayPrefs();
+  });
+  document.getElementById('localBgSelect')?.addEventListener('change', (e) => {
+    setLocalReaderPref('bg', e.target.value);
+    applyLocalReaderDisplayPrefs();
+  });
+  document.getElementById('localScaleSelect')?.addEventListener('change', (e) => {
+    setLocalReaderPref('scale', e.target.value);
+    applyLocalReaderDisplayPrefs();
+  });
+  document.getElementById('localCropBorders')?.addEventListener('change', (e) => {
+    setLocalReaderPref('crop', !!e.target.checked);
+    applyLocalReaderDisplayPrefs();
+  });
+  document.getElementById('localKeepScreen')?.addEventListener('change', (e) => {
+    setLocalReaderPref('keepScreen', !!e.target.checked);
+    applyLocalReaderDisplayPrefs();
+  });
+  document.getElementById('localPagePill')?.addEventListener('change', (e) => {
+    setLocalReaderPref('pagePill', !!e.target.checked);
+    applyLocalReaderDisplayPrefs();
+  });
+
+  updateLocalFabVisibility();
+  document.querySelectorAll('.popup-mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => setTimeout(updateLocalFabVisibility, 0));
+  });
+}
+
+(function bootLocalMangaReader() {
+  function run() {
+    try { initLocalMangaReader(); } catch (e) { console.warn('local reader init', e); }
+    try { updateLocalFabVisibility(); } catch (e) {}
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', run);
+  } else {
+    // HTML may still be below this script in some builds — defer one tick
+    setTimeout(run, 0);
+  }
+})();
+
 /* ── Anti-zoom (pinch + multi-touch + ctrl-wheel) ───────── */
 (function antiZoom() {
   try {
@@ -14591,5 +17006,6 @@ if ('serviceWorker' in navigator) {
 })();
 
 </script>
+
 </body>
 </html>
