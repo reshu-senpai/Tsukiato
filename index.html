@@ -4261,9 +4261,9 @@ button.comment-like:disabled { opacity: 0.55; cursor: default; }
 .lm-list{width:calc(100% - 40px)!important;max-width:none!important;margin-left:auto;margin-right:auto;padding-left:0;padding-right:0;}
 @media(max-width:560px){.lm-head{width:calc(100% - 28px);padding-left:0;padding-right:0;}.lm-list{width:calc(100% - 28px)!important;padding-left:0;padding-right:0;}}
 /* Library search popup is tracker-native; only the source tabs are omitted. */
-.lm-search-popup{position:fixed;top:calc(66px + env(safe-area-inset-top));right:calc(20px + env(safe-area-inset-right));left:auto;z-index:70;margin:0;transform-origin:top right;}
+.lm-search-popup{position:fixed;top:calc(81px + env(safe-area-inset-top));right:calc(34px + env(safe-area-inset-right));left:auto;z-index:70;margin:0;transform-origin:top right;}
 .lm-search-popup .popup-card{width:300px;}
-.lm-search-popup .search-tail{right:152px;}
+.lm-search-popup .search-tail{right:44px;}
 
 
 
@@ -4425,7 +4425,7 @@ select.lm-create-input{appearance:none;-webkit-appearance:none;}
   right: calc(68px + env(safe-area-inset-right));
   z-index: 80;
 }
-.lm-create-popup .search-tail{right: 24px;}
+.lm-create-popup .search-tail{right: 48px;}
 .lm-create-popup.is-open{display:block;}
 
 
@@ -4433,7 +4433,11 @@ select.lm-create-input{appearance:none;-webkit-appearance:none;}
 .lm-actions{display:flex;align-items:center;gap:8px;}
 .lm-back-inline{order:0;width:34px;height:34px;border:1px solid var(--ink-dim);border-radius:999px;background:transparent;color:var(--ink);font:18px/1 'DM Mono',monospace;}
 .lm-actions .lm-attach-btn{order:1;}
-.lm-head{padding-top:12px!important;padding-left:8px!important;padding-right:0!important;}
+.lm-head{padding-top:calc(44px + env(safe-area-inset-top))!important;padding-left:8px!important;padding-right:0!important;}
+/* Keep the masthead and library content on one scrolling surface, like tracker. */
+.lm-sheet{display:block!important;overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:contain;}
+.lm-list{flex:none!important;overflow:visible!important;}
+.lm-head #lmClose{background:rgba(217,79,128,.82)!important;border:1px solid rgba(255,255,255,.68)!important;border-radius:50%!important;color:#fff!important;-webkit-text-stroke:.35px rgba(0,0,0,.9)!important;text-shadow:0 0 .2px rgba(0,0,0,.9)!important;box-shadow:0 4px 14px rgba(217,79,128,.42),0 0 0 2px rgba(217,79,128,.16)!important;}
 .lm-head-copy h1{font-size:clamp(32px,8vw,46px)!important;}
 .lm-library-card .gcard-bar{display:none!important;}
 /* Large-library scroll optimization: defer off-screen card painting and image decoding. */
